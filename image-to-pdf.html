@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تحويل صور إلى PDF</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body style="font-family:Arial;text-align:center;padding:30px">
+
+<h2>📄 تحويل صور إلى PDF</h2>
+
+<input type="file" id="images" multiple accept="image/*"><br><br>
+
+<button onclick="createPDF()">تحميل PDF</button>
+
+<script>
+async function createPDF(){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  const files = document.getElementById("images").files;
+
+  for(let i=0;i<files.length;i++){
+    const imgData = await toBase64(files[i]);
+
+    if(i>0) pdf.addPage();
+
+    pdf.addImage(imgData, 'JPEG', 10, 10, 180, 250);
+  }
+
+  pdf.save("masar.pdf");
+}
+
+function toBase64(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = ()=>resolve(reader.result);
+  });
+}
+</script>
+
+</body>
+</html>
