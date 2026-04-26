@@ -7,9 +7,11 @@
 
 <link rel="stylesheet" href="../assets/css/style.css">
 
-<style>
-/* فقط إضافات خفيفة */
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
 
+<style>
 .math-layout {
     display: grid;
     grid-template-columns: 250px 1fr;
@@ -34,7 +36,6 @@
     color: var(--text);
     cursor: pointer;
     text-align: right;
-    transition: 0.3s;
 }
 
 .sidebar button.active,
@@ -43,33 +44,24 @@
     color: white;
 }
 
-.tab {
-    display: none;
-}
-
-.tab.active {
-    display: block;
-}
+.tab { display:none; }
+.tab.active { display:block; }
 </style>
+
 </head>
 
 <body>
 
-<!-- NAVBAR (كما هو) -->
 <nav>
     <a href="../index.html" class="logo">📚 <span>مسار</span></a>
     <div class="links">
         <a href="../index.html">الرئيسية</a>
         <a href="../tools/index.html">الأدوات</a>
-        <a href="../legal/about.html">عن مسار</a>
-        <a href="../contact.html">اتصل بنا</a>
     </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
     <h1>🔢 أدوات الرياضيات</h1>
-    <p>كل ما يحتاجه التلميذ في الرياضيات في مكان واحد</p>
 </div>
 
 <div class="container">
@@ -78,92 +70,151 @@
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <button onclick="showTab('table', this)" class="active">🧮 جدول الضرب</button>
+    <button onclick="showTab('graph', this)" class="active">📈 الرسم البياني</button>
     <button onclick="showTab('equation', this)">📐 المعادلات</button>
+    <button onclick="showTab('table', this)">🧮 جدول الضرب</button>
     <button onclick="showTab('units', this)">📏 الوحدات</button>
     <button onclick="showTab('geometry', this)">📊 الهندسة</button>
 </div>
 
-<!-- CONTENT -->
 <div>
 
-<!-- TABLE -->
-<div id="table" class="tab active">
-    <div class="card">
-        <h3>جدول الضرب</h3>
-        <select id="num">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-        </select>
-        <button class="btn" onclick="table()">عرض</button>
-        <div id="tableResult"></div>
-    </div>
+<!-- GRAPH -->
+<div id="graph" class="tab active">
+<div class="card">
+<h3>📈 رسم المنحنيات</h3>
+
+<input id="func1" placeholder="مثال: x^2">
+<input id="func2" placeholder="دالة ثانية (اختياري)">
+<input id="func3" placeholder="دالة ثالثة (اختياري)">
+
+<button class="btn" onclick="drawGraph()">رسم</button>
+
+<canvas id="chart" style="margin-top:20px;"></canvas>
+</div>
 </div>
 
 <!-- EQUATION -->
 <div id="equation" class="tab">
-    <div class="card">
-        <h3>حل المعادلات</h3>
-        <input id="eq" placeholder="2x + 3 = 11">
-        <button class="btn" onclick="solve()">حل</button>
-        <div id="eqResult"></div>
-    </div>
+<div class="card">
+<h3>حل المعادلات</h3>
+<input id="eq" placeholder="2x + 3 = 11">
+<button class="btn" onclick="solve()">حل</button>
+<div id="eqResult"></div>
+</div>
+</div>
+
+<!-- TABLE -->
+<div id="table" class="tab">
+<div class="card">
+<h3>جدول الضرب</h3>
+<select id="num">
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+<button class="btn" onclick="table()">عرض</button>
+<div id="tableResult"></div>
+</div>
 </div>
 
 <!-- UNITS -->
 <div id="units" class="tab">
-    <div class="card">
-        <h3>تحويل الوحدات</h3>
-        <input id="val" type="number" value="100">
-        <select id="unit">
-            <option value="m">متر</option>
-            <option value="cm">سم</option>
-            <option value="km">كم</option>
-        </select>
-        <button class="btn" onclick="convert()">تحويل</button>
-        <div id="unitResult"></div>
-    </div>
+<div class="card">
+<h3>تحويل الوحدات</h3>
+<input id="val" type="number" value="100">
+<select id="unit">
+<option value="m">متر</option>
+<option value="cm">سم</option>
+<option value="km">كم</option>
+</select>
+<button class="btn" onclick="convert()">تحويل</button>
+<div id="unitResult"></div>
+</div>
 </div>
 
 <!-- GEOMETRY -->
 <div id="geometry" class="tab">
-    <div class="card">
-        <h3>مساحة المستطيل</h3>
-        <input id="w" placeholder="العرض">
-        <input id="h" placeholder="الطول">
-        <button class="btn" onclick="rect()">احسب</button>
-        <div id="geoResult"></div>
-    </div>
-</div>
-
-</div>
+<div class="card">
+<h3>مساحة المستطيل</h3>
+<input id="w" placeholder="العرض">
+<input id="h" placeholder="الطول">
+<button class="btn" onclick="rect()">احسب</button>
+<div id="geoResult"></div>
 </div>
 </div>
 
-<footer>
-    <p>© 2026 <strong>مسار</strong></p>
-</footer>
+</div>
+</div>
+</div>
 
 <script>
 
 /* Tabs */
 function showTab(id, btn){
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 
-    document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
 }
 
-/* Table */
-function table(){
-    let n = document.getElementById('num').value;
-    let html="";
-    for(let i=1;i<=10;i++){
-        html += `${n} × ${i} = ${n*i}<br>`;
+/* Graph */
+let chart;
+
+function drawGraph(){
+    const inputs = [
+        document.getElementById("func1").value,
+        document.getElementById("func2").value,
+        document.getElementById("func3").value
+    ];
+
+    let datasets = [];
+    let xValues = [];
+
+    for(let x=-10; x<=10; x+=0.5){
+        xValues.push(x);
     }
-    document.getElementById('tableResult').innerHTML = html;
+
+    inputs.forEach((input,i)=>{
+        if(!input) return;
+
+        let expr = input.replace(/\^/g,'**');
+
+        let yValues = [];
+
+        for(let x of xValues){
+            try{
+                let y = eval(expr.replace(/x/g, `(${x})`));
+                yValues.push(y);
+            }catch{
+                return;
+            }
+        }
+
+        datasets.push({
+            label: "y = " + input,
+            data: yValues,
+            borderWidth: 2,
+            fill:false
+        });
+    });
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+        type:'line',
+        data:{ labels:xValues, datasets },
+        options:{
+            responsive:true,
+            plugins:{
+                zoom:{
+                    pan:{ enabled:true, mode:'xy' },
+                    zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'xy' }
+                }
+            }
+        }
+    });
 }
 
 /* Equation */
@@ -181,6 +232,16 @@ function solve(){
     }catch{
         document.getElementById('eqResult').innerHTML="خطأ";
     }
+}
+
+/* Table */
+function table(){
+    let n = document.getElementById('num').value;
+    let html="";
+    for(let i=1;i<=10;i++){
+        html += `${n} × ${i} = ${n*i}<br>`;
+    }
+    document.getElementById('tableResult').innerHTML = html;
 }
 
 /* Units */
