@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جميع الأدوات | أدوات مسار</title>
+    <meta name="description" content="جميع أدوات التلميذ الذكي - تحويل PDF، ضغط الصور، إنشاء فروض وغيرها">
 
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero صغير -->
+    <div class="hero" style="padding: 90px 20px 70px;">
+        <h1>🛠️ جميع الأدوات</h1>
+        <p>اختر الأداة التي تحتاجها لتسهيل دراستك وواجباتك المدرسية</p>
+    </div>
+
+    <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 20px 5%;">
+
+        <!-- Categories Filters -->
+        <div class="categories" style="margin-bottom: 50px;">
+            <button class="cat-btn active" data-category="all">جميع الأدوات</button>
+            <button class="cat-btn" data-category="pdf">PDF ومستندات</button>
+            <button class="cat-btn" data-category="image">صور وتصميم</button>
+            <button class="cat-btn" data-category="exam">فروض واختبارات</button>
+            <button class="cat-btn" data-category="math">رياضيات</button>
+        </div>
+
+        <!-- Tools Grid -->
+        <div class="grid" id="toolsGrid">
+
+            <!-- أداة 1: تحويل الصور إلى PDF -->
+            <div class="card pdf" data-category="pdf">
+                <div class="card-icon">📄</div>
+                <h3>تحويل الصور إلى PDF</h3>
+                <p>حوّل صور الواجبات والكراسات إلى ملف PDF احترافي مع ترتيب الصفحات.</p>
+                <a href="image-to-pdf.html" class="btn">جرب الآن</a>
+            </div>
+
+            <!-- أداة 2: ضغط الصور -->
+            <div class="card image" data-category="image">
+                <div class="card-icon">🖼️</div>
+                <h3>ضغط الصور</h3>
+                <p>قلل حجم الصور بسرعة واحصل عليها كملف ZIP جاهز للإرسال.</p>
+                <a href="compress-image.html" class="btn">جرب الآن</a>
+            </div>
+
+            <!-- أداة 3: إنشاء فروض (مؤقتاً) -->
+            <div class="card exam" data-category="exam">
+                <div class="card-icon">📝</div>
+                <h3>إنشاء فروض واختبارات</h3>
+                <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة حسب المستوى والمادة.</p>
+                <a href="#" class="btn" style="background:#94a3b8; cursor: not-allowed;">قريباً</a>
+            </div>
+
+            <!-- أداة 4: دمج PDF (يمكن إضافتها لاحقاً) -->
+            <div class="card pdf" data-category="pdf">
+                <div class="card-icon">🔗</div>
+                <h3>دمج ملفات PDF</h3>
+                <p>ادمج عدة ملفات PDF في ملف واحد بسهولة.</p>
+                <a href="#" class="btn" style="background:#94a3b8; cursor: not-allowed;">قريباً</a>
+            </div>
+
+            <!-- يمكنك إضافة المزيد هنا -->
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <!-- JavaScript بسيط لفلترة الأدوات -->
+    <script>
+        const buttons = document.querySelectorAll('.cat-btn');
+        const cards = document.querySelectorAll('.card');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // إزالة الـ active من كل الأزرار
+                buttons.forEach(btn => btn.classList.remove('active'));
+                // إضافة active للزر الحالي
+                button.classList.add('active');
+
+                const category = button.getAttribute('data-category');
+
+                cards.forEach(card => {
+                    if (category === 'all') {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = card.getAttribute('data-category') === category ? 'flex' : 'none';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
