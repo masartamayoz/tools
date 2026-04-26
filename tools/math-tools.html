@@ -1,1 +1,215 @@
 
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أدوات الرياضيات | أدوات مسار</title>
+    <meta name="description" content="أدوات رياضيات تفاعلية بسيطة للتلميذ - جدول الضرب، حل معادلات، تحويل وحدات">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>🔢 أدوات الرياضيات</h1>
+        <p>مجموعة أدوات رياضية تفاعلية تساعد التلميذ في الدراسة والواجبات</p>
+    </div>
+
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 30px 5%;">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+
+            <!-- 1. جدول الضرب التفاعلي -->
+            <div class="card" style="padding: 30px;">
+                <div class="card-icon" style="font-size: 3rem; margin-bottom: 20px;">🧮</div>
+                <h3>جدول الضرب التفاعلي</h3>
+                <p>تعلم جدول الضرب بطريقة ممتعة وتفاعلية</p>
+                
+                <div style="margin: 25px 0;">
+                    <label>اختر الرقم:</label>
+                    <select id="multiplyNumber" style="width:100%; padding:12px; margin-top:8px; border-radius:10px;">
+                        <option value="2">الرقم 2</option>
+                        <option value="3">الرقم 3</option>
+                        <option value="4" selected>الرقم 4</option>
+                        <option value="5">الرقم 5</option>
+                        <option value="6">الرقم 6</option>
+                        <option value="7">الرقم 7</option>
+                        <option value="8">الرقم 8</option>
+                        <option value="9">الرقم 9</option>
+                        <option value="10">الرقم 10</option>
+                        <option value="12">الرقم 12</option>
+                    </select>
+                </div>
+                
+                <button onclick="showMultiplicationTable()" class="btn" style="width:100%;">عرض جدول الضرب</button>
+                
+                <div id="multiplicationTable" style="margin-top: 25px; display: none; background: #f8fafc; padding: 20px; border-radius: 12px;"></div>
+            </div>
+
+            <!-- 2. حل معادلات بسيطة -->
+            <div class="card" style="padding: 30px;">
+                <div class="card-icon" style="font-size: 3rem; margin-bottom: 20px;">📐</div>
+                <h3>حل معادلات بسيطة</h3>
+                <p>اكتب معادلة بسيطة مثل: x + 8 = 15</p>
+                
+                <input type="text" id="equation" placeholder="مثال: x + 8 = 15" 
+                       style="width:100%; padding:14px; margin:15px 0; border-radius:12px; border:1px solid var(--border);">
+                
+                <button onclick="solveEquation()" class="btn" style="width:100%;">حل المعادلة</button>
+                
+                <div id="equationResult" style="margin-top: 20px; font-size: 1.1rem; min-height: 50px;"></div>
+            </div>
+
+            <!-- 3. تحويل الوحدات -->
+            <div class="card" style="padding: 30px;">
+                <div class="card-icon" style="font-size: 3rem; margin-bottom: 20px;">📏</div>
+                <h3>تحويل الوحدات</h3>
+                <p>حوّل بين الوحدات المترية بسهولة</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                    <div>
+                        <input type="number" id="value" value="100" style="width:100%; padding:12px; border-radius:10px;">
+                    </div>
+                    <div>
+                        <select id="unitFrom" style="width:100%; padding:12px; border-radius:10px;">
+                            <option value="m">متر (m)</option>
+                            <option value="cm">سنتيمتر (cm)</option>
+                            <option value="mm">مليمتر (mm)</option>
+                            <option value="km">كيلومتر (km)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="convertUnits()" class="btn" style="width:100%;">تحويل الوحدة</button>
+                
+                <div id="unitResult" style="margin-top: 20px; font-weight: 600; color: var(--primary);"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <script>
+        // 1. جدول الضرب
+        function showMultiplicationTable() {
+            const num = parseInt(document.getElementById('multiplyNumber').value);
+            let html = `<h4 style="text-align:center; margin-bottom:15px;">جدول الضرب للرقم ${num}</h4>`;
+            
+            html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 1.05rem;">`;
+            
+            for (let i = 1; i <= 12; i++) {
+                html += `
+                    <div style="background: var(--card-bg); padding: 10px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        ${num} × ${i} = <strong>${num * i}</strong>
+                    </div>`;
+            }
+            html += `</div>`;
+            
+            document.getElementById('multiplicationTable').innerHTML = html;
+            document.getElementById('multiplicationTable').style.display = 'block';
+        }
+
+        // 2. حل معادلات بسيطة (x + a = b)
+        function solveEquation() {
+            const input = document.getElementById('equation').value.trim();
+            const resultDiv = document.getElementById('equationResult');
+            
+            if (!input) {
+                resultDiv.innerHTML = `<span style="color:#ef4444;">الرجاء كتابة معادلة</span>`;
+                return;
+            }
+
+            try {
+                // معالجة بسيطة لمعادلات من النوع: x + 8 = 15 أو 3x = 12
+                let equation = input.replace(/\s/g, '');
+                
+                if (equation.includes('=')) {
+                    const [left, right] = equation.split('=');
+                    let xValue;
+                    
+                    if (left.includes('x')) {
+                        // شكل: ax + b = c
+                        const match = left.match(/(\d*)x([+-]?\d*)/) || left.match(/x([+-]?\d*)/);
+                        if (match) {
+                            const a = match[1] ? parseInt(match[1]) : 1;
+                            const b = match[2] ? parseInt(match[2]) : 0;
+                            xValue = (parseFloat(right) - b) / a;
+                        }
+                    } else if (right.includes('x')) {
+                        // شكل: c = ax + b
+                        xValue = parseFloat(left);
+                    }
+                    
+                    if (xValue !== undefined) {
+                        resultDiv.innerHTML = `الحل: <strong style="color:#10b981;">x = ${xValue}</strong>`;
+                    } else {
+                        resultDiv.innerHTML = `<span style="color:#f59e0b;">لا أستطيع حل هذه المعادلة حالياً</span>`;
+                    }
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<span style="color:#ef4444;">صيغة المعادلة غير صحيحة</span>`;
+            }
+        }
+
+        // 3. تحويل الوحدات
+        function convertUnits() {
+            const value = parseFloat(document.getElementById('value').value);
+            const from = document.getElementById('unitFrom').value;
+            let result = '';
+
+            if (isNaN(value)) {
+                document.getElementById('unitResult').innerHTML = `<span style="color:#ef4444;">أدخل رقم صحيح</span>`;
+                return;
+            }
+
+            switch(from) {
+                case 'm':
+                    result = `
+                        ${value} متر = <strong>${value * 100}</strong> سنتيمتر<br>
+                        ${value} متر = <strong>${value * 1000}</strong> مليمتر<br>
+                        ${value} متر = <strong>${(value / 1000).toFixed(3)}</strong> كيلومتر
+                    `;
+                    break;
+                case 'cm':
+                    result = `
+                        ${value} سنتيمتر = <strong>${value / 100}</strong> متر<br>
+                        ${value} سنتيمتر = <strong>${value * 10}</strong> مليمتر
+                    `;
+                    break;
+                case 'mm':
+                    result = `
+                        ${value} مليمتر = <strong>${value / 10}</strong> سنتيمتر<br>
+                        ${value} مليمتر = <strong>${value / 1000}</strong> متر
+                    `;
+                    break;
+                case 'km':
+                    result = `
+                        ${value} كيلومتر = <strong>${value * 1000}</strong> متر
+                    `;
+                    break;
+            }
+
+            document.getElementById('unitResult').innerHTML = result;
+        }
+    </script>
+
+</body>
+</html>
