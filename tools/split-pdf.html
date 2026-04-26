@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقسيم PDF | أدوات مسار</title>
+    <meta name="description" content="استخرج صفحات معينة من ملف PDF كبير - أداة تقسيم PDF احترافية">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>✂️ تقسيم ملف PDF</h1>
+        <p>استخرج صفحات معينة أو قسم الملف إلى ملفات أصغر بسهولة</p>
+    </div>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+
+        <!-- رفع الملف -->
+        <div style="text-align: center; margin: 40px 0;">
+            <input type="file" id="pdfInput" accept="application/pdf" 
+                   style="padding: 15px; font-size: 1.1rem;">
+            <p style="margin-top: 12px; color: var(--gray);">ارفع ملف PDF الذي تريد تقسيمه</p>
+        </div>
+
+        <!-- معلومات الملف -->
+        <div id="fileInfo" style="display: none; background: var(--card-bg); padding: 25px; border-radius: 16px; margin: 30px 0; text-align: center; border: 1px solid var(--border);">
+            <h3 id="fileName" style="margin-bottom: 10px;"></h3>
+            <p id="pageCount" style="font-size: 1.1rem; color: var(--primary);"></p>
+        </div>
+
+        <!-- خيارات التقسيم -->
+        <div id="splitOptions" style="display: none; margin: 40px 0;">
+            <h2 style="text-align: center; margin-bottom: 25px;">اختر طريقة التقسيم</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                
+                <!-- خيار 1: استخراج صفحات معينة -->
+                <div style="background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+                    <h3>📄 استخراج صفحات معينة</h3>
+                    <p style="margin: 15px 0; color: var(--gray);">مثال: 1,3,5-8,12</p>
+                    <input type="text" id="pagesInput" placeholder="1,3,5-8" 
+                           style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px;">
+                    <button onclick="extractPages()" class="btn" style="width: 100%;">استخراج الصفحات المحددة</button>
+                </div>
+
+                <!-- خيار 2: تقسيم إلى ملفات فردية -->
+                <div style="background: var(--card-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+                    <h3>📑 تقسيم إلى صفحات فردية</h3>
+                    <p style="margin: 15px 0; color: var(--gray);">سيتم استخراج كل صفحة كملف PDF منفصل</p>
+                    <button onclick="splitIntoSinglePages()" class="btn" style="width: 100%;">تقسيم إلى صفحات فردية</button>
+                </div>
+            </div>
+        </div>
+
+        <p id="status" style="text-align: center; margin-top: 30px; font-weight: 500; min-height: 30px;"></p>
+    </div>
+
+    <!-- شرح و FAQ -->
+    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2>كيفية استخدام أداة تقسيم PDF</h2>
+            <p>1. ارفع ملف PDF.<br>
+               2. اختر الطريقة المناسبة (استخراج صفحات معينة أو تقسيم إلى صفحات فردية).<br>
+               3. حمل الملفات الناتجة.</p>
+
+            <h3 style="margin-top: 40px;">الأسئلة الشائعة</h3>
+            <ul>
+                <li><strong>هل يمكن كتابة نطاق صفحات؟</strong> نعم، مثل: 1-5 أو 3,7,10-15</li>
+                <li><strong>هل الملفات تبقى آمنة؟</strong> نعم 100%، كل العملية تتم داخل متصفحك.</li>
+                <li><strong>ما هو الحد الأقصى لحجم الملف؟</strong> يعتمد على قوة جهازك، لكن عادة حتى 50-100 ميجا يعمل جيدًا.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <!-- مكتبة pdf-lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+    <script>
+        let originalPdfDoc = null;
+        let fileName = "";
+
+        const pdfInput = document.getElementById('pdfInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameEl = document.getElementById('fileName');
+        const pageCountEl = document.getElementById('pageCount');
+        const splitOptions = document.getElementById('splitOptions');
+        const status = document.getElementById('status');
+
+        pdfInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            status.textContent = "جاري قراءة الملف...";
+            fileName = file.name;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const { PDFDocument } = PDFLib;
+                originalPdfDoc = await PDFDocument.load(arrayBuffer);
+
+                const totalPages = originalPdfDoc.getPageCount();
+
+                fileNameEl.textContent = file.name;
+                pageCountEl.textContent = `عدد الصفحات: ${totalPages} صفحة`;
+                fileInfo.style.display = 'block';
+                splitOptions.style.display = 'block';
+
+                status.textContent = "";
+            } catch (err) {
+                status.style.color = '#ef4444';
+                status.textContent = "❌ حدث خطأ في قراءة الملف. تأكد أنه ملف PDF صالح.";
+            }
+        });
+
+        // استخراج صفحات معينة
+        async function extractPages() {
+            if (!originalPdfDoc) return;
+
+            const input = document.getElementById('pagesInput').value.trim();
+            if (!input) {
+                alert("الرجاء إدخال أرقام الصفحات");
+                return;
+            }
+
+            status.textContent = "جاري استخراج الصفحات...";
+
+            try {
+                const { PDFDocument } = PDFLib;
+                const newPdf = await PDFDocument.create();
+                const totalPages = originalPdfDoc.getPageCount();
+
+                // تحويل الإدخال إلى مصفوفة صفحات (مثال: "1,3,5-8")
+                const pagesToExtract = parsePageInput(input, totalPages);
+
+                for (let pageNum of pagesToExtract) {
+                    if (pageNum > 0 && pageNum <= totalPages) {
+                        const [copiedPage] = await newPdf.copyPages(originalPdfDoc, [pageNum - 1]);
+                        newPdf.addPage(copiedPage);
+                    }
+                }
+
+                const pdfBytes = await newPdf.save();
+                downloadPDF(pdfBytes, `مستخرج_${fileName}`);
+            } catch (err) {
+                status.style.color = '#ef4444';
+                status.textContent = "❌ حدث خطأ أثناء الاستخراج.";
+            }
+        }
+
+        // تقسيم إلى صفحات فردية
+        async function splitIntoSinglePages() {
+            if (!originalPdfDoc) return;
+
+            status.textContent = `جاري تقسيم ${originalPdfDoc.getPageCount()} صفحة...`;
+
+            try {
+                const { PDFDocument } = PDFLib;
+                const totalPages = originalPdfDoc.getPageCount();
+
+                for (let i = 0; i < totalPages; i++) {
+                    const newPdf = await PDFDocument.create();
+                    const [copiedPage] = await newPdf.copyPages(originalPdfDoc, [i]);
+                    newPdf.addPage(copiedPage);
+
+                    const pdfBytes = await newPdf.save();
+                    const pageNum = i + 1;
+                    downloadPDF(pdfBytes, `صفحة_${pageNum}_${fileName}`);
+                }
+
+                status.style.color = '#10b981';
+                status.textContent = `✅ تم تقسيم الملف إلى ${totalPages} ملف PDF فردي بنجاح!`;
+            } catch (err) {
+                status.style.color = '#ef4444';
+                status.textContent = "❌ حدث خطأ أثناء التقسيم.";
+            }
+        }
+
+        function parsePageInput(input, totalPages) {
+            const pages = [];
+            const parts = input.split(',');
+
+            for (let part of parts) {
+                part = part.trim();
+                if (part.includes('-')) {
+                    const [start, end] = part.split('-').map(Number);
+                    for (let i = Math.max(1, start); i <= Math.min(totalPages, end || totalPages); i++) {
+                        pages.push(i);
+                    }
+                } else {
+                    const num = parseInt(part);
+                    if (num > 0 && num <= totalPages) pages.push(num);
+                }
+            }
+            return [...new Set(pages)]; // إزالة التكرارات
+        }
+
+        function downloadPDF(pdfBytes, fileName) {
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+</body>
+</html>
