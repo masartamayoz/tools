@@ -5,243 +5,207 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أدوات الرياضيات | مسار</title>
 
+<link rel="stylesheet" href="../assets/css/style.css">
+
 <style>
-body {
-  margin:0;
-  font-family:"Segoe UI", sans-serif;
-  background:#f4f6fb;
-  direction:rtl;
+/* فقط إضافات خفيفة */
+
+.math-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+    margin-top: 40px;
 }
 
-/* LAYOUT */
-.app {
-  display:flex;
-  min-height:100vh;
-}
-
-/* SIDEBAR */
 .sidebar {
-  width:220px;
-  background:#4f46e5;
-  color:white;
-  padding:20px;
-}
-
-.sidebar h2 {
-  margin-bottom:20px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid var(--border);
 }
 
 .sidebar button {
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border:none;
-  border-radius:10px;
-  background:rgba(255,255,255,0.1);
-  color:white;
-  cursor:pointer;
-  text-align:right;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    text-align: right;
+    transition: 0.3s;
 }
 
-.sidebar button.active {
-  background:white;
-  color:#4f46e5;
+.sidebar button.active,
+.sidebar button:hover {
+    background: var(--primary);
+    color: white;
 }
 
-/* CONTENT */
-.content {
-  flex:1;
-  padding:30px;
+.tab {
+    display: none;
 }
 
-/* CARD */
-.card {
-  background:white;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.05);
-  max-width:500px;
+.tab.active {
+    display: block;
 }
-
-/* INPUT */
-input, select {
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-
-/* BUTTON */
-.btn {
-  width:100%;
-  padding:12px;
-  background:#4f46e5;
-  color:white;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-/* RESULT */
-.result {
-  margin-top:15px;
-  font-weight:bold;
-}
-
-/* HIDE */
-.tab { display:none; }
-.activeTab { display:block; }
-
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- NAVBAR (كما هو) -->
+<nav>
+    <a href="../index.html" class="logo">📚 <span>مسار</span></a>
+    <div class="links">
+        <a href="../index.html">الرئيسية</a>
+        <a href="../tools/index.html">الأدوات</a>
+        <a href="../legal/about.html">عن مسار</a>
+        <a href="../contact.html">اتصل بنا</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>🔢 أدوات الرياضيات</h1>
+    <p>كل ما يحتاجه التلميذ في الرياضيات في مكان واحد</p>
+</div>
+
+<div class="container">
+
+<div class="math-layout">
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-  <h2>🔢 الرياضيات</h2>
-
-  <button onclick="showTab('table', this)" class="active">جدول الضرب</button>
-  <button onclick="showTab('equation', this)">المعادلات</button>
-  <button onclick="showTab('units', this)">الوحدات</button>
-  <button onclick="showTab('geometry', this)">الهندسة</button>
+    <button onclick="showTab('table', this)" class="active">🧮 جدول الضرب</button>
+    <button onclick="showTab('equation', this)">📐 المعادلات</button>
+    <button onclick="showTab('units', this)">📏 الوحدات</button>
+    <button onclick="showTab('geometry', this)">📊 الهندسة</button>
 </div>
 
 <!-- CONTENT -->
-<div class="content">
+<div>
 
-<!-- 1. جدول الضرب -->
-<div id="table" class="tab activeTab">
-  <div class="card">
-    <h3>🧮 جدول الضرب</h3>
-
-    <select id="num">
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4" selected>4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-    </select>
-
-    <button class="btn" onclick="table()">عرض</button>
-
-    <div id="tableResult" class="result"></div>
-  </div>
+<!-- TABLE -->
+<div id="table" class="tab active">
+    <div class="card">
+        <h3>جدول الضرب</h3>
+        <select id="num">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+        </select>
+        <button class="btn" onclick="table()">عرض</button>
+        <div id="tableResult"></div>
+    </div>
 </div>
 
-<!-- 2. المعادلات -->
+<!-- EQUATION -->
 <div id="equation" class="tab">
-  <div class="card">
-    <h3>📐 حل المعادلات</h3>
-
-    <input id="eq" placeholder="مثال: 2x + 3 = 11">
-
-    <button class="btn" onclick="solve()">حل</button>
-
-    <div id="eqResult" class="result"></div>
-  </div>
+    <div class="card">
+        <h3>حل المعادلات</h3>
+        <input id="eq" placeholder="2x + 3 = 11">
+        <button class="btn" onclick="solve()">حل</button>
+        <div id="eqResult"></div>
+    </div>
 </div>
 
-<!-- 3. الوحدات -->
+<!-- UNITS -->
 <div id="units" class="tab">
-  <div class="card">
-    <h3>📏 تحويل الوحدات</h3>
-
-    <input type="number" id="val" value="100">
-
-    <select id="unit">
-      <option value="m">متر</option>
-      <option value="cm">سم</option>
-      <option value="km">كم</option>
-    </select>
-
-    <button class="btn" onclick="convert()">تحويل</button>
-
-    <div id="unitResult" class="result"></div>
-  </div>
+    <div class="card">
+        <h3>تحويل الوحدات</h3>
+        <input id="val" type="number" value="100">
+        <select id="unit">
+            <option value="m">متر</option>
+            <option value="cm">سم</option>
+            <option value="km">كم</option>
+        </select>
+        <button class="btn" onclick="convert()">تحويل</button>
+        <div id="unitResult"></div>
+    </div>
 </div>
 
-<!-- 4. الهندسة -->
+<!-- GEOMETRY -->
 <div id="geometry" class="tab">
-  <div class="card">
-    <h3>📐 مساحة المستطيل</h3>
-
-    <input id="w" placeholder="العرض">
-    <input id="h" placeholder="الطول">
-
-    <button class="btn" onclick="rect()">احسب</button>
-
-    <div id="geoResult" class="result"></div>
-  </div>
+    <div class="card">
+        <h3>مساحة المستطيل</h3>
+        <input id="w" placeholder="العرض">
+        <input id="h" placeholder="الطول">
+        <button class="btn" onclick="rect()">احسب</button>
+        <div id="geoResult"></div>
+    </div>
 </div>
 
 </div>
 </div>
+</div>
+
+<footer>
+    <p>© 2026 <strong>مسار</strong></p>
+</footer>
 
 <script>
 
-/* TAB SYSTEM */
+/* Tabs */
 function showTab(id, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activeTab'));
-  document.getElementById(id).classList.add('activeTab');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
 
-  document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+    document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 }
 
-/* TABLE */
+/* Table */
 function table(){
-  let n = document.getElementById('num').value;
-  let html="";
-  for(let i=1;i<=10;i++){
-    html += `${n} × ${i} = ${n*i}<br>`;
-  }
-  document.getElementById('tableResult').innerHTML = html;
+    let n = document.getElementById('num').value;
+    let html="";
+    for(let i=1;i<=10;i++){
+        html += `${n} × ${i} = ${n*i}<br>`;
+    }
+    document.getElementById('tableResult').innerHTML = html;
 }
 
-/* EQUATION */
+/* Equation */
 function solve(){
-  try{
-    let input = document.getElementById('eq').value.replace(/\s/g,'');
-    let [l,r]=input.split('=');
+    try{
+        let input = document.getElementById('eq').value.replace(/\s/g,'');
+        let [l,r]=input.split('=');
 
-    let a = eval(l.replace('x','1')) - eval(l.replace('x','0'));
-    let b = eval(l.replace('x','0'));
+        let a = eval(l.replace('x','1')) - eval(l.replace('x','0'));
+        let b = eval(l.replace('x','0'));
 
-    let x = (eval(r)-b)/a;
+        let x = (eval(r)-b)/a;
 
-    document.getElementById('eqResult').innerHTML = "x = "+x;
-  }catch{
-    document.getElementById('eqResult').innerHTML="خطأ";
-  }
+        document.getElementById('eqResult').innerHTML = "x = "+x;
+    }catch{
+        document.getElementById('eqResult').innerHTML="خطأ";
+    }
 }
 
-/* UNITS */
+/* Units */
 function convert(){
-  let v = parseFloat(document.getElementById('val').value);
-  let u = document.getElementById('unit').value;
+    let v = parseFloat(document.getElementById('val').value);
+    let u = document.getElementById('unit').value;
 
-  let res="";
-  if(u=="m") res = v*100+" cm";
-  if(u=="cm") res = v/100+" m";
-  if(u=="km") res = v*1000+" m";
+    let res="";
+    if(u=="m") res = v*100+" cm";
+    if(u=="cm") res = v/100+" m";
+    if(u=="km") res = v*1000+" m";
 
-  document.getElementById('unitResult').innerHTML=res;
+    document.getElementById('unitResult').innerHTML=res;
 }
 
-/* GEOMETRY */
+/* Geometry */
 function rect(){
-  let w = document.getElementById('w').value;
-  let h = document.getElementById('h').value;
+    let w = document.getElementById('w').value;
+    let h = document.getElementById('h').value;
 
-  let area = w*h;
-  let p = 2*(+w + +h);
+    let area = w*h;
+    let p = 2*(+w + +h);
 
-  document.getElementById('geoResult').innerHTML =
-    "المساحة: "+area+" | المحيط: "+p;
+    document.getElementById('geoResult').innerHTML =
+        "المساحة: "+area+" | المحيط: "+p;
 }
 
 </script>
