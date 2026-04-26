@@ -3,262 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسار | أدوات التلميذ الذكي</title>
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --accent: #06b6d4;
-            --dark: #1e2937;
-            --gray: #64748b;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f8fafc;
-            direction: rtl;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        /* Navbar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 5%;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        nav .logo span {
-            color: var(--accent);
-        }
-
-        nav .links a {
-            margin: 0 18px;
-            text-decoration: none;
-            color: #475569;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav .links a:hover {
-            color: var(--primary);
-        }
-
-        /* Hero */
-        .hero {
-            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
-            color: white;
-            text-align: center;
-            padding: 110px 20px 90px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-            pointer-events: none;
-        }
-
-        .hero h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            max-width: 600px;
-            margin: 0 auto;
-            opacity: 0.95;
-        }
-
-        /* Categories */
-        .categories {
-            text-align: center;
-            margin: 40px 0 20px;
-        }
-
-        .cat-btn {
-            padding: 12px 24px;
-            margin: 8px;
-            border: none;
-            border-radius: 50px;
-            background: white;
-            color: var(--gray);
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .cat-btn:hover, .cat-btn.active {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 28px;
-            padding: 20px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Card */
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 28px 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15);
-        }
-
-        .card h3 {
-            font-size: 1.35rem;
-            color: var(--dark);
-            margin: 16px 0 12px;
-        }
-
-        .card p {
-            color: var(--gray);
-            flex-grow: 1;
-        }
-
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 14px 24px;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 50px 20px 30px;
-            color: #64748b;
-            font-size: 0.95rem;
-            border-top: 1px solid #e2e8f0;
-            margin-top: 60px;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            nav {
-                padding: 16px 5%;
-            }
-        }
-    </style>
+    <title>أدوات التلميذ الذكي | مسار</title>
+    <meta name="description" content="منصة أدوات تعليمية ذكية للتلميذ التونسي - تحويل PDF، ضغط صور، إنشاء فروض، وأدوات رياضيات بتصميم احترافي">
+    
+    <!-- ربط ملف الـ CSS الموحد -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
     <!-- Navbar -->
     <nav>
-        <a href="#" class="logo">
+        <a href="index.html" class="logo">
             📚 <span>مسار</span>
         </a>
         <div class="links">
-            <a href="#">الرئيسية</a>
-            <a href="#">الأدوات</a>
-            <a href="#">عن مسار</a>
-            <a href="#">اتصل بنا</a>
+            <a href="index.html">الرئيسية</a>
+            <a href="tools/index.html">الأدوات</a>
+            <a href="legal/about.html">عن مسار</a>
+            <a href="contact.html">اتصل بنا</a>
         </div>
     </nav>
 
     <!-- Hero -->
     <div class="hero">
         <h1>🧠 أدوات التلميذ الذكي</h1>
-        <p>منصة متكاملة تجمع كل الأدوات التي يحتاجها التلميذ في مكان واحد بتصميم أنيق وسهل الاستخدام</p>
+        <p>منصة تونسية متكاملة تساعد التلاميذ والأساتذة على تحويل الواجبات والفروض إلى ملفات احترافية بسرعة وسهولة</p>
     </div>
 
     <!-- Categories -->
     <div class="categories">
-        <button class="cat-btn active">جميع الأدوات</button>
-        <button class="cat-btn">PDF ومستندات</button>
-        <button class="cat-btn">صور وتصميم</button>
-        <button class="cat-btn">رياضيات وعلوم</button>
-        <button class="cat-btn">اختبارات وفروض</button>
+        <button class="cat-btn active" data-category="all">جميع الأدوات</button>
+        <button class="cat-btn" data-category="pdf">PDF ومستندات</button>
+        <button class="cat-btn" data-category="image">صور وتصميم</button>
+        <button class="cat-btn" data-category="math">رياضيات وعلوم</button>
+        <button class="cat-btn" data-category="exam">اختبارات وفروض</button>
     </div>
 
     <!-- Tools Grid -->
-    <div class="grid">
-        <div class="card">
-            <h3>📄 تحويل الصور إلى PDF</h3>
-            <p>حوّل صورك المتعددة إلى ملف PDF احترافي في ثوانٍ مع إمكانية ترتيب الصفحات.</p>
-            <a href="/image-to-pdf.html" class="btn">جرب الآن</a>
+    <div class="grid" id="tools-grid">
+        <div class="card pdf" data-category="pdf">
+            <div class="card-icon">📄</div>
+            <h3>تحويل الصور إلى PDF</h3>
+            <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات واختيار الحجم.</p>
+            <a href="tools/image-to-pdf.html" class="btn">جرب الآن</a>
         </div>
 
-        <div class="card">
-            <h3>🖼️ ضغط الصور</h3>
-            <p>قلل حجم الصور دون فقدان كبير في الجودة باستخدام تقنية الضغط الذكي.</p>
-            <a href="/compress.html" class="btn">جرب الآن</a>
+        <div class="card image" data-category="image">
+            <div class="card-icon">🖼️</div>
+            <h3>ضغط الصور</h3>
+            <p>قلل حجم صور الواجبات والملفات دون فقدان واضح في الجودة لتسهيل الإرسال.</p>
+            <a href="tools/compress-image.html" class="btn">جرب الآن</a>
         </div>
 
-        <div class="card">
-            <h3>📝 إنشاء فروض واختبارات</h3>
-            <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة بسرعة وبجودة عالية.</p>
-            <a href="#" class="btn">جرب الآن</a>
+        <div class="card exam" data-category="exam">
+            <div class="card-icon">📝</div>
+            <h3>إنشاء فروض واختبارات</h3>
+            <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة حسب المستوى والمادة.</p>
+            <a href="tools/exam-generator.html" class="btn">جرب الآن</a>
         </div>
 
-        <!-- يمكنك إضافة المزيد من الكروت هنا -->
+        <!-- يمكن إضافة المزيد لاحقاً -->
     </div>
 
     <footer>
-        <p>© 2026 <strong>مسار - تميّز</strong> | جميع الحقوق محفوظة</p>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
 </body>
