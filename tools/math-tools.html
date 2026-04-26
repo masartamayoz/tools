@@ -7,9 +7,7 @@
 
 <link rel="stylesheet" href="../assets/css/style.css">
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
 
 <style>
 .math-layout {
@@ -70,77 +68,85 @@
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <button onclick="showTab('graph', this)" class="active">📈 الرسم البياني</button>
-    <button onclick="showTab('equation', this)">📐 المعادلات</button>
-    <button onclick="showTab('table', this)">🧮 جدول الضرب</button>
+    <button onclick="showTab('table', this)" class="active">🧮 جدول الضرب</button>
+    <button onclick="showTab('geometry', this)">📐 الهندسة</button>
+    <button onclick="showTab('graph', this)">📈 الرسم</button>
+    <button onclick="showTab('equation', this)">📊 المعادلات</button>
     <button onclick="showTab('units', this)">📏 الوحدات</button>
-    <button onclick="showTab('geometry', this)">📊 الهندسة</button>
 </div>
 
 <div>
 
-<!-- GRAPH -->
-<div id="graph" class="tab active">
-<div class="card">
-<h3>📈 رسم المنحنيات</h3>
-
-<input id="func1" placeholder="مثال: x^2">
-<input id="func2" placeholder="دالة ثانية (اختياري)">
-<input id="func3" placeholder="دالة ثالثة (اختياري)">
-
-<button class="btn" onclick="drawGraph()">رسم</button>
-
-<canvas id="chart" style="margin-top:20px;"></canvas>
-</div>
-</div>
-
-<!-- EQUATION -->
-<div id="equation" class="tab">
-<div class="card">
-<h3>حل المعادلات</h3>
-<input id="eq" placeholder="2x + 3 = 11">
-<button class="btn" onclick="solve()">حل</button>
-<div id="eqResult"></div>
-</div>
-</div>
-
 <!-- TABLE -->
-<div id="table" class="tab">
+<div id="table" class="tab active">
 <div class="card">
-<h3>جدول الضرب</h3>
-<select id="num">
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-</select>
-<button class="btn" onclick="table()">عرض</button>
-<div id="tableResult"></div>
-</div>
-</div>
-
-<!-- UNITS -->
-<div id="units" class="tab">
-<div class="card">
-<h3>تحويل الوحدات</h3>
-<input id="val" type="number" value="100">
-<select id="unit">
-<option value="m">متر</option>
-<option value="cm">سم</option>
-<option value="km">كم</option>
-</select>
-<button class="btn" onclick="convert()">تحويل</button>
-<div id="unitResult"></div>
+<h3>🧮 جدول الضرب (1 → 9)</h3>
+<button class="btn" onclick="fullTable()">عرض الجدول</button>
+<div id="tableResult" style="margin-top:20px;"></div>
 </div>
 </div>
 
 <!-- GEOMETRY -->
 <div id="geometry" class="tab">
 <div class="card">
-<h3>مساحة المستطيل</h3>
-<input id="w" placeholder="العرض">
-<input id="h" placeholder="الطول">
-<button class="btn" onclick="rect()">احسب</button>
-<div id="geoResult"></div>
+<h3>📐 المساحات والمحيطات</h3>
+
+<select id="shape">
+<option value="square">مربع</option>
+<option value="rectangle">مستطيل</option>
+<option value="triangle">مثلث</option>
+<option value="circle">دائرة</option>
+</select>
+
+<div id="inputs"></div>
+
+<button class="btn" onclick="calcShape()">احسب</button>
+
+<div id="geoResult" style="margin-top:15px;"></div>
+</div>
+</div>
+
+<!-- GRAPH -->
+<div id="graph" class="tab">
+<div class="card">
+<h3>📈 الرسم البياني</h3>
+
+<input id="func" placeholder="مثال: x^2">
+
+<button class="btn" onclick="drawGraph()">رسم</button>
+
+<canvas id="chart"></canvas>
+</div>
+</div>
+
+<!-- EQUATION -->
+<div id="equation" class="tab">
+<div class="card">
+<h3>📊 المعادلات</h3>
+
+<input id="eq" placeholder="2x + 3 = 11">
+
+<button class="btn" onclick="solve()">حل</button>
+
+<div id="eqResult"></div>
+</div>
+</div>
+
+<!-- UNITS -->
+<div id="units" class="tab">
+<div class="card">
+<h3>📏 الوحدات</h3>
+
+<input id="val" type="number" value="100">
+<select id="unit">
+<option value="m">متر</option>
+<option value="cm">سم</option>
+<option value="km">كم</option>
+</select>
+
+<button class="btn" onclick="convert()">تحويل</button>
+
+<div id="unitResult"></div>
 </div>
 </div>
 
@@ -159,114 +165,131 @@ function showTab(id, btn){
     btn.classList.add('active');
 }
 
-/* Graph */
+/* ================= TABLE ================= */
+function fullTable(){
+    let html = "<table style='width:100%;text-align:center;border-collapse:collapse'>";
+    html += "<tr><th>×</th>";
+
+    for(let i=1;i<=9;i++){
+        html += `<th>${i}</th>`;
+    }
+    html += "</tr>";
+
+    for(let i=1;i<=9;i++){
+        html += `<tr><th>${i}</th>`;
+        for(let j=1;j<=9;j++){
+            html += `<td style="border:1px solid var(--border);padding:6px">${i*j}</td>`;
+        }
+        html += "</tr>";
+    }
+
+    html += "</table>";
+    document.getElementById("tableResult").innerHTML = html;
+}
+
+/* ================= GEOMETRY ================= */
+const inputsDiv = document.getElementById("inputs");
+
+document.getElementById("shape").addEventListener("change", renderInputs);
+
+function renderInputs(){
+    let shape = document.getElementById("shape").value;
+    let html = "";
+
+    if(shape=="square") html = `<input id="a" placeholder="الضلع">`;
+    if(shape=="rectangle") html = `
+        <input id="a" placeholder="الطول">
+        <input id="b" placeholder="العرض">`;
+    if(shape=="triangle") html = `
+        <input id="b" placeholder="القاعدة">
+        <input id="h" placeholder="الارتفاع">`;
+    if(shape=="circle") html = `<input id="r" placeholder="نصف القطر">`;
+
+    inputsDiv.innerHTML = html;
+}
+renderInputs();
+
+function calcShape(){
+    let s = document.getElementById("shape").value;
+    let r="";
+
+    if(s=="square"){
+        let a=+a.value;
+        r=`المساحة: ${a*a} | المحيط: ${4*a}`;
+    }
+
+    if(s=="rectangle"){
+        let a=+document.getElementById("a").value;
+        let b=+document.getElementById("b").value;
+        r=`المساحة: ${a*b} | المحيط: ${2*(a+b)}`;
+    }
+
+    if(s=="triangle"){
+        let b=+document.getElementById("b").value;
+        let h=+document.getElementById("h").value;
+        r=`المساحة: ${(b*h)/2}`;
+    }
+
+    if(s=="circle"){
+        let r0=+document.getElementById("r").value;
+        r=`المساحة: ${(Math.PI*r0*r0).toFixed(2)} | المحيط: ${(2*Math.PI*r0).toFixed(2)}`;
+    }
+
+    document.getElementById("geoResult").innerHTML=r;
+}
+
+/* ================= GRAPH ================= */
 let chart;
 
 function drawGraph(){
-    const inputs = [
-        document.getElementById("func1").value,
-        document.getElementById("func2").value,
-        document.getElementById("func3").value
-    ];
+    let expr = document.getElementById("func").value.replace(/\^/g,"**");
 
-    let datasets = [];
-    let xValues = [];
+    let x=[], y=[];
 
-    for(let x=-10; x<=10; x+=0.5){
-        xValues.push(x);
+    for(let i=-10;i<=10;i+=0.5){
+        x.push(i);
+        y.push(eval(expr.replace(/x/g,`(${i})`)));
     }
-
-    inputs.forEach((input,i)=>{
-        if(!input) return;
-
-        let expr = input.replace(/\^/g,'**');
-
-        let yValues = [];
-
-        for(let x of xValues){
-            try{
-                let y = eval(expr.replace(/x/g, `(${x})`));
-                yValues.push(y);
-            }catch{
-                return;
-            }
-        }
-
-        datasets.push({
-            label: "y = " + input,
-            data: yValues,
-            borderWidth: 2,
-            fill:false
-        });
-    });
 
     if(chart) chart.destroy();
 
-    chart = new Chart(document.getElementById("chart"), {
-        type:'line',
-        data:{ labels:xValues, datasets },
-        options:{
-            responsive:true,
-            plugins:{
-                zoom:{
-                    pan:{ enabled:true, mode:'xy' },
-                    zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'xy' }
-                }
-            }
+    chart = new Chart(document.getElementById("chart"),{
+        type:"line",
+        data:{
+            labels:x,
+            datasets:[{
+                data:y,
+                borderWidth:2,
+                fill:false
+            }]
         }
     });
 }
 
-/* Equation */
+/* ================= EQUATION ================= */
 function solve(){
-    try{
-        let input = document.getElementById('eq').value.replace(/\s/g,'');
-        let [l,r]=input.split('=');
+    let eq = document.getElementById("eq").value.replace(/\s/g,"");
+    let [l,r]=eq.split("=");
 
-        let a = eval(l.replace('x','1')) - eval(l.replace('x','0'));
-        let b = eval(l.replace('x','0'));
+    let a = eval(l.replace("x","1")) - eval(l.replace("x","0"));
+    let b = eval(l.replace("x","0"));
 
-        let x = (eval(r)-b)/a;
+    let x = (eval(r)-b)/a;
 
-        document.getElementById('eqResult').innerHTML = "x = "+x;
-    }catch{
-        document.getElementById('eqResult').innerHTML="خطأ";
-    }
+    document.getElementById("eqResult").innerHTML="x = "+x;
 }
 
-/* Table */
-function table(){
-    let n = document.getElementById('num').value;
-    let html="";
-    for(let i=1;i<=10;i++){
-        html += `${n} × ${i} = ${n*i}<br>`;
-    }
-    document.getElementById('tableResult').innerHTML = html;
-}
-
-/* Units */
+/* ================= UNITS ================= */
 function convert(){
-    let v = parseFloat(document.getElementById('val').value);
-    let u = document.getElementById('unit').value;
+    let v=+document.getElementById("val").value;
+    let u=document.getElementById("unit").value;
 
-    let res="";
-    if(u=="m") res = v*100+" cm";
-    if(u=="cm") res = v/100+" m";
-    if(u=="km") res = v*1000+" m";
+    let r="";
+    if(u=="m") r=v*100+" cm";
+    if(u=="cm") r=v/100+" m";
+    if(u=="km") r=v*1000+" m";
 
-    document.getElementById('unitResult').innerHTML=res;
-}
-
-/* Geometry */
-function rect(){
-    let w = document.getElementById('w').value;
-    let h = document.getElementById('h').value;
-
-    let area = w*h;
-    let p = 2*(+w + +h);
-
-    document.getElementById('geoResult').innerHTML =
-        "المساحة: "+area+" | المحيط: "+p;
+    document.getElementById("unitResult").innerHTML=r;
 }
 
 </script>
