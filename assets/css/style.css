@@ -1,1 +1,285 @@
+/* =============================================
+   أدوات التلميذ الذكي - مسار | Style.css
+   ============================================= */
 
+:root {
+    --primary: #4f46e5;
+    --primary-light: #6366f1;
+    --accent: #06b6d4;
+    --dark: #1e2937;
+    --gray: #64748b;
+    --light-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #334155;
+    --border: #e2e8f0;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+    --light-bg: #0f172a;
+    --card-bg: #1e2937;
+    --text: #e2e8f0;
+    --gray: #94a3b8;
+    --border: #334155;
+}
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--light-bg);
+    color: var(--text);
+    direction: rtl;
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Navbar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 5%;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+}
+
+[data-theme="dark"] nav {
+    background: rgba(15, 23, 42, 0.97);
+}
+
+nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+nav .logo span {
+    color: var(--accent);
+}
+
+nav .links a {
+    margin: 0 18px;
+    text-decoration: none;
+    color: var(--gray);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav .links a:hover {
+    color: var(--primary);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(79, 70, 229, 0.1);
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    color: white;
+    text-align: center;
+    padding: 120px 20px 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
+    pointer-events: none;
+}
+
+.hero h1 {
+    font-size: 3.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 1.28rem;
+    max-width: 680px;
+    margin: 0 auto;
+    opacity: 0.95;
+}
+
+/* Categories */
+.categories {
+    text-align: center;
+    margin: 45px 0 30px;
+    padding: 0 5%;
+}
+
+.cat-btn {
+    padding: 12px 26px;
+    margin: 8px;
+    border: none;
+    border-radius: 50px;
+    background: var(--card-bg);
+    color: var(--gray);
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cat-btn:hover,
+.cat-btn.active {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 28px;
+    padding: 20px 5%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* Card */
+.card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 28px 26px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+}
+
+.card:hover {
+    transform: translateY(-14px);
+    box-shadow: 0 25px 50px rgba(79, 70, 229, 0.18);
+}
+
+.card .card-icon {
+    font-size: 2.8rem;
+    margin-bottom: 16px;
+}
+
+.card h3 {
+    font-size: 1.38rem;
+    color: var(--dark);
+    margin: 12px 0 14px;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .card h3 {
+    color: #e2e8f0;
+}
+
+.card p {
+    color: var(--gray);
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+
+/* Button */
+.btn {
+    display: inline-block;
+    margin-top: auto;
+    padding: 14px 28px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn:hover {
+    background: var(--primary-light);
+    transform: translateY(-3px);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 60px 20px 40px;
+    color: var(--gray);
+    font-size: 0.95rem;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+}
+
+footer strong {
+    color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.45rem;
+    }
+    .hero {
+        padding: 90px 20px 70px;
+    }
+    nav {
+        padding: 16px 5%;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    nav .links a {
+        margin: 0 10px;
+        font-size: 0.95rem;
+    }
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 22px;
+        padding: 20px 4%;
+    }
+    .cat-btn {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Extra Small */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2.1rem;
+    }
+    nav .logo {
+        font-size: 22px;
+    }
+}
