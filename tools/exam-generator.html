@@ -1,1 +1,207 @@
 
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء فروض واختبارات | أدوات مسار</title>
+    <meta name="description" content="أنشئ فروضاً واختبارات مدرسية جاهزة للطباعة بسرعة - حسب المستوى والمادة">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>📝 إنشاء فروض واختبارات</h1>
+        <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة في ثوانٍ</p>
+    </div>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 30px 5%;">
+
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.07);">
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+
+                <!-- المستوى الدراسي -->
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:500;">المستوى الدراسي</label>
+                    <select id="level" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                        <option value="">اختر المستوى</option>
+                        <option value="ابتدائي">ابتدائي</option>
+                        <option value="إعدادي">إعدادي</option>
+                        <option value="ثانوي">ثانوي</option>
+                    </select>
+                </div>
+
+                <!-- المادة -->
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:500;">المادة</label>
+                    <select id="subject" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                        <option value="">اختر المادة</option>
+                        <option value="رياضيات">رياضيات</option>
+                        <option value="عربية">لغة عربية</option>
+                        <option value="فرنسية">لغة فرنسية</option>
+                        <option value="علوم">علوم</option>
+                        <option value="تاريخ">تاريخ وجغرافيا</option>
+                        <option value="إسلامية">تربية إسلامية</option>
+                    </select>
+                </div>
+
+                <!-- عدد الأسئلة -->
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:500;">عدد الأسئلة</label>
+                    <select id="questionCount" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                        <option value="5">5 أسئلة</option>
+                        <option value="10" selected>10 أسئلة</option>
+                        <option value="15">15 سؤال</option>
+                        <option value="20">20 سؤال</option>
+                    </select>
+                </div>
+
+                <!-- نوع الاختبار -->
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:500;">نوع الاختبار</label>
+                    <select id="examType" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border);">
+                        <option value="اختبار">اختبار قصير</option>
+                        <option value="فرض">فرض منزلي</option>
+                        <option value="امتحان">امتحان فصلي</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- زر الإنشاء -->
+            <div style="text-align: center; margin-top: 40px;">
+                <button onclick="generateExam()" class="btn" style="padding: 16px 60px; font-size: 1.25rem;">
+                    📄 إنشاء الفرض / الاختبار
+                </button>
+            </div>
+
+            <p id="status" style="text-align:center; margin-top: 25px; font-weight:500; min-height: 30px;"></p>
+        </div>
+
+        <!-- منطقة عرض الفرض (ستظهر بعد الإنشاء) -->
+        <div id="examPreview" style="display: none; margin-top: 50px; background: white; padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); line-height: 2;">
+            <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px dashed #ddd; padding-bottom: 20px;">
+                <h2 id="examTitle" style="color: var(--primary);"></h2>
+                <p id="examSubtitle" style="color: var(--gray); font-size: 1.1rem;"></p>
+            </div>
+            
+            <div id="questionsContainer"></div>
+
+            <div style="text-align: center; margin-top: 60px;">
+                <button onclick="printExam()" class="btn" style="background: #10b981; padding: 14px 50px;">
+                    🖨️ طباعة الفرض
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <script>
+        function generateExam() {
+            const level = document.getElementById('level').value;
+            const subject = document.getElementById('subject').value;
+            const count = parseInt(document.getElementById('questionCount').value);
+            const type = document.getElementById('examType').value;
+
+            if (!level || !subject) {
+                alert("الرجاء اختيار المستوى والمادة");
+                return;
+            }
+
+            const status = document.getElementById('status');
+            status.textContent = "جاري إنشاء الفرض...";
+
+            // بيانات وهمية ذكية (يمكن تطويرها لاحقاً)
+            const questions = generateSampleQuestions(subject, count);
+
+            // ملء العنوان
+            document.getElementById('examTitle').textContent = `${type} في ${subject} - ${level}`;
+            document.getElementById('examSubtitle').textContent = `عدد الأسئلة: ${count} | التاريخ: ${new Date().toLocaleDateString('ar-TN')}`;
+
+            // عرض الأسئلة
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '35px';
+                div.innerHTML = `
+                    <p style="font-weight: 600; margin-bottom: 12px;">
+                        ${index + 1}. ${q.question}
+                    </p>
+                    ${q.options ? 
+                        q.options.map((opt, i) => `
+                            <div style="margin: 8px 0; padding-right: 25px;">
+                                ${String.fromCharCode(65 + i)}. ${opt}
+                            </div>
+                        `).join('') : 
+                        '<div style="height: 80px; background: #f8fafc; border-radius: 10px; margin: 15px 0;"></div>'
+                    }
+                `;
+                container.appendChild(div);
+            });
+
+            // إظهار الفرض
+            document.getElementById('examPreview').style.display = 'block';
+            status.textContent = "✅ تم إنشاء الفرض بنجاح!";
+            
+            // التمرير إلى الأسفل
+            document.getElementById('examPreview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // توليد أسئلة وهمية ذكية حسب المادة
+        function generateSampleQuestions(subject, count) {
+            const baseQuestions = {
+                "رياضيات": [
+                    { question: "ما هو ناتج ٢٥ × ٨؟", options: ["١٦٠", "٢٠٠", "١٨٠", "٢٢٠"] },
+                    { question: "حل المعادلة: x + ١٥ = ٤٢", options: ["x = ٢٧", "x = ٥٧", "x = ٢٨", "x = ٢٥"] },
+                ],
+                "عربية": [
+                    { question: "ما معنى كلمة 'مُجتهد'؟", options: ["كسول", "مجدّ", "غاضب", "فرحان"] },
+                    { question: "استخرج المبتدأ في الجملة: الطالبُ ناجحٌ", options: [] },
+                ],
+                "فرنسية": [
+                    { question: "Conjugue le verbe 'être' au présent pour 'nous'", options: ["sommes", "êtes", "suis", "est"] },
+                ],
+                "علوم": [
+                    { question: "ما هي وظيفة القلب في جسم الإنسان؟", options: [] },
+                ]
+            };
+
+            let questions = baseQuestions[subject] || [
+                { question: "سؤال نموذجي في هذه المادة؟", options: ["خيار 1", "خيار 2", "خيار 3", "خيار 4"] }
+            ];
+
+            // تكرار وتوسيع الأسئلة للوصول للعدد المطلوب
+            let result = [];
+            while (result.length < count) {
+                result = result.concat(questions);
+            }
+            return result.slice(0, count);
+        }
+
+        function printExam() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>
