@@ -1,1 +1,168 @@
 
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ضغط الصور | أدوات مسار</title>
+    <meta name="description" content="قلل حجم الصور بسرعة دون فقدان كبير في الجودة - مثالي للواجبات والكراسات">
+
+    <!-- ربط ملف التصميم الموحد -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero صغير للأداة -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>🖼️ ضغط الصور</h1>
+        <p>قلل حجم الصور بسرعة وبجودة عالية - مثالي لإرسال الواجبات والكراسات عبر الإنترنت</p>
+    </div>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+
+        <!-- منطقة الأداة -->
+        <div class="tool-section" style="text-align: center; margin: 40px 0;">
+            
+            <div style="margin: 30px 0;">
+                <input type="file" id="imageInput" accept="image/*" 
+                       style="padding: 15px; font-size: 1.1rem; margin-bottom: 20px;">
+            </div>
+
+            <!-- منطقة المعاينة قبل وبعد -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 40px 0;" id="comparison">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+
+            <div style="margin: 40px 0;">
+                <label>مستوى الضغط: <strong id="qualityValue">80</strong>%</label>
+                <input type="range" id="quality" min="50" max="95" value="80" 
+                       style="width: 300px; margin: 15px 0;">
+            </div>
+
+            <button onclick="compressImage()" class="btn" style="padding: 16px 50px; font-size: 1.2rem;">
+                ⚡ ضغط الصورة وتحميلها
+            </button>
+
+            <p id="resultInfo" style="margin-top: 20px; font-weight: 500; color: #10b981;"></p>
+        </div>
+
+        <!-- شرح + FAQ -->
+        <div style="margin-top: 80px; background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2>كيف تعمل أداة ضغط الصور؟</h2>
+            <p>تعمل الأداة محلياً داخل متصفحك باستخدام تقنية Canvas. لا يتم رفع أي صورة إلى السيرفر، مما يضمن خصوصية تامة.</p>
+
+            <h3 style="margin-top: 40px;">الأسئلة الشائعة (FAQ)</h3>
+            <ul>
+                <li><strong>هل تقل الجودة كثيراً؟</strong> يمكنك التحكم في نسبة الضغط. عادةً يمكن تقليل الحجم بنسبة 50-70% مع الحفاظ على جودة مقبولة.</li>
+                <li><strong>ما أنواع الصور المدعومة؟</strong> JPG, JPEG, PNG, WebP.</li>
+                <li><strong>هل يمكن ضغط عدة صور في وقت واحد؟</strong> حالياً تدعم صورة واحدة. سنضيف خاصية الضغط الجماعي قريباً.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <!-- JavaScript لضغط الصور -->
+    <script>
+        let originalFile = null;
+        let originalSize = 0;
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            originalFile = file;
+            originalSize = (file.size / 1024).toFixed(1);
+            
+            // عرض الصورة الأصلية
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                showComparison(event.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function showComparison(imageSrc) {
+            const container = document.getElementById('comparison');
+            container.innerHTML = `
+                <div>
+                    <h3>الصورة الأصلية</h3>
+                    <img src="${imageSrc}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                    <p>الحجم: <strong>${originalSize} KB</strong></p>
+                </div>
+                <div id="compressedPreview">
+                    <h3>بعد الضغط</h3>
+                    <p>اضغط على الزر أعلاه للمعاينة</p>
+                </div>
+            `;
+        }
+
+        async function compressImage() {
+            if (!originalFile) {
+                alert("الرجاء اختيار صورة أولاً");
+                return;
+            }
+
+            const quality = document.getElementById('quality').value / 100;
+            const resultInfo = document.getElementById('resultInfo');
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                // تحويل إلى Blob مضغوط
+                canvas.toBlob(function(blob) {
+                    const compressedSize = (blob.size / 1024).toFixed(1);
+                    const reduction = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+
+                    // عرض الصورة المضغوطة
+                    const compressedURL = URL.createObjectURL(blob);
+                    document.getElementById('compressedPreview').innerHTML = `
+                        <h3>بعد الضغط</h3>
+                        <img src="${compressedURL}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                        <p>الحجم بعد الضغط: <strong>${compressedSize} KB</strong></p>
+                        <p style="color:#10b981;">تم تقليل الحجم بنسبة ${reduction}%</p>
+                    `;
+
+                    // تحميل تلقائي
+                    const link = document.createElement('a');
+                    link.download = 'صورة_مضغوطة_مسار.jpg';
+                    link.href = compressedURL;
+                    link.click();
+
+                    resultInfo.innerHTML = `✅ تم ضغط الصورة بنجاح! (تم تقليل الحجم بنسبة ${reduction}%)`;
+                }, 'image/jpeg', quality);
+            };
+
+            img.src = URL.createObjectURL(originalFile);
+        }
+
+        // تحديث قيمة الجودة في الوقت الفعلي
+        document.getElementById('quality').addEventListener('input', function() {
+            document.getElementById('qualityValue').textContent = this.value;
+        });
+    </script>
+
+</body>
+</html>
