@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دمج ملفات PDF | أدوات مسار</title>
+    <meta name="description" content="ادمج عدة ملفات PDF في ملف واحد بسهولة وسرعة - مثالي للتلاميذ والأساتذة">
 
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>🔗 دمج ملفات PDF</h1>
+        <p>ادمج عدة ملفات PDF في ملف واحد احترافي بترتيب يناسبك</p>
+    </div>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+
+        <!-- منطقة رفع الملفات -->
+        <div style="text-align: center; margin: 40px 0;">
+            <input type="file" id="pdfInput" multiple accept="application/pdf" 
+                   style="padding: 15px; font-size: 1.1rem;">
+            <p style="margin-top: 12px; color: var(--gray);">اختر ملفات PDF التي تريد دمجها (يمكن رفع أكثر من ملف)</p>
+        </div>
+
+        <!-- قائمة الملفات المرفوعة -->
+        <div id="fileList" style="margin: 40px 0; min-height: 100px;"></div>
+
+        <!-- أزرار التحكم -->
+        <div style="text-align: center; margin: 50px 0;">
+            <button onclick="mergePDFs()" class="btn" id="mergeBtn" style="padding: 16px 50px; font-size: 1.2rem; display: none;">
+                🔗 دمج الملفات وتحميل PDF
+            </button>
+        </div>
+
+        <p id="status" style="text-align:center; font-weight: 500; min-height: 30px;"></p>
+    </div>
+
+    <!-- شرح و FAQ -->
+    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2>كيفية استخدام أداة دمج PDF</h2>
+            <p>1. ارفع ملفات PDF التي تريد دمجها.<br>
+               2. يمكنك رفع أكثر من ملف في نفس الوقت.<br>
+               3. اضغط على "دمج الملفات" لتحميل الملف النهائي.</p>
+
+            <h3 style="margin-top: 40px;">الأسئلة الشائعة (FAQ)</h3>
+            <ul>
+                <li><strong>هل الملفات تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك، لا يتم رفع أي ملف إلى السيرفر.</li>
+                <li><strong>هل يحافظ على الجودة؟</strong> نعم، يتم دمج الملفات بدون فقدان جودة.</li>
+                <li><strong>ما هو الحد الأقصى لعدد الملفات؟</strong> يعتمد على قوة جهازك، لكن عادة يمكن دمج 20-30 ملف بسهولة.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <!-- مكتبة pdf-lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+    <script>
+        let pdfFiles = [];
+
+        const fileInput = document.getElementById('pdfInput');
+        const fileList = document.getElementById('fileList');
+        const mergeBtn = document.getElementById('mergeBtn');
+        const status = document.getElementById('status');
+
+        fileInput.addEventListener('change', function(e) {
+            pdfFiles = Array.from(e.target.files);
+            renderFileList();
+        });
+
+        function renderFileList() {
+            if (pdfFiles.length === 0) {
+                fileList.innerHTML = '';
+                mergeBtn.style.display = 'none';
+                return;
+            }
+
+            let html = `<h3 style="margin-bottom:20px;">الملفات المرفوعة (${pdfFiles.length})</h3>`;
+            
+            pdfFiles.forEach((file, index) => {
+                html += `
+                    <div style="background:var(--card-bg); padding:15px 20px; margin:10px 0; border-radius:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border);">
+                        <div>
+                            <strong>${file.name}</strong>
+                            <small style="color:var(--gray); margin-right:10px;">(${(file.size/1024/1024).toFixed(2)} MB)</small>
+                        </div>
+                        <button onclick="removeFile(${index})" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer;">حذف</button>
+                    </div>
+                `;
+            });
+
+            fileList.innerHTML = html;
+            mergeBtn.style.display = 'inline-block';
+        }
+
+        function removeFile(index) {
+            pdfFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        async function mergePDFs() {
+            if (pdfFiles.length < 2) {
+                alert("الرجاء رفع ملفين PDF على الأقل للدمج");
+                return;
+            }
+
+            status.textContent = "جاري دمج الملفات... يرجى الانتظار";
+            mergeBtn.disabled = true;
+
+            try {
+                const { PDFDocument } = PDFLib;
+                const mergedPdf = await PDFDocument.create();
+
+                for (let file of pdfFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                }
+
+                const pdfBytes = await mergedPdf.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `مدموج_مسار_${new Date().toISOString().slice(0,10)}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                status.style.color = '#10b981';
+                status.textContent = `✅ تم دمج ${pdfFiles.length} ملف PDF بنجاح!`;
+
+            } catch (error) {
+                console.error(error);
+                status.style.color = '#ef4444';
+                status.textContent = "❌ حدث خطأ أثناء الدمج. يرجى المحاولة مرة أخرى.";
+            } finally {
+                mergeBtn.disabled = false;
+            }
+        }
+    </script>
+
+</body>
+</html>
