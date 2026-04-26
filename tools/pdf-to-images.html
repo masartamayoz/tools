@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل PDF إلى صور | أدوات مسار</title>
+    <meta name="description" content="حوّل ملف PDF إلى صور عالية الجودة - استخراج كل الصفحات كصور JPG أو PNG">
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>📸 تحويل PDF إلى صور</h1>
+        <p>حوّل ملفات PDF إلى صور عالية الجودة (JPG أو PNG) بسهولة</p>
+    </div>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+
+        <!-- رفع الملف -->
+        <div style="text-align: center; margin: 40px 0;">
+            <input type="file" id="pdfInput" accept="application/pdf" 
+                   style="padding: 15px; font-size: 1.1rem;">
+            <p style="margin-top: 12px; color: var(--gray);">ارفع ملف PDF الذي تريد تحويله إلى صور</p>
+        </div>
+
+        <!-- معلومات الملف -->
+        <div id="fileInfo" style="display: none; background: var(--card-bg); padding: 25px; border-radius: 16px; margin: 30px 0; text-align: center;">
+            <h3 id="fileName" style="margin-bottom: 8px;"></h3>
+            <p id="pageCount" style="color: var(--primary); font-size: 1.15rem;"></p>
+        </div>
+
+        <!-- خيارات التحويل -->
+        <div id="convertOptions" style="display: none; text-align: center; margin: 40px 0;">
+            <label style="margin-right: 15px;">صيغة الصور:</label>
+            <select id="imageFormat" style="padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                <option value="jpeg">JPG (أفضل حجم)</option>
+                <option value="png">PNG (جودة أعلى)</option>
+            </select>
+
+            <div style="margin-top: 30px;">
+                <button onclick="convertPDFtoImages()" class="btn" style="padding: 16px 55px; font-size: 1.2rem;">
+                    📸 تحويل PDF إلى صور
+                </button>
+            </div>
+        </div>
+
+        <p id="status" style="text-align: center; margin-top: 25px; font-weight: 500; min-height: 30px;"></p>
+
+        <!-- منطقة المعاينة -->
+        <div id="previewArea" style="display: none; margin-top: 50px;">
+            <h2 style="text-align: center; margin-bottom: 25px;">الصور الناتجة</h2>
+            <div id="imagesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;"></div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <button onclick="downloadAllImages()" class="btn" style="background: #10b981;">
+                    ⬇️ تحميل جميع الصور كـ ZIP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- شرح و FAQ -->
+    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2>كيفية استخدام أداة تحويل PDF إلى صور</h2>
+            <p>1. ارفع ملف PDF.<br>
+               2. اختر الصيغة المطلوبة (JPG أو PNG).<br>
+               3. اضغط على زر التحويل.<br>
+               4. يمكنك تحميل جميع الصور كملف ZIP.</p>
+
+            <h3 style="margin-top: 40px;">الأسئلة الشائعة</h3>
+            <ul>
+                <li><strong>هل جودة الصور عالية؟</strong> نعم، يتم استخراج الصور بدقة عالية.</li>
+                <li><strong>هل يمكن تحويل ملفات كبيرة؟</strong> يعتمد على قوة جهازك، لكن الأداة تعمل جيداً مع معظم الملفات.</li>
+                <li><strong>هل الصور تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
+
+    <!-- مكتبات مطلوبة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <script>
+        let pdfDocument = null;
+        let fileNameBase = "";
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const pdfInput = document.getElementById('pdfInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameEl = document.getElementById('fileName');
+        const pageCountEl = document.getElementById('pageCount');
+        const convertOptions = document.getElementById('convertOptions');
+        const previewArea = document.getElementById('previewArea');
+        const imagesGrid = document.getElementById('imagesGrid');
+        const status = document.getElementById('status');
+
+        pdfInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileNameBase = file.name.replace('.pdf', '');
+            status.textContent = "جاري تحميل ملف PDF...";
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                pdfDocument = await loadingTask.promise;
+
+                fileNameEl.textContent = file.name;
+                pageCountEl.textContent = `عدد الصفحات: ${pdfDocument.numPages} صفحة`;
+                fileInfo.style.display = 'block';
+                convertOptions.style.display = 'block';
+
+                status.textContent = "";
+            } catch (err) {
+                status.style.color = '#ef4444';
+                status.textContent = "❌ حدث خطأ في قراءة الملف PDF.";
+            }
+        });
+
+        async function convertPDFtoImages() {
+            if (!pdfDocument) return;
+
+            const format = document.getElementById('imageFormat').value;
+            status.textContent = `جاري تحويل ${pdfDocument.numPages} صفحة إلى صور...`;
+            imagesGrid.innerHTML = '';
+            previewArea.style.display = 'block';
+
+            const zip = new JSZip();
+            const scale = 2; // جودة أعلى
+
+            for (let i = 1; i <= pdfDocument.numPages; i++) {
+                const page = await pdfDocument.getPage(i);
+                const viewport = page.getViewport({ scale: scale });
+
+                const canvas = document.createElement('canvas');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const context = canvas.getContext('2d');
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                const imageDataURL = canvas.toDataURL(`image/${format}`, 0.95);
+
+                // عرض المعاينة
+                const div = document.createElement('div');
+                div.style.textAlign = 'center';
+                div.innerHTML = `
+                    <p style="margin-bottom:8px;"><strong>صفحة ${i}</strong></p>
+                    <img src="${imageDataURL}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                `;
+                imagesGrid.appendChild(div);
+
+                // إضافة الصورة إلى الـ ZIP
+                const base64Data = imageDataURL.split(',')[1];
+                zip.file(`صفحة_${i}.${format}`, base64Data, { base64: true });
+
+                status.textContent = `تم تحويل ${i} من ${pdfDocument.numPages} صفحة...`;
+            }
+
+            // حفظ الـ ZIP
+            window.generatedZip = zip;
+            status.style.color = '#10b981';
+            status.textContent = `✅ تم تحويل الملف إلى ${pdfDocument.numPages} صورة بنجاح!`;
+        }
+
+        async function downloadAllImages() {
+            if (!window.generatedZip) {
+                alert("الرجاء تحويل الملف أولاً");
+                return;
+            }
+
+            status.textContent = "جاري إنشاء ملف ZIP...";
+            const zipBlob = await window.generatedZip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(zipBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `صور_من_${fileNameBase}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            status.textContent = "✅ تم تحميل جميع الصور كملف ZIP!";
+        }
+    </script>
+
+</body>
+</html>
