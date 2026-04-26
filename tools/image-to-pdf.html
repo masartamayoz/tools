@@ -1,45 +1,128 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>تحويل صور إلى PDF</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل الصور إلى PDF | أدوات مسار</title>
+    <meta name="description" content="حوّل صور الواجبات والكراسات إلى ملف PDF احترافي بسهولة">
+
+    <!-- ربط ملف التصميم الموحد -->
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
+<body>
 
-<body style="font-family:Arial;text-align:center;padding:30px">
+    <!-- Navbar -->
+    <nav>
+        <a href="../index.html" class="logo">
+            📚 <span>مسار</span>
+        </a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+    </nav>
 
-<h2>📄 تحويل صور إلى PDF</h2>
+    <!-- Hero صغير للأداة -->
+    <div class="hero" style="padding: 80px 20px 60px;">
+        <h1>📄 تحويل الصور إلى PDF</h1>
+        <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي جاهز للطباعة أو الإرسال</p>
+    </div>
 
-<input type="file" id="images" multiple accept="image/*"><br><br>
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
 
-<button onclick="createPDF()">تحميل PDF</button>
+        <!-- منطقة الأداة -->
+        <div class="tool-section">
+            <h2 style="text-align:center; margin-bottom: 30px; color: var(--dark);">ارفع الصور الخاصة بك</h2>
+            
+            <div style="text-align:center; margin: 30px 0;">
+                <input type="file" id="imageInput" multiple accept="image/*" 
+                       style="padding: 15px; font-size: 1.1rem;">
+            </div>
 
-<script>
-async function createPDF(){
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
+            <div id="preview" style="margin: 30px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;"></div>
 
-  const files = document.getElementById("images").files;
+            <div style="text-align:center; margin: 40px 0;">
+                <button onclick="createPDF()" class="btn" style="padding: 16px 40px; font-size: 1.2rem;">
+                    📥 تحميل ملف PDF
+                </button>
+            </div>
+        </div>
 
-  for(let i=0;i<files.length;i++){
-    const imgData = await toBase64(files[i]);
+        <!-- شرح + FAQ -->
+        <div style="margin-top: 80px; background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <h2>كيفية استخدام الأداة؟</h2>
+            <p>1. اضغط على زر "اختر الملفات" واختر الصور من جهازك.<br>
+               2. ستظهر الصور في منطقة المعاينة.<br>
+               3. اضغط على "تحميل ملف PDF" لتحميل الملف النهائي.</p>
 
-    if(i>0) pdf.addPage();
+            <h3 style="margin-top: 40px;">الأسئلة الشائعة (FAQ)</h3>
+            <ul>
+                <li><strong>هل الصور تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك فقط، لا يتم رفع أي شيء إلى السيرفر.</li>
+                <li><strong>هل يمكنني رفع أكثر من صورة؟</strong> نعم، يدعم رفع عدة صور في نفس الوقت.</li>
+                <li><strong>هل يمكن ترتيب الصور؟</strong> حالياً يتم ترتيبها حسب ترتيب رفعها (سنضيف خاصية Drag & Drop لاحقاً).</li>
+            </ul>
+        </div>
 
-    pdf.addImage(imgData, 'JPEG', 10, 10, 180, 250);
-  }
+    </div>
 
-  pdf.save("masar.pdf");
-}
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+    </footer>
 
-function toBase64(file){
-  return new Promise((resolve)=>{
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = ()=>resolve(reader.result);
-  });
-}
-</script>
+    <!-- JavaScript للأداة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let selectedFiles = [];
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            selectedFiles = Array.from(e.target.files);
+            showPreview();
+        });
+
+        function showPreview() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function createPDF() {
+            if (selectedFiles.length === 0) {
+                alert("الرجاء رفع صور أولاً");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                if (i > 0) pdf.addPage();
+
+                const imgData = await getBase64(selectedFiles[i]);
+                pdf.addImage(imgData, 'JPEG', 10, 10, 190, 270);
+            }
+
+            pdf.save("واجبي_مسار.pdf");
+        }
+
+        function getBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+            });
+        }
+    </script>
 
 </body>
 </html>
