@@ -1,108 +1,128 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جميع الأدوات | أدوات مسار</title>
+    <title>جميع الأدوات | مسار</title>
     <meta name="description" content="جميع أدوات التلميذ الذكي - تحويل PDF، ضغط الصور، إنشاء فروض وغيرها">
-
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- ===== شريط التنقل ===== -->
     <nav>
-        <a href="../index.html" class="logo">
-            📚 <span>مسار</span>
-        </a>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
         <div class="links">
             <a href="../index.html">الرئيسية</a>
-            <a href="index.html">الأدوات</a>
+            <a href="index.html" class="active">الأدوات</a>
             <a href="../legal/about.html">عن مسار</a>
             <a href="../contact.html">اتصل بنا</a>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-    <!-- Hero صغير -->
-    <div class="hero" style="padding: 90px 20px 70px;">
+    <!-- ===== Hero ===== -->
+    <div class="hero">
         <h1>🛠️ جميع الأدوات</h1>
         <p>اختر الأداة التي تحتاجها لتسهيل دراستك وواجباتك المدرسية</p>
     </div>
 
-    <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 20px 5%;">
+    <!-- ===== التصنيفات ===== -->
+    <div class="categories" role="group" aria-label="تصفية الأدوات">
+        <button class="cat-btn active" data-category="all">جميع الأدوات</button>
+        <button class="cat-btn" data-category="pdf">📄 PDF ومستندات</button>
+        <button class="cat-btn" data-category="image">🖼️ صور وتصميم</button>
+        <button class="cat-btn" data-category="exam">📝 فروض واختبارات</button>
+        <button class="cat-btn" data-category="math">📐 رياضيات</button>
+    </div>
 
-        <!-- Categories Filters -->
-        <div class="categories" style="margin-bottom: 50px;">
-            <button class="cat-btn active" data-category="all">جميع الأدوات</button>
-            <button class="cat-btn" data-category="pdf">PDF ومستندات</button>
-            <button class="cat-btn" data-category="image">صور وتصميم</button>
-            <button class="cat-btn" data-category="exam">فروض واختبارات</button>
-            <button class="cat-btn" data-category="math">رياضيات</button>
-        </div>
-
-        <!-- Tools Grid -->
+    <!-- ===== شبكة الأدوات ===== -->
+    <main>
         <div class="grid" id="toolsGrid">
 
-            <!-- أداة 1: تحويل الصور إلى PDF -->
-            <div class="card pdf" data-category="pdf">
+            <div class="card" data-category="pdf">
                 <div class="card-icon">📄</div>
                 <h3>تحويل الصور إلى PDF</h3>
                 <p>حوّل صور الواجبات والكراسات إلى ملف PDF احترافي مع ترتيب الصفحات.</p>
                 <a href="image-to-pdf.html" class="btn">جرب الآن</a>
             </div>
 
-            <!-- أداة 2: ضغط الصور -->
-            <div class="card image" data-category="image">
+            <div class="card" data-category="image">
                 <div class="card-icon">🖼️</div>
                 <h3>ضغط الصور</h3>
                 <p>قلل حجم الصور بسرعة واحصل عليها كملف ZIP جاهز للإرسال.</p>
                 <a href="compress-image.html" class="btn">جرب الآن</a>
             </div>
 
-            <!-- أداة 3: إنشاء فروض (مؤقتاً) -->
-            <div class="card exam" data-category="exam">
-                <div class="card-icon">📝</div>
-                <h3>إنشاء فروض واختبارات</h3>
-                <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة حسب المستوى والمادة.</p>
-                <a href="#" class="btn" style="background:#94a3b8; cursor: not-allowed;">قريباً</a>
-            </div>
-
-            <!-- أداة 4: دمج PDF (يمكن إضافتها لاحقاً) -->
-            <div class="card pdf" data-category="pdf">
+            <div class="card" data-category="pdf">
                 <div class="card-icon">🔗</div>
                 <h3>دمج ملفات PDF</h3>
-                <p>ادمج عدة ملفات PDF في ملف واحد بسهولة.</p>
-                <a href="#" class="btn" style="background:#94a3b8; cursor: not-allowed;">قريباً</a>
+                <p>ادمج عدة ملفات PDF في ملف واحد احترافي بترتيب يناسبك.</p>
+                <a href="merge-pdf.html" class="btn">جرب الآن</a>
             </div>
 
-            <!-- يمكنك إضافة المزيد هنا -->
-        </div>
-    </div>
+            <div class="card" data-category="pdf">
+                <div class="card-icon">✂️</div>
+                <h3>تقسيم ملف PDF</h3>
+                <p>استخرج صفحات معينة أو قسّم الملف إلى ملفات أصغر بسهولة.</p>
+                <a href="split-pdf.html" class="btn">جرب الآن</a>
+            </div>
 
+            <div class="card" data-category="pdf">
+                <div class="card-icon">📸</div>
+                <h3>تحويل PDF إلى صور</h3>
+                <p>حوّل ملفات PDF إلى صور عالية الجودة بصيغة JPG أو PNG.</p>
+                <a href="pdf-to-images.html" class="btn">جرب الآن</a>
+            </div>
+
+            <div class="card" data-category="math">
+                <div class="card-icon">🔢</div>
+                <h3>أدوات الرياضيات</h3>
+                <p>جدول الضرب، الهندسة، الرسم البياني، المعادلات، وتحويل الوحدات.</p>
+                <a href="math-tools.html" class="btn">جرب الآن</a>
+            </div>
+
+            <div class="card" data-category="exam">
+                <div class="card-icon">📝</div>
+                <h3>إنشاء فروض واختبارات</h3>
+                <p>أنشئ اختبارات وفروضاً مدرسية جاهزة للطباعة حسب المستوى والمادة.</p>
+                <a href="exam-generator.html" class="btn">جرب الآن</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ===== التذييل ===== -->
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- JavaScript بسيط لفلترة الأدوات -->
     <script>
-        const buttons = document.querySelectorAll('.cat-btn');
-        const cards = document.querySelectorAll('.card');
+        /* ─── تبديل السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
+        });
 
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                // إزالة الـ active من كل الأزرار
-                buttons.forEach(btn => btn.classList.remove('active'));
-                // إضافة active للزر الحالي
-                button.classList.add('active');
+        /* ─── تصفية الأدوات ─── */
+        const catBtns = document.querySelectorAll('.cat-btn');
+        const cards   = document.querySelectorAll('.card');
 
-                const category = button.getAttribute('data-category');
-
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                catBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const sel = btn.dataset.category;
                 cards.forEach(card => {
-                    if (category === 'all') {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = card.getAttribute('data-category') === category ? 'flex' : 'none';
-                    }
+                    card.style.display = (sel === 'all' || card.dataset.category === sel) ? '' : 'none';
                 });
             });
         });
