@@ -1,165 +1,190 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دمج ملفات PDF | أدوات مسار</title>
-    <meta name="description" content="ادمج عدة ملفات PDF في ملف واحد بسهولة وسرعة - مثالي للتلاميذ والأساتذة">
-
+    <title>دمج ملفات PDF | مسار</title>
+    <meta name="description" content="ادمج عدة ملفات PDF في ملف واحد بسهولة وسرعة">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-wrapper { max-width: 1100px; margin: 0 auto; padding: 40px 5% 80px; }
+        .tool-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-md); }
+
+        .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; transition: border-color var(--transition-base), background var(--transition-base); }
+        .upload-zone:hover, .upload-zone.dragging { border-color: var(--primary); background: rgba(79,70,229,0.04); }
+        .upload-zone input[type="file"] { display: none; }
+        .upload-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .upload-zone p { color: var(--gray); margin-top: 8px; font-size: var(--font-size-sm); }
+
+        .file-list { margin-top: 28px; }
+        .file-list h3 { margin-bottom: 16px; }
+        .file-item { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: border-color var(--transition-fast); }
+        .file-item:hover { border-color: var(--primary); }
+        .file-item .meta strong { display: block; }
+        .file-item .meta small { color: var(--gray); font-size: var(--font-size-sm); }
+        .btn-remove { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-size-sm); }
+        .btn-remove:hover { background: #dc2626; }
+
+        .status-msg { text-align: center; font-weight: 500; min-height: 28px; margin-top: 20px; color: #10b981; }
+        .status-msg.error { color: #ef4444; }
+
+        .faq-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-sm); margin-top: 40px; }
+        .faq-card h2 { margin-bottom: 16px; }
+        .faq-card h3 { margin-top: 32px; margin-bottom: 12px; }
+        .faq-card li { margin-bottom: 10px; list-style: none; }
+        .faq-card li::before { content: '✅ '; }
+    </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav>
-        <a href="../index.html" class="logo">
-            📚 <span>مسار</span>
-        </a>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
         <div class="links">
             <a href="../index.html">الرئيسية</a>
-            <a href="../tools/index.html">الأدوات</a>
+            <a href="../tools/index.html" class="active">الأدوات</a>
             <a href="../legal/about.html">عن مسار</a>
             <a href="../contact.html">اتصل بنا</a>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-    <!-- Hero -->
-    <div class="hero" style="padding: 80px 20px 60px;">
+    <div class="hero">
         <h1>🔗 دمج ملفات PDF</h1>
         <p>ادمج عدة ملفات PDF في ملف واحد احترافي بترتيب يناسبك</p>
     </div>
 
-    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+    <main class="tool-wrapper">
+        <div class="tool-card">
 
-        <!-- منطقة رفع الملفات -->
-        <div style="text-align: center; margin: 40px 0;">
-            <input type="file" id="pdfInput" multiple accept="application/pdf" 
-                   style="padding: 15px; font-size: 1.1rem;">
-            <p style="margin-top: 12px; color: var(--gray);">اختر ملفات PDF التي تريد دمجها (يمكن رفع أكثر من ملف)</p>
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="pdfInput" multiple accept="application/pdf">
+                <span class="upload-icon">📂</span>
+                <strong>اضغط لاختيار ملفات PDF أو اسحبها هنا</strong>
+                <p>يمكن رفع أكثر من ملف معاً</p>
+            </div>
+
+            <div id="fileList" class="file-list"></div>
+
+            <div style="text-align: center; margin-top: 32px;">
+                <button onclick="mergePDFs()" class="btn" id="mergeBtn" style="display: none; padding: 14px 50px; font-size: 1.1rem;">
+                    🔗 دمج الملفات وتحميل PDF
+                </button>
+            </div>
+
+            <p id="status" class="status-msg"></p>
         </div>
 
-        <!-- قائمة الملفات المرفوعة -->
-        <div id="fileList" style="margin: 40px 0; min-height: 100px;"></div>
-
-        <!-- أزرار التحكم -->
-        <div style="text-align: center; margin: 50px 0;">
-            <button onclick="mergePDFs()" class="btn" id="mergeBtn" style="padding: 16px 50px; font-size: 1.2rem; display: none;">
-                🔗 دمج الملفات وتحميل PDF
-            </button>
-        </div>
-
-        <p id="status" style="text-align:center; font-weight: 500; min-height: 30px;"></p>
-    </div>
-
-    <!-- شرح و FAQ -->
-    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
-        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-            <h2>كيفية استخدام أداة دمج PDF</h2>
-            <p>1. ارفع ملفات PDF التي تريد دمجها.<br>
-               2. يمكنك رفع أكثر من ملف في نفس الوقت.<br>
-               3. اضغط على "دمج الملفات" لتحميل الملف النهائي.</p>
-
-            <h3 style="margin-top: 40px;">الأسئلة الشائعة (FAQ)</h3>
+        <div class="faq-card">
+            <h2>كيفية الاستخدام</h2>
+            <p>ارفع ملفاتك (ملفين على الأقل)، ثم اضغط "دمج الملفات" للحصول على ملف PDF موحّد.</p>
+            <h3>الأسئلة الشائعة</h3>
             <ul>
-                <li><strong>هل الملفات تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك، لا يتم رفع أي ملف إلى السيرفر.</li>
-                <li><strong>هل يحافظ على الجودة؟</strong> نعم، يتم دمج الملفات بدون فقدان جودة.</li>
-                <li><strong>ما هو الحد الأقصى لعدد الملفات؟</strong> يعتمد على قوة جهازك، لكن عادة يمكن دمج 20-30 ملف بسهولة.</li>
+                <li><strong>هل الملفات آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك.</li>
+                <li><strong>هل يحافظ على الجودة؟</strong> نعم، الدمج يتم دون فقدان للجودة.</li>
+                <li><strong>الحد الأقصى؟</strong> يعتمد على جهازك، عادةً 20-30 ملف بسهولة.</li>
             </ul>
         </div>
-    </div>
+    </main>
 
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- مكتبة pdf-lib -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
     <script>
-        let pdfFiles = [];
-
-        const fileInput = document.getElementById('pdfInput');
-        const fileList = document.getElementById('fileList');
-        const mergeBtn = document.getElementById('mergeBtn');
-        const status = document.getElementById('status');
-
-        fileInput.addEventListener('change', function(e) {
-            pdfFiles = Array.from(e.target.files);
-            renderFileList();
+        /* ─── السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
         });
 
-        function renderFileList() {
-            if (pdfFiles.length === 0) {
-                fileList.innerHTML = '';
-                mergeBtn.style.display = 'none';
-                return;
-            }
+        /* ─── الأداة ─── */
+        let pdfFiles = [];
+        const uploadZone = document.getElementById('uploadZone');
+        const pdfInput   = document.getElementById('pdfInput');
+        const fileList   = document.getElementById('fileList');
+        const mergeBtn   = document.getElementById('mergeBtn');
+        const status     = document.getElementById('status');
 
-            let html = `<h3 style="margin-bottom:20px;">الملفات المرفوعة (${pdfFiles.length})</h3>`;
-            
-            pdfFiles.forEach((file, index) => {
-                html += `
-                    <div style="background:var(--card-bg); padding:15px 20px; margin:10px 0; border-radius:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border);">
-                        <div>
-                            <strong>${file.name}</strong>
-                            <small style="color:var(--gray); margin-right:10px;">(${(file.size/1024/1024).toFixed(2)} MB)</small>
-                        </div>
-                        <button onclick="removeFile(${index})" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer;">حذف</button>
-                    </div>
-                `;
-            });
+        uploadZone.addEventListener('click', () => pdfInput.click());
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragging'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragging'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault(); uploadZone.classList.remove('dragging');
+            addFiles(Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf'));
+        });
+        pdfInput.addEventListener('change', e => addFiles(Array.from(e.target.files)));
 
-            fileList.innerHTML = html;
-            mergeBtn.style.display = 'inline-block';
+        function addFiles(newFiles) {
+            pdfFiles = [...pdfFiles, ...newFiles];
+            renderList();
         }
 
-        function removeFile(index) {
-            pdfFiles.splice(index, 1);
-            renderFileList();
+        function removeFile(i) {
+            pdfFiles.splice(i, 1);
+            renderList();
+        }
+
+        function renderList() {
+            mergeBtn.style.display = pdfFiles.length >= 2 ? 'inline-flex' : 'none';
+            if (!pdfFiles.length) { fileList.innerHTML = ''; return; }
+
+            fileList.innerHTML = `<h3>الملفات المرفوعة (${pdfFiles.length})</h3>` +
+                pdfFiles.map((f, i) => `
+                    <div class="file-item">
+                        <div class="meta">
+                            <strong>📄 ${f.name}</strong>
+                            <small>${(f.size / 1024 / 1024).toFixed(2)} MB</small>
+                        </div>
+                        <button class="btn-remove" onclick="removeFile(${i})">حذف</button>
+                    </div>
+                `).join('');
         }
 
         async function mergePDFs() {
-            if (pdfFiles.length < 2) {
-                alert("الرجاء رفع ملفين PDF على الأقل للدمج");
-                return;
-            }
-
-            status.textContent = "جاري دمج الملفات... يرجى الانتظار";
+            if (pdfFiles.length < 2) return;
+            status.className = 'status-msg';
+            status.textContent = 'جاري دمج الملفات...';
             mergeBtn.disabled = true;
 
             try {
                 const { PDFDocument } = PDFLib;
-                const mergedPdf = await PDFDocument.create();
+                const merged = await PDFDocument.create();
 
-                for (let file of pdfFiles) {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await PDFDocument.load(arrayBuffer);
-                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                for (const file of pdfFiles) {
+                    const buf = await file.arrayBuffer();
+                    const pdf = await PDFDocument.load(buf);
+                    const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+                    pages.forEach(p => merged.addPage(p));
                 }
 
-                const pdfBytes = await mergedPdf.save();
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `مدموج_مسار_${new Date().toISOString().slice(0,10)}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-
-                status.style.color = '#10b981';
+                const bytes = await merged.save();
+                download(bytes, `مدموج_مسار_${new Date().toISOString().slice(0,10)}.pdf`);
                 status.textContent = `✅ تم دمج ${pdfFiles.length} ملف PDF بنجاح!`;
-
-            } catch (error) {
-                console.error(error);
-                status.style.color = '#ef4444';
-                status.textContent = "❌ حدث خطأ أثناء الدمج. يرجى المحاولة مرة أخرى.";
+            } catch (err) {
+                status.className = 'status-msg error';
+                status.textContent = '❌ حدث خطأ أثناء الدمج. حاول مجدداً.';
             } finally {
                 mergeBtn.disabled = false;
             }
+        }
+
+        function download(bytes, name) {
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href = url; a.download = name;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     </script>
 
