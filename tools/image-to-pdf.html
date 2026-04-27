@@ -1,125 +1,298 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل الصور إلى PDF | أدوات مسار</title>
+    <title>تحويل الصور إلى PDF | مسار</title>
     <meta name="description" content="حوّل صور الواجبات والكراسات إلى ملف PDF احترافي بسهولة">
-
-    <!-- ربط ملف التصميم الموحد -->
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* ─── أنماط خاصة بالأداة ─── */
+        .tool-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 5% 80px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color var(--transition-base), background var(--transition-base);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragging {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.04);
+        }
+
+        .upload-zone input[type="file"] { display: none; }
+
+        .upload-zone .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .upload-zone p {
+            color: var(--gray);
+            margin-top: 8px;
+            font-size: var(--font-size-sm);
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .preview-item {
+            position: relative;
+            background: var(--light-bg);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .preview-item span {
+            display: block;
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            border: none;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-msg {
+            text-align: center;
+            font-weight: 500;
+            min-height: 28px;
+            margin-top: 20px;
+            color: #10b981;
+        }
+
+        .faq-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            margin-top: 40px;
+        }
+
+        .faq-card h2 { margin-bottom: 16px; }
+
+        .faq-card h3 {
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        .faq-card li {
+            margin-bottom: 10px;
+            list-style: none;
+            padding-right: 0;
+        }
+
+        .faq-card li::before {
+            content: '✅ ';
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- ===== شريط التنقل ===== -->
     <nav>
-        <a href="../index.html" class="logo">
-            📚 <span>مسار</span>
-        </a>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
         <div class="links">
             <a href="../index.html">الرئيسية</a>
-            <a href="../tools/index.html">الأدوات</a>
+            <a href="../tools/index.html" class="active">الأدوات</a>
             <a href="../legal/about.html">عن مسار</a>
             <a href="../contact.html">اتصل بنا</a>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-    <!-- Hero صغير للأداة -->
-    <div class="hero" style="padding: 80px 20px 60px;">
+    <!-- ===== Hero ===== -->
+    <div class="hero">
         <h1>📄 تحويل الصور إلى PDF</h1>
         <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي جاهز للطباعة أو الإرسال</p>
     </div>
 
-    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+    <!-- ===== الأداة ===== -->
+    <main class="tool-wrapper">
+        <div class="tool-card">
 
-        <!-- منطقة الأداة -->
-        <div class="tool-section">
-            <h2 style="text-align:center; margin-bottom: 30px; color: var(--dark);">ارفع الصور الخاصة بك</h2>
-            
-            <div style="text-align:center; margin: 30px 0;">
-                <input type="file" id="imageInput" multiple accept="image/*" 
-                       style="padding: 15px; font-size: 1.1rem;">
+            <!-- منطقة الرفع -->
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="imageInput" multiple accept="image/*">
+                <span class="upload-icon">📁</span>
+                <strong>اضغط لاختيار الصور أو اسحبها هنا</strong>
+                <p>يدعم JPG، PNG، WebP — يمكن رفع أكثر من صورة معاً</p>
             </div>
 
-            <div id="preview" style="margin: 30px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;"></div>
+            <!-- معاينة الصور -->
+            <div id="previewGrid" class="preview-grid"></div>
 
-            <div style="text-align:center; margin: 40px 0;">
-                <button onclick="createPDF()" class="btn" style="padding: 16px 40px; font-size: 1.2rem;">
+            <!-- زر التحميل -->
+            <div style="text-align: center; margin-top: 36px;">
+                <button onclick="createPDF()" class="btn" id="downloadBtn" style="display: none; padding: 14px 50px; font-size: 1.1rem;">
                     📥 تحميل ملف PDF
                 </button>
             </div>
+
+            <p id="status" class="status-msg"></p>
         </div>
 
-        <!-- شرح + FAQ -->
-        <div style="margin-top: 80px; background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-            <h2>كيفية استخدام الأداة؟</h2>
-            <p>1. اضغط على زر "اختر الملفات" واختر الصور من جهازك.<br>
-               2. ستظهر الصور في منطقة المعاينة.<br>
-               3. اضغط على "تحميل ملف PDF" لتحميل الملف النهائي.</p>
+        <!-- FAQ -->
+        <div class="faq-card">
+            <h2>كيفية استخدام الأداة</h2>
+            <p>اضغط على منطقة الرفع أو اسحب صورك إليها، ستظهر المعاينة مباشرة. بعد ذلك اضغط "تحميل ملف PDF" للحصول على ملفك.</p>
 
-            <h3 style="margin-top: 40px;">الأسئلة الشائعة (FAQ)</h3>
+            <h3>الأسئلة الشائعة</h3>
             <ul>
-                <li><strong>هل الصور تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك فقط، لا يتم رفع أي شيء إلى السيرفر.</li>
-                <li><strong>هل يمكنني رفع أكثر من صورة؟</strong> نعم، يدعم رفع عدة صور في نفس الوقت.</li>
-                <li><strong>هل يمكن ترتيب الصور؟</strong> حالياً يتم ترتيبها حسب ترتيب رفعها (سنضيف خاصية Drag & Drop لاحقاً).</li>
+                <li><strong>هل الصور آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك تماماً.</li>
+                <li><strong>هل يدعم عدة صور؟</strong> نعم، يمكن رفع عشرات الصور في آنٍ واحد.</li>
+                <li><strong>هل يمكن ترتيب الصور؟</strong> الترتيب يتبع ترتيب الرفع (خاصية السحب قريباً).</li>
             </ul>
         </div>
+    </main>
 
-    </div>
-
+    <!-- ===== التذييل ===== -->
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- JavaScript للأداة -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        let selectedFiles = [];
-
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            selectedFiles = Array.from(e.target.files);
-            showPreview();
+        /* ─── تبديل السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
         });
 
-        function showPreview() {
-            const preview = document.getElementById('preview');
-            preview.innerHTML = '';
-            
-            selectedFiles.forEach((file, index) => {
+        /* ─── منطق الأداة ─── */
+        let selectedFiles = [];
+
+        const uploadZone  = document.getElementById('uploadZone');
+        const imageInput  = document.getElementById('imageInput');
+        const previewGrid = document.getElementById('previewGrid');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const status      = document.getElementById('status');
+
+        // فتح مربع الملفات عند الضغط
+        uploadZone.addEventListener('click', () => imageInput.click());
+
+        // السحب والإفلات
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragging'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragging'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragging');
+            addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+        });
+
+        imageInput.addEventListener('change', e => addFiles(Array.from(e.target.files)));
+
+        function addFiles(files) {
+            selectedFiles = [...selectedFiles, ...files];
+            renderPreview();
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renderPreview();
+        }
+
+        function renderPreview() {
+            previewGrid.innerHTML = '';
+            downloadBtn.style.display = selectedFiles.length ? 'inline-flex' : 'none';
+
+            selectedFiles.forEach((file, i) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
-                    preview.appendChild(div);
+                reader.onload = ev => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    item.innerHTML = `
+                        <button class="remove-btn" onclick="removeFile(${i})">×</button>
+                        <img src="${ev.target.result}" alt="${file.name}">
+                        <span>${file.name}</span>
+                    `;
+                    previewGrid.appendChild(item);
                 };
                 reader.readAsDataURL(file);
             });
         }
 
         async function createPDF() {
-            if (selectedFiles.length === 0) {
-                alert("الرجاء رفع صور أولاً");
-                return;
-            }
+            if (!selectedFiles.length) return;
+            status.textContent = 'جاري إنشاء PDF...';
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
 
             for (let i = 0; i < selectedFiles.length; i++) {
                 if (i > 0) pdf.addPage();
-
                 const imgData = await getBase64(selectedFiles[i]);
                 pdf.addImage(imgData, 'JPEG', 10, 10, 190, 270);
+                status.textContent = `جاري المعالجة: ${i + 1} / ${selectedFiles.length}`;
             }
 
-            pdf.save("واجبي_مسار.pdf");
+            pdf.save('واجبي_مسار.pdf');
+            status.style.color = '#10b981';
+            status.textContent = `✅ تم إنشاء PDF بنجاح (${selectedFiles.length} صفحة)!`;
         }
 
         function getBase64(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
+            return new Promise(resolve => {
+                const r = new FileReader();
+                r.readAsDataURL(file);
+                r.onload = () => resolve(r.result);
             });
         }
     </script>
