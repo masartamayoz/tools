@@ -1,74 +1,146 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أدوات التلميذ الذكي | مسار</title>
-    <meta name="description" content="منصة أدوات تعليمية ذكية للتلميذ التونسي">
+    <meta name="description" content="منصة أدوات تعليمية ذكية للتلميذ التونسي - حوّل واجباتك وفروضك إلى ملفات احترافية بسرعة وسهولة">
 
     <!-- ربط ملف التصميم الخارجي -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- =============================================
+         شريط التنقل (Navbar)
+         ============================================= -->
     <nav>
         <a href="index.html" class="logo">
             📚 <span>مسار</span>
         </a>
+
         <div class="links">
-            <a href="index.html">الرئيسية</a>
+            <a href="index.html" class="active">الرئيسية</a>
             <a href="tools/index.html">الأدوات</a>
             <a href="legal/about.html">عن مسار</a>
             <a href="contact.html">اتصل بنا</a>
         </div>
+
+        <!-- زر تبديل السمة -->
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">
+            🌙
+        </button>
     </nav>
 
-    <!-- Hero -->
+
+    <!-- =============================================
+         القسم الرئيسي (Hero)
+         ============================================= -->
     <div class="hero">
         <h1>🧠 أدوات التلميذ الذكي</h1>
         <p>منصة تونسية متكاملة تساعد التلاميذ والأساتذة على تحويل الواجبات والفروض إلى ملفات احترافية بسرعة وسهولة</p>
     </div>
 
-    <!-- Categories -->
-    <div class="categories">
+
+    <!-- =============================================
+         التصنيفات (Categories)
+         ============================================= -->
+    <div class="categories" role="group" aria-label="تصفية الأدوات">
         <button class="cat-btn active" data-category="all">جميع الأدوات</button>
-        <button class="cat-btn" data-category="pdf">PDF ومستندات</button>
-        <button class="cat-btn" data-category="image">صور وتصميم</button>
-        <button class="cat-btn" data-category="math">رياضيات وعلوم</button>
-        <button class="cat-btn" data-category="exam">اختبارات وفروض</button>
+        <button class="cat-btn" data-category="pdf">📄 PDF ومستندات</button>
+        <button class="cat-btn" data-category="image">🖼️ صور وتصميم</button>
+        <button class="cat-btn" data-category="math">📐 رياضيات وعلوم</button>
+        <button class="cat-btn" data-category="exam">📝 اختبارات وفروض</button>
     </div>
 
-    <!-- Tools Grid -->
-    <div class="grid" id="tools-grid">
-        <div class="card pdf" data-category="pdf">
-            <div class="card-icon">📄</div>
-            <h3>تحويل الصور إلى PDF</h3>
-            <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات واختيار الحجم.</p>
-            <a href="tools/image-to-pdf.html" class="btn">جرب الآن</a>
+
+    <!-- =============================================
+         شبكة الأدوات (Tools Grid)
+         ============================================= -->
+    <main>
+        <div class="grid" id="tools-grid">
+
+            <!-- بطاقة: تحويل الصور إلى PDF -->
+            <div class="card" data-category="pdf">
+                <div class="card-icon">📄</div>
+                <h3>تحويل الصور إلى PDF</h3>
+                <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات واختيار الحجم.</p>
+                <a href="tools/image-to-pdf.html" class="btn">جرب الآن</a>
+            </div>
+
+            <!-- بطاقة: ضغط الصور -->
+            <div class="card" data-category="image">
+                <div class="card-icon">🖼️</div>
+                <h3>ضغط الصور</h3>
+                <p>قلل حجم صور الواجبات والملفات دون فقدان واضح في الجودة لتسهيل الإرسال عبر الإنترنت.</p>
+                <a href="tools/compress-image.html" class="btn">جرب الآن</a>
+            </div>
+
+            <!-- بطاقة: إنشاء فروض واختبارات -->
+            <div class="card" data-category="exam">
+                <div class="card-icon">📝</div>
+                <h3>إنشاء فروض واختبارات</h3>
+                <p>أنشئ اختبارات وفروضاً مدرسية جاهزة للطباعة حسب المستوى والمادة الدراسية.</p>
+                <a href="tools/exam-generator.html" class="btn">جرب الآن</a>
+            </div>
+
+            <!-- يمكن إضافة المزيد من البطاقات هنا -->
+
         </div>
+    </main>
 
-        <div class="card image" data-category="image">
-            <div class="card-icon">🖼️</div>
-            <h3>ضغط الصور</h3>
-            <p>قلل حجم صور الواجبات والملفات دون فقدان واضح في الجودة لتسهيل الإرسال.</p>
-            <a href="tools/compress-image.html" class="btn">جرب الآن</a>
-        </div>
 
-        <div class="card exam" data-category="exam">
-            <div class="card-icon">📝</div>
-            <h3>إنشاء فروض واختبارات</h3>
-            <p>أنشئ اختبارات وفروض مدرسية جاهزة للطباعة حسب المستوى والمادة.</p>
-            <a href="tools/exam-generator.html" class="btn">جرب الآن</a>
-        </div>
-
-        <!-- يمكن إضافة المزيد لاحقاً -->
-    </div>
-
+    <!-- =============================================
+         التذييل (Footer)
+         ============================================= -->
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
         <p>جميع الحقوق محفوظة</p>
     </footer>
+
+
+    <!-- =============================================
+         JavaScript
+         ============================================= -->
+    <script>
+        /* ─── تبديل السمة (Dark / Light Mode) ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // استرجاع السمة المحفوظة
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
+        });
+
+
+        /* ─── تصفية البطاقات حسب التصنيف ─── */
+        const catBtns = document.querySelectorAll('.cat-btn');
+        const cards   = document.querySelectorAll('.card');
+
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // تحديث الزر النشط
+                catBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const selected = btn.dataset.category;
+
+                // إظهار / إخفاء البطاقات
+                cards.forEach(card => {
+                    const match = selected === 'all' || card.dataset.category === selected;
+                    card.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>
