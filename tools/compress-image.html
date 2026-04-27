@@ -1,176 +1,198 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ضغط الصور | أدوات مسار</title>
+    <title>ضغط الصور | مسار</title>
     <meta name="description" content="ضغط متعدد الصور وتحميلها كملف ZIP - أداة مثالية للواجبات والكراسات المدرسية">
-
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-wrapper { max-width: 1100px; margin: 0 auto; padding: 40px 5% 80px; }
+        .tool-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-md); }
+
+        .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; transition: border-color var(--transition-base), background var(--transition-base); }
+        .upload-zone:hover, .upload-zone.dragging { border-color: var(--primary); background: rgba(79,70,229,0.04); }
+        .upload-zone input[type="file"] { display: none; }
+        .upload-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .upload-zone p { color: var(--gray); margin-top: 8px; font-size: var(--font-size-sm); }
+
+        .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 32px; }
+        .preview-item { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; text-align: center; }
+        .preview-item img { width: 100%; height: 130px; object-fit: cover; }
+        .preview-item span { display: block; padding: 6px 8px; font-size: 0.78rem; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .slider-row { display: flex; align-items: center; gap: 16px; margin: 28px 0; }
+        .slider-row label { font-weight: 500; white-space: nowrap; }
+        .slider-row input[type="range"] { flex: 1; accent-color: var(--primary); }
+        .quality-badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600; min-width: 56px; text-align: center; }
+
+        .status-msg { text-align: center; font-weight: 500; min-height: 28px; margin-top: 20px; color: #10b981; }
+        .status-msg.error { color: #ef4444; }
+
+        .faq-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-sm); margin-top: 40px; }
+        .faq-card h2 { margin-bottom: 16px; }
+        .faq-card h3 { margin-top: 32px; margin-bottom: 12px; }
+        .faq-card li { margin-bottom: 10px; list-style: none; }
+        .faq-card li::before { content: '✅ '; }
+    </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav>
-        <a href="../index.html" class="logo">
-            📚 <span>مسار</span>
-        </a>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
         <div class="links">
             <a href="../index.html">الرئيسية</a>
-            <a href="../tools/index.html">الأدوات</a>
+            <a href="../tools/index.html" class="active">الأدوات</a>
             <a href="../legal/about.html">عن مسار</a>
             <a href="../contact.html">اتصل بنا</a>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-    <!-- Hero -->
-    <div class="hero" style="padding: 80px 20px 60px;">
+    <div class="hero">
         <h1>🖼️ ضغط الصور</h1>
-        <p>اضغط عدة صور في وقت واحد واحصل عليها كملف ZIP جاهز - مثالي لإرسال الواجبات</p>
+        <p>اضغط عدة صور في وقت واحد واحصل عليها كملف ZIP جاهز — مثالي لإرسال الواجبات</p>
     </div>
 
-    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px 5%;">
+    <main class="tool-wrapper">
+        <div class="tool-card">
 
-        <div style="text-align: center; margin-bottom: 40px;">
-            <input type="file" id="imageInput" multiple accept="image/*" 
-                   style="padding: 15px; font-size: 1.1rem;">
-            <p style="margin-top: 10px; color: var(--gray);">يمكنك رفع عدة صور معاً (JPG, PNG, WebP)</p>
+            <!-- رفع الصور -->
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="imageInput" multiple accept="image/*">
+                <span class="upload-icon">📁</span>
+                <strong>اضغط لاختيار الصور أو اسحبها هنا</strong>
+                <p>يدعم JPG، PNG، WebP — يمكن رفع عدة صور معاً</p>
+            </div>
+
+            <!-- معاينة -->
+            <div id="previewGrid" class="preview-grid"></div>
+
+            <!-- شريط الجودة -->
+            <div class="slider-row">
+                <label>مستوى الجودة:</label>
+                <input type="range" id="quality" min="50" max="95" value="80">
+                <span class="quality-badge"><span id="qualityValue">80</span>%</span>
+            </div>
+
+            <!-- زر الضغط -->
+            <div style="text-align: center; margin-top: 8px;">
+                <button onclick="compressAndDownload()" class="btn" id="compressBtn" style="display: none; padding: 14px 50px; font-size: 1.1rem;">
+                    📦 ضغط الصور وتحميل ZIP
+                </button>
+            </div>
+
+            <p id="status" class="status-msg"></p>
         </div>
 
-        <!-- منطقة المعاينة -->
-        <div id="previewArea" style="margin: 40px 0; display: none;">
-            <h2 style="text-align:center; margin-bottom: 25px;">الصور المرفوعة</h2>
-            <div id="imagesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;"></div>
-        </div>
-
-        <div style="text-align:center; margin: 40px 0;">
-            <label>مستوى الجودة: <strong id="qualityValue">80</strong>%</label><br>
-            <input type="range" id="quality" min="50" max="95" value="80" 
-                   style="width: 350px; margin: 15px 0;">
-        </div>
-
-        <div style="text-align:center; margin: 30px 0;">
-            <button onclick="compressAndDownloadZip()" class="btn" style="padding: 16px 50px; font-size: 1.2rem;">
-                📦 ضغط جميع الصور وتحميلها كـ ZIP
-            </button>
-        </div>
-
-        <p id="resultInfo" style="text-align:center; margin-top: 25px; font-weight: 500; min-height: 28px; color: #10b981;"></p>
-    </div>
-
-    <!-- شرح و FAQ -->
-    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
-        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-            <h2>كيفية استخدام أداة ضغط الصور</h2>
-            <p>1. ارفع الصور التي تريد ضغطها.<br>
-               2. اختر نسبة الجودة المناسبة.<br>
-               3. اضغط على الزر لتحميل كل الصور المضغوطة داخل ملف ZIP واحد.</p>
-
-            <h3 style="margin-top: 40px;">الأسئلة الشائعة</h3>
+        <div class="faq-card">
+            <h2>كيفية الاستخدام</h2>
+            <p>ارفع الصور، اختر مستوى الجودة المناسب، ثم اضغط على الزر للحصول على ملف ZIP يحتوي جميع الصور المضغوطة.</p>
+            <h3>الأسئلة الشائعة</h3>
             <ul>
-                <li><strong>هل الصور آمنة؟</strong> نعم، كل شيء يتم داخل متصفحك فقط.</li>
-                <li><strong>ما هو أفضل مستوى جودة؟</strong> بين 75% - 85% للواجبات المدرسية.</li>
-                <li><strong>هل يدعم PNG؟</strong> نعم، يتم تحويلها إلى JPG لضغط أفضل.</li>
+                <li><strong>هل الصور آمنة؟</strong> نعم، كل العملية تتم داخل متصفحك.</li>
+                <li><strong>أفضل مستوى جودة للواجبات؟</strong> بين 75% و 85%.</li>
+                <li><strong>هل يدعم PNG؟</strong> نعم، تُحوَّل تلقائياً إلى JPG للضغط الأمثل.</li>
             </ul>
         </div>
-    </div>
+    </main>
 
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- JSZip Library + Main Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        let selectedFiles = [];
+        /* ─── السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
+        });
 
-        const imageInput = document.getElementById('imageInput');
-        const previewArea = document.getElementById('previewArea');
-        const imagesGrid = document.getElementById('imagesGrid');
+        /* ─── الأداة ─── */
+        let files = [];
+        const uploadZone  = document.getElementById('uploadZone');
+        const imageInput  = document.getElementById('imageInput');
+        const previewGrid = document.getElementById('previewGrid');
+        const compressBtn = document.getElementById('compressBtn');
         const qualitySlider = document.getElementById('quality');
-        const qualityValue = document.getElementById('qualityValue');
-        const resultInfo = document.getElementById('resultInfo');
+        const qualityValue  = document.getElementById('qualityValue');
+        const status = document.getElementById('status');
 
-        qualitySlider.addEventListener('input', () => {
-            qualityValue.textContent = qualitySlider.value;
+        qualitySlider.addEventListener('input', () => qualityValue.textContent = qualitySlider.value);
+
+        uploadZone.addEventListener('click', () => imageInput.click());
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragging'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragging'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault(); uploadZone.classList.remove('dragging');
+            addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
         });
+        imageInput.addEventListener('change', e => addFiles(Array.from(e.target.files)));
 
-        imageInput.addEventListener('change', function(e) {
-            selectedFiles = Array.from(e.target.files);
-            if (selectedFiles.length === 0) return;
-
-            previewArea.style.display = 'block';
+        function addFiles(newFiles) {
+            files = [...files, ...newFiles];
             renderPreview();
-        });
+        }
 
         function renderPreview() {
-            imagesGrid.innerHTML = '';
-            selectedFiles.forEach((file) => {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    const div = document.createElement('div');
-                    div.style.cssText = `background:var(--card-bg); padding:15px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.08); text-align:center;`;
-                    div.innerHTML = `
-                        <img src="${ev.target.result}" style="max-width:100%; height:180px; object-fit:contain; border-radius:10px; margin-bottom:10px;">
-                        <p style="font-size:0.9rem; margin:8px 0 4px;"><strong>${file.name}</strong></p>
-                        <p style="font-size:0.85rem; color:var(--gray);">أصلي: ${(file.size/1024).toFixed(1)} KB</p>
+            previewGrid.innerHTML = '';
+            compressBtn.style.display = files.length ? 'inline-flex' : 'none';
+            files.forEach(file => {
+                const r = new FileReader();
+                r.onload = ev => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    item.innerHTML = `
+                        <img src="${ev.target.result}" alt="${file.name}">
+                        <span>${file.name} · ${(file.size/1024).toFixed(0)} KB</span>
                     `;
-                    imagesGrid.appendChild(div);
+                    previewGrid.appendChild(item);
                 };
-                reader.readAsDataURL(file);
+                r.readAsDataURL(file);
             });
         }
 
-        async function compressAndDownloadZip() {
-            if (selectedFiles.length === 0) {
-                alert("الرجاء رفع صور أولاً");
-                return;
-            }
-
+        async function compressAndDownload() {
+            if (!files.length) return;
             const quality = qualitySlider.value / 100;
-            resultInfo.textContent = `جاري ضغط ${selectedFiles.length} صورة وإنشاء ملف ZIP...`;
-
             const zip = new JSZip();
+            status.className = 'status-msg';
 
-            for (let i = 0; i < selectedFiles.length; i++) {
-                const file = selectedFiles[i];
-                const compressedBlob = await compressSingleImage(file, quality);
-
-                const fileName = `مضغوط_${file.name.replace(/\.[^/.]+$/, "")}.jpg`;
-                zip.file(fileName, compressedBlob);
-
-                resultInfo.textContent = `تم ضغط ${i+1} من ${selectedFiles.length} صورة...`;
+            for (let i = 0; i < files.length; i++) {
+                status.textContent = `جاري ضغط ${i + 1} من ${files.length} صورة...`;
+                const blob = await compressImage(files[i], quality);
+                zip.file(`مضغوط_${files[i].name.replace(/\.[^.]+$/, '')}.jpg`, blob);
             }
 
-            // توليد وتحميل الملف ZIP
-            const zipBlob = await zip.generateAsync({type: "blob"});
-            const zipUrl = URL.createObjectURL(zipBlob);
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `صور_مضغوطة_مسار_${new Date().toISOString().slice(0,10)}.zip`;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
 
-            const link = document.createElement('a');
-            link.href = zipUrl;
-            link.download = `صور_مضغوطة_مسار_${new Date().toISOString().slice(0,10)}.zip`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(zipUrl);
-
-            resultInfo.style.color = '#10b981';
-            resultInfo.textContent = `✅ تم ضغط ${selectedFiles.length} صورة وتحميلها كملف ZIP بنجاح!`;
+            status.textContent = `✅ تم ضغط ${files.length} صورة وتحميلها!`;
         }
 
-        function compressSingleImage(file, quality) {
-            return new Promise((resolve) => {
+        function compressImage(file, quality) {
+            return new Promise(resolve => {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-
-                    canvas.toBlob((blob) => {
-                        resolve(blob);
-                    }, 'image/jpeg', quality);
+                    canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
                 };
                 img.src = URL.createObjectURL(file);
             });
