@@ -1,209 +1,224 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل PDF إلى صور | أدوات مسار</title>
+    <title>تحويل PDF إلى صور | مسار</title>
     <meta name="description" content="حوّل ملف PDF إلى صور عالية الجودة - استخراج كل الصفحات كصور JPG أو PNG">
-
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-wrapper { max-width: 1100px; margin: 0 auto; padding: 40px 5% 80px; }
+        .tool-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-md); }
+
+        .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; transition: border-color var(--transition-base), background var(--transition-base); }
+        .upload-zone:hover, .upload-zone.dragging { border-color: var(--primary); background: rgba(79,70,229,0.04); }
+        .upload-zone input[type="file"] { display: none; }
+        .upload-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .upload-zone p { color: var(--gray); margin-top: 8px; font-size: var(--font-size-sm); }
+
+        .file-info { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 24px; margin-top: 20px; display: flex; gap: 16px; align-items: center; }
+        .file-info .icon { font-size: 2rem; }
+        .file-info strong { display: block; }
+        .file-info span { color: var(--primary); font-weight: 500; }
+
+        .format-row { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
+        .format-row label { font-weight: 500; }
+        .format-row select { padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--light-bg); color: var(--text); font-family: var(--font-base); }
+        .format-row select:focus { outline: none; border-color: var(--primary); }
+
+        .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 32px; }
+        .preview-item { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; text-align: center; }
+        .preview-item p { padding: 8px; font-size: var(--font-size-sm); color: var(--gray); }
+        .preview-item img { width: 100%; object-fit: contain; max-height: 200px; }
+
+        .status-msg { text-align: center; font-weight: 500; min-height: 28px; margin-top: 20px; color: #10b981; }
+        .status-msg.error { color: #ef4444; }
+
+        .faq-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-sm); margin-top: 40px; }
+        .faq-card h2 { margin-bottom: 16px; }
+        .faq-card h3 { margin-top: 32px; margin-bottom: 12px; }
+        .faq-card li { margin-bottom: 10px; list-style: none; }
+        .faq-card li::before { content: '✅ '; }
+    </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav>
-        <a href="../index.html" class="logo">
-            📚 <span>مسار</span>
-        </a>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
         <div class="links">
             <a href="../index.html">الرئيسية</a>
-            <a href="../tools/index.html">الأدوات</a>
+            <a href="../tools/index.html" class="active">الأدوات</a>
             <a href="../legal/about.html">عن مسار</a>
             <a href="../contact.html">اتصل بنا</a>
         </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-    <!-- Hero -->
-    <div class="hero" style="padding: 80px 20px 60px;">
+    <div class="hero">
         <h1>📸 تحويل PDF إلى صور</h1>
-        <p>حوّل ملفات PDF إلى صور عالية الجودة (JPG أو PNG) بسهولة</p>
+        <p>حوّل ملفات PDF إلى صور عالية الجودة بصيغة JPG أو PNG بسهولة</p>
     </div>
 
-    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px 5%;">
+    <main class="tool-wrapper">
+        <div class="tool-card">
 
-        <!-- رفع الملف -->
-        <div style="text-align: center; margin: 40px 0;">
-            <input type="file" id="pdfInput" accept="application/pdf" 
-                   style="padding: 15px; font-size: 1.1rem;">
-            <p style="margin-top: 12px; color: var(--gray);">ارفع ملف PDF الذي تريد تحويله إلى صور</p>
-        </div>
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="pdfInput" accept="application/pdf">
+                <span class="upload-icon">📂</span>
+                <strong>اضغط لاختيار ملف PDF أو اسحبه هنا</strong>
+                <p>ملف PDF واحد فقط</p>
+            </div>
 
-        <!-- معلومات الملف -->
-        <div id="fileInfo" style="display: none; background: var(--card-bg); padding: 25px; border-radius: 16px; margin: 30px 0; text-align: center;">
-            <h3 id="fileName" style="margin-bottom: 8px;"></h3>
-            <p id="pageCount" style="color: var(--primary); font-size: 1.15rem;"></p>
-        </div>
+            <div id="fileInfo" style="display:none;" class="file-info">
+                <div class="icon">📄</div>
+                <div>
+                    <strong id="fileName"></strong>
+                    <span id="pageCount"></span>
+                </div>
+            </div>
 
-        <!-- خيارات التحويل -->
-        <div id="convertOptions" style="display: none; text-align: center; margin: 40px 0;">
-            <label style="margin-right: 15px;">صيغة الصور:</label>
-            <select id="imageFormat" style="padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);">
-                <option value="jpeg">JPG (أفضل حجم)</option>
-                <option value="png">PNG (جودة أعلى)</option>
-            </select>
+            <div id="convertOptions" style="display:none;">
+                <div class="format-row">
+                    <label>صيغة الصور:</label>
+                    <select id="imageFormat">
+                        <option value="jpeg">JPG (حجم أصغر)</option>
+                        <option value="png">PNG (جودة أعلى)</option>
+                    </select>
+                </div>
 
-            <div style="margin-top: 30px;">
-                <button onclick="convertPDFtoImages()" class="btn" style="padding: 16px 55px; font-size: 1.2rem;">
-                    📸 تحويل PDF إلى صور
-                </button>
+                <div style="text-align: center; margin-top: 24px;">
+                    <button onclick="convertPDF()" class="btn" style="padding: 14px 50px; font-size: 1.1rem;">
+                        📸 تحويل PDF إلى صور
+                    </button>
+                </div>
+            </div>
+
+            <p id="status" class="status-msg"></p>
+
+            <div id="previewArea" style="display:none; margin-top:40px;">
+                <h3 style="margin-bottom:16px;">الصور الناتجة</h3>
+                <div id="previewGrid" class="preview-grid"></div>
+                <div style="text-align:center; margin-top:28px;">
+                    <button onclick="downloadZip()" class="btn" style="background:#10b981; padding:14px 40px;">
+                        ⬇️ تحميل جميع الصور كـ ZIP
+                    </button>
+                </div>
             </div>
         </div>
 
-        <p id="status" style="text-align: center; margin-top: 25px; font-weight: 500; min-height: 30px;"></p>
-
-        <!-- منطقة المعاينة -->
-        <div id="previewArea" style="display: none; margin-top: 50px;">
-            <h2 style="text-align: center; margin-bottom: 25px;">الصور الناتجة</h2>
-            <div id="imagesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;"></div>
-            
-            <div style="text-align: center; margin-top: 40px;">
-                <button onclick="downloadAllImages()" class="btn" style="background: #10b981;">
-                    ⬇️ تحميل جميع الصور كـ ZIP
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- شرح و FAQ -->
-    <div style="max-width: 1100px; margin: 80px auto; padding: 0 5%;">
-        <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-            <h2>كيفية استخدام أداة تحويل PDF إلى صور</h2>
-            <p>1. ارفع ملف PDF.<br>
-               2. اختر الصيغة المطلوبة (JPG أو PNG).<br>
-               3. اضغط على زر التحويل.<br>
-               4. يمكنك تحميل جميع الصور كملف ZIP.</p>
-
-            <h3 style="margin-top: 40px;">الأسئلة الشائعة</h3>
+        <div class="faq-card">
+            <h2>كيفية الاستخدام</h2>
+            <p>ارفع ملف PDF، اختر الصيغة المناسبة، ثم اضغط تحويل. يمكنك بعدها تحميل جميع الصور كملف ZIP.</p>
+            <h3>الأسئلة الشائعة</h3>
             <ul>
-                <li><strong>هل جودة الصور عالية؟</strong> نعم، يتم استخراج الصور بدقة عالية.</li>
-                <li><strong>هل يمكن تحويل ملفات كبيرة؟</strong> يعتمد على قوة جهازك، لكن الأداة تعمل جيداً مع معظم الملفات.</li>
-                <li><strong>هل الصور تبقى آمنة؟</strong> نعم، كل المعالجة تتم داخل متصفحك.</li>
+                <li><strong>هل الجودة عالية؟</strong> نعم، يتم استخراج الصور بدقة ضعف دقة الشاشة.</li>
+                <li><strong>هل تعمل مع ملفات كبيرة؟</strong> يعتمد على جهازك، معظم الملفات تعمل بسهولة.</li>
+                <li><strong>هل الملف آمن؟</strong> نعم، كل المعالجة تتم داخل متصفحك.</li>
             </ul>
         </div>
-    </div>
+    </main>
 
     <footer>
         <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
     </footer>
 
-    <!-- مكتبات مطلوبة -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
     <script>
-        let pdfDocument = null;
-        let fileNameBase = "";
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        const pdfInput = document.getElementById('pdfInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileNameEl = document.getElementById('fileName');
-        const pageCountEl = document.getElementById('pageCount');
-        const convertOptions = document.getElementById('convertOptions');
-        const previewArea = document.getElementById('previewArea');
-        const imagesGrid = document.getElementById('imagesGrid');
-        const status = document.getElementById('status');
-
-        pdfInput.addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            fileNameBase = file.name.replace('.pdf', '');
-            status.textContent = "جاري تحميل ملف PDF...";
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-                pdfDocument = await loadingTask.promise;
-
-                fileNameEl.textContent = file.name;
-                pageCountEl.textContent = `عدد الصفحات: ${pdfDocument.numPages} صفحة`;
-                fileInfo.style.display = 'block';
-                convertOptions.style.display = 'block';
-
-                status.textContent = "";
-            } catch (err) {
-                status.style.color = '#ef4444';
-                status.textContent = "❌ حدث خطأ في قراءة الملف PDF.";
-            }
+        /* ─── السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
         });
 
-        async function convertPDFtoImages() {
-            if (!pdfDocument) return;
+        /* ─── الأداة ─── */
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-            const format = document.getElementById('imageFormat').value;
-            status.textContent = `جاري تحويل ${pdfDocument.numPages} صفحة إلى صور...`;
-            imagesGrid.innerHTML = '';
-            previewArea.style.display = 'block';
+        let pdfDoc = null;
+        let baseName = '';
+        let generatedZip = null;
 
-            const zip = new JSZip();
-            const scale = 2; // جودة أعلى
+        const uploadZone = document.getElementById('uploadZone');
+        const pdfInput   = document.getElementById('pdfInput');
+        const status     = document.getElementById('status');
 
-            for (let i = 1; i <= pdfDocument.numPages; i++) {
-                const page = await pdfDocument.getPage(i);
-                const viewport = page.getViewport({ scale: scale });
+        uploadZone.addEventListener('click', () => pdfInput.click());
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragging'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragging'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault(); uploadZone.classList.remove('dragging');
+            const f = e.dataTransfer.files[0];
+            if (f && f.type === 'application/pdf') loadFile(f);
+        });
+        pdfInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
-                const canvas = document.createElement('canvas');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const context = canvas.getContext('2d');
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-                const imageDataURL = canvas.toDataURL(`image/${format}`, 0.95);
-
-                // عرض المعاينة
-                const div = document.createElement('div');
-                div.style.textAlign = 'center';
-                div.innerHTML = `
-                    <p style="margin-bottom:8px;"><strong>صفحة ${i}</strong></p>
-                    <img src="${imageDataURL}" style="max-width:100%; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-                `;
-                imagesGrid.appendChild(div);
-
-                // إضافة الصورة إلى الـ ZIP
-                const base64Data = imageDataURL.split(',')[1];
-                zip.file(`صفحة_${i}.${format}`, base64Data, { base64: true });
-
-                status.textContent = `تم تحويل ${i} من ${pdfDocument.numPages} صفحة...`;
+        async function loadFile(file) {
+            status.className = 'status-msg';
+            status.textContent = 'جاري تحميل ملف PDF...';
+            baseName = file.name.replace('.pdf', '');
+            try {
+                pdfDoc = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('pageCount').textContent = `عدد الصفحات: ${pdfDoc.numPages} صفحة`;
+                document.getElementById('fileInfo').style.display = 'flex';
+                document.getElementById('convertOptions').style.display = 'block';
+                status.textContent = '';
+            } catch {
+                status.className = 'status-msg error';
+                status.textContent = '❌ حدث خطأ في قراءة الملف.';
             }
-
-            // حفظ الـ ZIP
-            window.generatedZip = zip;
-            status.style.color = '#10b981';
-            status.textContent = `✅ تم تحويل الملف إلى ${pdfDocument.numPages} صورة بنجاح!`;
         }
 
-        async function downloadAllImages() {
-            if (!window.generatedZip) {
-                alert("الرجاء تحويل الملف أولاً");
-                return;
+        async function convertPDF() {
+            if (!pdfDoc) return;
+            const format = document.getElementById('imageFormat').value;
+            const zip = new JSZip();
+            const grid = document.getElementById('previewGrid');
+            grid.innerHTML = '';
+            document.getElementById('previewArea').style.display = 'block';
+            status.className = 'status-msg';
+
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                status.textContent = `جاري تحويل صفحة ${i} من ${pdfDoc.numPages}...`;
+                const page = await pdfDoc.getPage(i);
+                const vp = page.getViewport({ scale: 2 });
+                const canvas = document.createElement('canvas');
+                canvas.width = vp.width; canvas.height = vp.height;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+
+                const dataURL = canvas.toDataURL(`image/${format}`, 0.95);
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `<p>صفحة ${i}</p><img src="${dataURL}" alt="صفحة ${i}">`;
+                grid.appendChild(div);
+
+                zip.file(`صفحة_${i}.${format === 'jpeg' ? 'jpg' : 'png'}`, dataURL.split(',')[1], { base64: true });
             }
 
-            status.textContent = "جاري إنشاء ملف ZIP...";
-            const zipBlob = await window.generatedZip.generateAsync({ type: "blob" });
-            const url = URL.createObjectURL(zipBlob);
+            generatedZip = zip;
+            status.textContent = `✅ تم تحويل ${pdfDoc.numPages} صفحة بنجاح!`;
+        }
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `صور_من_${fileNameBase}.zip`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        async function downloadZip() {
+            if (!generatedZip) return;
+            status.textContent = 'جاري إنشاء ملف ZIP...';
+            const blob = await generatedZip.generateAsync({ type: 'blob' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href = url; a.download = `صور_من_${baseName}.zip`;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
-            status.textContent = "✅ تم تحميل جميع الصور كملف ZIP!";
+            status.textContent = '✅ تم تحميل جميع الصور!';
         }
     </script>
 
