@@ -1,298 +1,468 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أدوات الرياضيات | مسار</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أدوات الرياضيات | مسار</title>
+    <meta name="description" content="أدوات رياضية متنوعة - جدول الضرب، الهندسة، الرسم البياني، المعادلات، تحويل الوحدات">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tool-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 5% 80px; }
 
-<link rel="stylesheet" href="../assets/css/style.css">
+        /* ─── تخطيط العمودين ─── */
+        .math-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        /* ─── الشريط الجانبي ─── */
+        .sidebar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            position: sticky;
+            top: 90px;
+        }
 
-<style>
-.math-layout {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 30px;
-    margin-top: 40px;
-}
+        .sidebar h4 {
+            font-size: var(--font-size-sm);
+            color: var(--gray);
+            padding: 6px 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.sidebar {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid var(--border);
-}
+        .sidebar button {
+            width: 100%;
+            padding: 11px 14px;
+            margin-bottom: 6px;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--text);
+            font-family: var(--font-base);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            text-align: right;
+            transition: all var(--transition-fast);
+        }
 
-.sidebar button {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 12px;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    text-align: right;
-}
+        .sidebar button:hover {
+            background: rgba(79,70,229,0.07);
+            color: var(--primary);
+        }
 
-.sidebar button.active,
-.sidebar button:hover {
-    background: var(--primary);
-    color: white;
-}
+        .sidebar button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
-.tab { display:none; }
-.tab.active { display:block; }
-</style>
+        /* ─── التبويبات ─── */
+        .tab { display: none; }
+        .tab.active { display: block; }
 
+        /* ─── بطاقة الأداة ─── */
+        .math-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .math-card h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .math-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--light-bg);
+            color: var(--text);
+            font-size: var(--font-size-base);
+            font-family: var(--font-base);
+            margin-bottom: 14px;
+            transition: border-color var(--transition-fast);
+        }
+
+        .math-input:focus { outline: none; border-color: var(--primary); }
+
+        select.math-input { cursor: pointer; }
+
+        .result-box {
+            background: var(--light-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-weight: 500;
+            min-height: 52px;
+            color: var(--primary);
+            transition: background var(--transition-base);
+        }
+
+        /* ─── جدول الضرب ─── */
+        .mult-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-sm);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .mult-table th {
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+        }
+
+        .mult-table td {
+            border: 1px solid var(--border);
+            padding: 7px;
+            color: var(--text);
+        }
+
+        .mult-table tr:hover td { background: rgba(79,70,229,0.05); }
+
+        /* ─── استجابة ─── */
+        @media (max-width: 768px) {
+            .math-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; }
+            .sidebar h4 { display: none; }
+            .sidebar button { width: auto; }
+        }
+    </style>
 </head>
-
 <body>
 
-<nav>
-    <a href="../index.html" class="logo">📚 <span>مسار</span></a>
-    <div class="links">
-        <a href="../index.html">الرئيسية</a>
-        <a href="../tools/index.html">الأدوات</a>
+    <nav>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html" class="active">الأدوات</a>
+            <a href="../legal/about.html">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+    </nav>
+
+    <div class="hero">
+        <h1>🔢 أدوات الرياضيات</h1>
+        <p>جدول الضرب، الهندسة، الرسم البياني، المعادلات، وتحويل الوحدات — كل شيء في مكان واحد</p>
     </div>
-</nav>
 
-<div class="hero">
-    <h1>🔢 أدوات الرياضيات</h1>
-</div>
+    <main class="tool-wrapper">
+        <div class="math-layout">
 
-<div class="container">
+            <!-- ─── الشريط الجانبي ─── -->
+            <div class="sidebar">
+                <h4>الأدوات</h4>
+                <button class="active" onclick="showTab('table', this)">🧮 جدول الضرب</button>
+                <button onclick="showTab('geometry', this)">📐 الهندسة</button>
+                <button onclick="showTab('graph', this)">📈 الرسم البياني</button>
+                <button onclick="showTab('equation', this)">📊 المعادلات</button>
+                <button onclick="showTab('units', this)">📏 تحويل الوحدات</button>
+            </div>
 
-<div class="math-layout">
+            <!-- ─── محتوى التبويبات ─── -->
+            <div>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <button onclick="showTab('table', this)" class="active">🧮 جدول الضرب</button>
-    <button onclick="showTab('geometry', this)">📐 الهندسة</button>
-    <button onclick="showTab('graph', this)">📈 الرسم</button>
-    <button onclick="showTab('equation', this)">📊 المعادلات</button>
-    <button onclick="showTab('units', this)">📏 الوحدات</button>
-</div>
+                <!-- جدول الضرب -->
+                <div id="table" class="tab active">
+                    <div class="math-card">
+                        <h3>🧮 جدول الضرب (١ إلى ٩)</h3>
+                        <button class="btn" onclick="renderMultTable()">عرض الجدول الكامل</button>
+                        <div id="tableResult"></div>
+                    </div>
+                </div>
 
-<div>
+                <!-- الهندسة -->
+                <div id="geometry" class="tab">
+                    <div class="math-card">
+                        <h3>📐 المساحات والمحيطات</h3>
+                        <select class="math-input" id="shape" onchange="renderShapeInputs()">
+                            <option value="square">مربع</option>
+                            <option value="rectangle">مستطيل</option>
+                            <option value="triangle">مثلث</option>
+                            <option value="circle">دائرة</option>
+                        </select>
+                        <div id="shapeInputs"></div>
+                        <button class="btn" onclick="calcShape()">احسب</button>
+                        <div id="geoResult" class="result-box" style="display:none;"></div>
+                    </div>
+                </div>
 
-<!-- TABLE -->
-<div id="table" class="tab active">
-<div class="card">
-<h3>🧮 جدول الضرب (1 → 9)</h3>
-<button class="btn" onclick="fullTable()">عرض الجدول</button>
-<div id="tableResult" style="margin-top:20px;"></div>
-</div>
-</div>
+                <!-- الرسم البياني -->
+                <div id="graph" class="tab">
+                    <div class="math-card">
+                        <h3>📈 رسم دالة رياضية</h3>
+                        <input class="math-input" id="funcInput" placeholder="أدخل الدالة - مثال: x^2 أو 2*x+3">
+                        <button class="btn" onclick="drawChart()">رسم الدالة</button>
+                        <div style="margin-top: 24px;">
+                            <canvas id="mathChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-<!-- GEOMETRY -->
-<div id="geometry" class="tab">
-<div class="card">
-<h3>📐 المساحات والمحيطات</h3>
+                <!-- المعادلات -->
+                <div id="equation" class="tab">
+                    <div class="math-card">
+                        <h3>📊 حل المعادلات من الدرجة الأولى</h3>
+                        <input class="math-input" id="eqInput" placeholder="مثال: 2x + 3 = 11">
+                        <button class="btn" onclick="solveEquation()">حل المعادلة</button>
+                        <div id="eqResult" class="result-box" style="display:none;"></div>
+                    </div>
+                </div>
 
-<select id="shape">
-<option value="square">مربع</option>
-<option value="rectangle">مستطيل</option>
-<option value="triangle">مثلث</option>
-<option value="circle">دائرة</option>
-</select>
+                <!-- تحويل الوحدات -->
+                <div id="units" class="tab">
+                    <div class="math-card">
+                        <h3>📏 تحويل الوحدات</h3>
 
-<div id="inputs"></div>
+                        <select class="math-input" id="unitCategory" onchange="renderUnitOptions()">
+                            <option value="length">الطول</option>
+                            <option value="weight">الكتلة</option>
+                            <option value="temp">درجة الحرارة</option>
+                        </select>
 
-<button class="btn" onclick="calcShape()">احسب</button>
+                        <input class="math-input" type="number" id="unitValue" placeholder="أدخل القيمة" value="100">
 
-<div id="geoResult" style="margin-top:15px;"></div>
-</div>
-</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div>
+                                <label style="display:block; margin-bottom:6px; font-size:var(--font-size-sm); font-weight:500;">من:</label>
+                                <select class="math-input" id="fromUnit"></select>
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:6px; font-size:var(--font-size-sm); font-weight:500;">إلى:</label>
+                                <select class="math-input" id="toUnit"></select>
+                            </div>
+                        </div>
 
-<!-- GRAPH -->
-<div id="graph" class="tab">
-<div class="card">
-<h3>📈 الرسم البياني</h3>
+                        <button class="btn" onclick="convertUnits()" style="margin-top:4px;">تحويل</button>
+                        <div id="unitResult" class="result-box" style="display:none;"></div>
+                    </div>
+                </div>
 
-<input id="func" placeholder="مثال: x^2">
+            </div>
+        </div>
+    </main>
 
-<button class="btn" onclick="drawGraph()">رسم</button>
+    <footer>
+        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
+    </footer>
 
-<canvas id="chart"></canvas>
-</div>
-</div>
+    <script>
+        /* ─── السمة ─── */
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+        const saved = localStorage.getItem('theme') || 'light';
+        htmlEl.setAttribute('data-theme', saved);
+        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
+        });
 
-<!-- EQUATION -->
-<div id="equation" class="tab">
-<div class="card">
-<h3>📊 المعادلات</h3>
-
-<input id="eq" placeholder="2x + 3 = 11">
-
-<button class="btn" onclick="solve()">حل</button>
-
-<div id="eqResult"></div>
-</div>
-</div>
-
-<!-- UNITS -->
-<div id="units" class="tab">
-<div class="card">
-<h3>📏 الوحدات</h3>
-
-<input id="val" type="number" value="100">
-<select id="unit">
-<option value="m">متر</option>
-<option value="cm">سم</option>
-<option value="km">كم</option>
-</select>
-
-<button class="btn" onclick="convert()">تحويل</button>
-
-<div id="unitResult"></div>
-</div>
-</div>
-
-</div>
-</div>
-</div>
-
-<script>
-
-/* Tabs */
-function showTab(id, btn){
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-
-    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-}
-
-/* ================= TABLE ================= */
-function fullTable(){
-    let html = "<table style='width:100%;text-align:center;border-collapse:collapse'>";
-    html += "<tr><th>×</th>";
-
-    for(let i=1;i<=9;i++){
-        html += `<th>${i}</th>`;
-    }
-    html += "</tr>";
-
-    for(let i=1;i<=9;i++){
-        html += `<tr><th>${i}</th>`;
-        for(let j=1;j<=9;j++){
-            html += `<td style="border:1px solid var(--border);padding:6px">${i*j}</td>`;
+        /* ─── التبويبات ─── */
+        function showTab(id, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
-        html += "</tr>";
-    }
 
-    html += "</table>";
-    document.getElementById("tableResult").innerHTML = html;
-}
-
-/* ================= GEOMETRY ================= */
-const inputsDiv = document.getElementById("inputs");
-
-document.getElementById("shape").addEventListener("change", renderInputs);
-
-function renderInputs(){
-    let shape = document.getElementById("shape").value;
-    let html = "";
-
-    if(shape=="square") html = `<input id="a" placeholder="الضلع">`;
-    if(shape=="rectangle") html = `
-        <input id="a" placeholder="الطول">
-        <input id="b" placeholder="العرض">`;
-    if(shape=="triangle") html = `
-        <input id="b" placeholder="القاعدة">
-        <input id="h" placeholder="الارتفاع">`;
-    if(shape=="circle") html = `<input id="r" placeholder="نصف القطر">`;
-
-    inputsDiv.innerHTML = html;
-}
-renderInputs();
-
-function calcShape(){
-    let s = document.getElementById("shape").value;
-    let r="";
-
-    if(s=="square"){
-        let a=+a.value;
-        r=`المساحة: ${a*a} | المحيط: ${4*a}`;
-    }
-
-    if(s=="rectangle"){
-        let a=+document.getElementById("a").value;
-        let b=+document.getElementById("b").value;
-        r=`المساحة: ${a*b} | المحيط: ${2*(a+b)}`;
-    }
-
-    if(s=="triangle"){
-        let b=+document.getElementById("b").value;
-        let h=+document.getElementById("h").value;
-        r=`المساحة: ${(b*h)/2}`;
-    }
-
-    if(s=="circle"){
-        let r0=+document.getElementById("r").value;
-        r=`المساحة: ${(Math.PI*r0*r0).toFixed(2)} | المحيط: ${(2*Math.PI*r0).toFixed(2)}`;
-    }
-
-    document.getElementById("geoResult").innerHTML=r;
-}
-
-/* ================= GRAPH ================= */
-let chart;
-
-function drawGraph(){
-    let expr = document.getElementById("func").value.replace(/\^/g,"**");
-
-    let x=[], y=[];
-
-    for(let i=-10;i<=10;i+=0.5){
-        x.push(i);
-        y.push(eval(expr.replace(/x/g,`(${i})`)));
-    }
-
-    if(chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("chart"),{
-        type:"line",
-        data:{
-            labels:x,
-            datasets:[{
-                data:y,
-                borderWidth:2,
-                fill:false
-            }]
+        /* ═══════════════════════════════════════
+           جدول الضرب
+        ═══════════════════════════════════════ */
+        function renderMultTable() {
+            let html = '<table class="mult-table"><tr><th>×</th>';
+            for (let i = 1; i <= 9; i++) html += `<th>${i}</th>`;
+            html += '</tr>';
+            for (let i = 1; i <= 9; i++) {
+                html += `<tr><th>${i}</th>`;
+                for (let j = 1; j <= 9; j++) html += `<td>${i * j}</td>`;
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('tableResult').innerHTML = html;
         }
-    });
-}
 
-/* ================= EQUATION ================= */
-function solve(){
-    let eq = document.getElementById("eq").value.replace(/\s/g,"");
-    let [l,r]=eq.split("=");
+        /* ═══════════════════════════════════════
+           الهندسة
+        ═══════════════════════════════════════ */
+        const shapeLabels = {
+            square:    [['a', 'طول الضلع']],
+            rectangle: [['a', 'الطول'], ['b', 'العرض']],
+            triangle:  [['b', 'القاعدة'], ['h', 'الارتفاع']],
+            circle:    [['r', 'نصف القطر']],
+        };
 
-    let a = eval(l.replace("x","1")) - eval(l.replace("x","0"));
-    let b = eval(l.replace("x","0"));
+        function renderShapeInputs() {
+            const shape = document.getElementById('shape').value;
+            document.getElementById('shapeInputs').innerHTML = shapeLabels[shape]
+                .map(([id, label]) => `
+                    <input class="math-input" type="number" id="${id}" placeholder="${label}" min="0">
+                `).join('');
+            document.getElementById('geoResult').style.display = 'none';
+        }
 
-    let x = (eval(r)-b)/a;
+        renderShapeInputs();
 
-    document.getElementById("eqResult").innerHTML="x = "+x;
-}
+        function getVal(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
 
-/* ================= UNITS ================= */
-function convert(){
-    let v=+document.getElementById("val").value;
-    let u=document.getElementById("unit").value;
+        function calcShape() {
+            const shape = document.getElementById('shape').value;
+            let result = '';
+            if (shape === 'square') {
+                const a = getVal('a');
+                result = `المساحة: ${(a * a).toFixed(2)} | المحيط: ${(4 * a).toFixed(2)}`;
+            } else if (shape === 'rectangle') {
+                const a = getVal('a'), b = getVal('b');
+                result = `المساحة: ${(a * b).toFixed(2)} | المحيط: ${(2 * (a + b)).toFixed(2)}`;
+            } else if (shape === 'triangle') {
+                const b = getVal('b'), h = getVal('h');
+                result = `المساحة: ${((b * h) / 2).toFixed(2)}`;
+            } else if (shape === 'circle') {
+                const r = getVal('r');
+                result = `المساحة: ${(Math.PI * r * r).toFixed(4)} | المحيط: ${(2 * Math.PI * r).toFixed(4)}`;
+            }
+            const el = document.getElementById('geoResult');
+            el.textContent = result;
+            el.style.display = 'block';
+        }
 
-    let r="";
-    if(u=="m") r=v*100+" cm";
-    if(u=="cm") r=v/100+" m";
-    if(u=="km") r=v*1000+" m";
+        /* ═══════════════════════════════════════
+           الرسم البياني
+        ═══════════════════════════════════════ */
+        let chartInstance = null;
 
-    document.getElementById("unitResult").innerHTML=r;
-}
+        function drawChart() {
+            const expr = document.getElementById('funcInput').value.trim();
+            if (!expr) return;
 
-</script>
+            const xs = [], ys = [];
+            for (let x = -10; x <= 10; x += 0.5) {
+                try {
+                    const y = eval(expr.replace(/\^/g, '**').replace(/x/g, `(${x})`));
+                    if (isFinite(y)) { xs.push(x); ys.push(y); }
+                } catch { /* تجاهل الأخطاء */ }
+            }
+
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(document.getElementById('mathChart'), {
+                type: 'line',
+                data: {
+                    labels: xs,
+                    datasets: [{
+                        data: ys,
+                        borderColor: '#4f46e5',
+                        borderWidth: 2.5,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.3,
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.06)' } },
+                        y: { grid: { color: 'rgba(0,0,0,0.06)' } },
+                    }
+                }
+            });
+        }
+
+        /* ═══════════════════════════════════════
+           المعادلات
+        ═══════════════════════════════════════ */
+        function solveEquation() {
+            const input = document.getElementById('eqInput').value.trim();
+            const el = document.getElementById('eqResult');
+
+            try {
+                const [lhs, rhs] = input.replace(/\s/g, '').split('=');
+                if (!rhs) throw new Error();
+                const a = eval(lhs.replace(/x/g, '1')) - eval(lhs.replace(/x/g, '0'));
+                const b = eval(lhs.replace(/x/g, '0'));
+                const x = (eval(rhs) - b) / a;
+                el.textContent = `x = ${x}`;
+            } catch {
+                el.textContent = 'تأكد من صيغة المعادلة (مثال: 2x + 3 = 11)';
+            }
+            el.style.display = 'block';
+        }
+
+        /* ═══════════════════════════════════════
+           تحويل الوحدات
+        ═══════════════════════════════════════ */
+        const unitData = {
+            length: {
+                units: { 'متر (m)': 1, 'سنتيمتر (cm)': 0.01, 'كيلومتر (km)': 1000, 'ملليمتر (mm)': 0.001, 'إنش (in)': 0.0254, 'قدم (ft)': 0.3048 },
+            },
+            weight: {
+                units: { 'كيلوغرام (kg)': 1, 'غرام (g)': 0.001, 'طن (t)': 1000, 'رطل (lb)': 0.453592, 'أوقية (oz)': 0.0283495 },
+            },
+            temp: {
+                units: { 'مئوية (°C)': 'c', 'فهرنهايت (°F)': 'f', 'كلفن (K)': 'k' },
+            },
+        };
+
+        function renderUnitOptions() {
+            const cat = document.getElementById('unitCategory').value;
+            const keys = Object.keys(unitData[cat].units);
+            ['fromUnit', 'toUnit'].forEach((id, i) => {
+                document.getElementById(id).innerHTML = keys.map((k, j) =>
+                    `<option value="${k}" ${i !== j && j === 0 ? '' : (i === 1 && j === 1 ? 'selected' : '')}>${k}</option>`
+                ).join('');
+            });
+            document.getElementById('unitResult').style.display = 'none';
+        }
+
+        renderUnitOptions();
+
+        function convertUnits() {
+            const cat  = document.getElementById('unitCategory').value;
+            const val  = parseFloat(document.getElementById('unitValue').value);
+            const from = document.getElementById('fromUnit').value;
+            const to   = document.getElementById('toUnit').value;
+            const el   = document.getElementById('unitResult');
+            let result;
+
+            if (cat === 'temp') {
+                const ft = unitData.temp.units[from];
+                const tt = unitData.temp.units[to];
+                let c;
+                if (ft === 'c') c = val;
+                else if (ft === 'f') c = (val - 32) * 5/9;
+                else c = val - 273.15;
+
+                if (tt === 'c') result = c;
+                else if (tt === 'f') result = c * 9/5 + 32;
+                else result = c + 273.15;
+            } else {
+                const fromFactor = unitData[cat].units[from];
+                const toFactor   = unitData[cat].units[to];
+                result = val * fromFactor / toFactor;
+            }
+
+            el.textContent = `${val} ${from} = ${result.toFixed(6).replace(/\.?0+$/, '')} ${to}`;
+            el.style.display = 'block';
+        }
+    </script>
 
 </body>
 </html>
