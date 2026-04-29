@@ -15,9 +15,11 @@
 
         /* ══ الشريط الجانبي ══ */
         .sidebar {
+            display: block;
             background: var(--card-bg); border: 1px solid var(--border);
             border-radius: var(--radius-lg); padding: 14px;
             position: sticky; top: 88px; box-shadow: var(--shadow-sm);
+            backdrop-filter: none; -webkit-backdrop-filter: none;
         }
         .sidebar-section-title {
             font-size: 0.72rem; font-weight: 700; color: var(--gray-light);
@@ -132,7 +134,13 @@
         /* ══ استجابة ══ */
         @media (max-width: 900px) {
             .math-layout { grid-template-columns: 1fr; }
-            .sidebar { position: static; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; }
+            .sidebar {
+                position: static;
+                display: flex;        /* أفقي فقط على الموبايل */
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 10px;
+            }
             .sidebar-section-title, .sidebar-divider { display: none; }
             .sidebar button { width: auto; font-size: 0.82rem; padding: 8px 12px; }
             .graph-options { grid-template-columns: 1fr 1fr; }
@@ -166,7 +174,7 @@
         <div class="math-layout">
 
             <!-- ════ الشريط الجانبي ════ -->
-            <nav class="sidebar">
+            <div class="sidebar" role="navigation" aria-label="أدوات الرياضيات">
                 <div class="sidebar-section-title">الأعداد</div>
                 <button class="active" onclick="showTab('table',this)">🧮 جدول الضرب</button>
 
@@ -183,7 +191,7 @@
                 <div class="sidebar-divider"></div>
                 <div class="sidebar-section-title">القياس</div>
                 <button onclick="showTab('units',this)">📏 تحويل الوحدات</button>
-            </nav>
+            </div>
 
             <!-- ════ محتوى التبويبات ════ -->
             <div>
