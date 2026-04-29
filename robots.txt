@@ -1,8 +1,6 @@
 User-agent: *
 Allow: /
 
-# ملفات لا نريد فهرستها
 Disallow: /assets/
 
-# خريطة الموقع
-Sitemap: https://masartamayoz.github.io/sitemap.xml
+Sitemap: https://tools.masartamayoz.com/sitemap.xml
