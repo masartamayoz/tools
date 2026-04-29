@@ -51,6 +51,9 @@
             <a href="contact.html">اتصل بنا</a>
         </div>
 
+        <!-- زر Hamburger للموبايل -->
+        <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
+
         <!-- زر تبديل السمة -->
         <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">
             🌙
@@ -167,5 +170,53 @@
         });
     </script>
 
+
+    <script>
+    /* ─── Hamburger Menu ─── */
+    (function() {
+        const hamburger = document.getElementById('hamburger');
+        const links     = document.querySelector('nav .links');
+        const nav       = document.querySelector('nav');
+
+        // إنشاء طبقة التعتيم
+        const overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
+
+        function openMenu() {
+            links.classList.add('open');
+            overlay.classList.add('open');
+            hamburger.innerHTML = '&#10005;'; // X
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            links.classList.remove('open');
+            overlay.classList.remove('open');
+            hamburger.innerHTML = '&#9776;'; // ☰
+            document.body.style.overflow = '';
+        }
+
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                links.classList.contains('open') ? closeMenu() : openMenu();
+            });
+        }
+
+        overlay.addEventListener('click', closeMenu);
+
+        // إغلاق عند الضغط على رابط
+        if (links) {
+            links.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', closeMenu);
+            });
+        }
+
+        // إغلاق عند تغيير حجم الشاشة
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) closeMenu();
+        });
+    })();
+    </script>
 </body>
 </html>
