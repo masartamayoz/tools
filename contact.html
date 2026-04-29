@@ -1,1 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اتصل بنا | مسار</title>
+    <meta name="description" content="تواصل مع فريق مسار - اقتراحاتك وملاحظاتك تهمنا">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .page-wrapper { max-width: 1000px; margin: 0 auto; padding: 50px 5% 100px; }
 
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* ── النموذج ── */
+        .form-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 44px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-card h2 { font-size: 1.5rem; margin-bottom: 8px; }
+        .form-card > p { color: var(--gray); margin-bottom: 32px; font-size: var(--font-size-sm); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; font-size: var(--font-size-sm); color: var(--gray); margin-bottom: 7px; }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; padding: 13px 16px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--light-bg); color: var(--text);
+            font-family: var(--font-base); font-size: var(--font-size-base);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            resize: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.10);
+        }
+
+        .form-group textarea { min-height: 140px; resize: vertical; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .form-status {
+            display: none; margin-top: 14px; padding: 14px 18px;
+            border-radius: var(--radius-md); font-weight: 500;
+        }
+        .form-status--success { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.25); color: #059669; }
+        .form-status--error   { background: rgba(239,68,68,.07);  border: 1px solid rgba(239,68,68,.22);  color: #dc2626; }
+
+        /* ── بطاقة المعلومات ── */
+        .info-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 32px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-card h3 { font-size: 1.1rem; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+        .info-item {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .info-item .i-icon {
+            width: 42px; height: 42px; border-radius: var(--radius-md);
+            background: rgba(79,70,229,0.10); display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+        }
+
+        .info-item h4 { font-size: var(--font-size-sm); font-weight: 600; color: var(--gray); margin-bottom: 4px; }
+        .info-item p  { font-size: var(--font-size-sm); color: var(--text); margin: 0; line-height: 1.5; }
+        .info-item a  { color: var(--primary); text-decoration: none; }
+        .info-item a:hover { text-decoration: underline; }
+
+        .faq-mini { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+        .faq-mini h3 { font-size: 1.05rem; margin-bottom: 16px; }
+
+        .faq-item { margin-bottom: 16px; }
+        .faq-item summary {
+            cursor: pointer; font-weight: 500; font-size: var(--font-size-sm);
+            color: var(--text); list-style: none; padding: 10px 14px;
+            background: var(--light-bg); border: 1px solid var(--border);
+            border-radius: var(--radius-md); transition: background var(--transition-fast);
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::before { content: '+ '; color: var(--primary); font-weight: 700; }
+        details[open] summary::before { content: '− '; }
+        .faq-item summary:hover { background: rgba(79,70,229,0.05); }
+        .faq-item p { font-size: var(--font-size-sm); color: var(--gray); line-height: 1.8; padding: 12px 14px 4px; margin: 0; }
+
+        @media (max-width: 768px) {
+            .contact-layout { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .form-card { padding: 28px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">📚 <span>مسار</span></a>
+        <div class="links">
+            <a href="index.html">الرئيسية</a>
+            <a href="tools/index.html">الأدوات</a>
+            <a href="legal/about.html">عن مسار</a>
+            <a href="contact.html" class="active">اتصل بنا</a>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+    </nav>
+
+    <div class="hero">
+        <h1>📬 اتصل بنا</h1>
+        <p>اقتراحاتك وملاحظاتك تساعدنا على تطوير مسار — نحن نقرأ كل رسالة</p>
+    </div>
+
+    <main class="page-wrapper">
+        <div class="contact-layout">
+
+            <!-- ── نموذج التواصل ── -->
+            <div class="form-card">
+                <h2>أرسل لنا رسالة</h2>
+                <p>سنرد عليك في أقرب وقت ممكن، عادةً خلال 24–48 ساعة.</p>
+
+                <form id="contactForm" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">الاسم الكامل <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="أحمد بن علي" autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">البريد الإلكتروني <span style="color:#ef4444;">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="ahmed@example.com" autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">موضوع الرسالة</label>
+                        <select id="subject" name="subject">
+                            <option value="">اختر الموضوع</option>
+                            <option value="suggestion">اقتراح أداة جديدة</option>
+                            <option value="bug">الإبلاغ عن مشكلة تقنية</option>
+                            <option value="feedback">ملاحظة على أداة موجودة</option>
+                            <option value="partnership">تعاون أو شراكة</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">الرسالة <span style="color:#ef4444;">*</span></label>
+                        <textarea id="message" name="message" placeholder="اكتب رسالتك هنا..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" style="width:100%; padding:15px; font-size:1.05rem;">
+                        📤 إرسال الرسالة
+                    </button>
+
+                    <div id="formStatus" class="form-status"></div>
+                </form>
+            </div>
+
+            <!-- ── معلومات التواصل + FAQ ── -->
+            <div>
+                <div class="info-card">
+                    <h3>معلومات التواصل</h3>
+
+                    <div class="info-item">
+                        <div class="i-icon">📧</div>
+                        <div>
+                            <h4>البريد الإلكتروني</h4>
+                            <p><a href="mailto:contact@masar.tn">contact@masar.tn</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="i-icon">⏱️</div>
+                        <div>
+                            <h4>وقت الاستجابة</h4>
+                            <p>عادةً خلال 24–48 ساعة في أيام العمل</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="i-icon">🌍</div>
+                        <div>
+                            <h4>الموقع</h4>
+                            <p>تونس 🇹🇳</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="i-icon">💡</div>
+                        <div>
+                            <h4>اقتراح أداة جديدة</h4>
+                            <p>لديك فكرة؟ أخبرنا وسنعمل على تنفيذها!</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ مصغّر -->
+                    <div class="faq-mini">
+                        <h3>أسئلة شائعة</h3>
+
+                        <details class="faq-item">
+                            <summary>هل مسار مجاني بالكامل؟</summary>
+                            <p>نعم، جميع الأدوات مجانية تماماً دون حدود أو اشتراكات.</p>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>هل ملفاتي آمنة؟</summary>
+                            <p>نعم 100%. جميع المعالجة تتم داخل متصفحك، لا شيء يُرفع لسيرفراتنا.</p>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>هل يمكنني طلب أداة جديدة؟</summary>
+                            <p>بالطبع! أرسل لنا رسالة عبر النموذج واختر "اقتراح أداة جديدة".</p>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>هل تعمل الأدوات بدون إنترنت؟</summary>
+                            <p>تحتاج اتصالاً لأول تحميل للصفحة، لكن بعض الأدوات تعمل بدون إنترنت بعد التحميل.</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© <span id="copyrightYear">2026</span> <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>
+            <a href="legal/privacy.html" style="color:var(--primary);">الخصوصية</a> ·
+            <a href="legal/terms.html"   style="color:var(--primary);">الشروط</a> ·
+            <a href="legal/about.html"   style="color:var(--primary);">عن مسار</a>
+        </p>
+    </footer>
+
+    <script src="assets/js/common.js"></script>
+</body>
+</html>

@@ -1,1 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عن مسار | أدوات التلميذ الذكي</title>
+    <meta name="description" content="تعرّف على منصة مسار - المنصة التونسية التعليمية المجانية للتلاميذ والأساتذة">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .page-wrapper { max-width: 860px; margin: 0 auto; padding: 50px 5% 100px; }
+        .prose-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 48px; box-shadow: var(--shadow-md); margin-bottom: 28px; }
+        .prose-card h2 { font-size: 1.45rem; color: var(--primary); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+        .prose-card p { color: var(--text); line-height: 1.9; margin-bottom: 14px; }
+        .prose-card p:last-child { margin-bottom: 0; }
+        .prose-card ul { padding-right: 20px; margin-bottom: 14px; }
+        .prose-card ul li { color: var(--text); line-height: 1.9; margin-bottom: 8px; }
+        .prose-card ul li::marker { color: var(--primary); }
+        .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .value-item { background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; text-align: center; }
+        .value-item .v-icon { font-size: 2rem; margin-bottom: 10px; }
+        .value-item h4 { color: var(--primary); margin-bottom: 6px; }
+        .value-item p { font-size: var(--font-size-sm); color: var(--gray); margin: 0; }
+        .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 20px; text-align: center; }
+        .stat-box { background: linear-gradient(135deg, rgba(79,70,229,.08), rgba(6,182,212,.08)); border: 1px solid rgba(79,70,229,.15); border-radius: var(--radius-md); padding: 20px; }
+        .stat-box .num { font-size: 2rem; font-weight: 800; color: var(--primary); }
+        .stat-box .lbl { font-size: var(--font-size-sm); color: var(--gray); margin-top: 4px; }
+        @media(max-width:560px){ .stat-row{grid-template-columns:1fr 1fr;} .prose-card{padding:28px 20px;} }
+    </style>
+</head>
+<body>
 
+    <nav>
+        <a href="../index.html" class="logo">📚 <span>مسار</span></a>
+        <div class="links">
+            <a href="../index.html">الرئيسية</a>
+            <a href="../tools/index.html">الأدوات</a>
+            <a href="about.html" class="active">عن مسار</a>
+            <a href="../contact.html">اتصل بنا</a>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+    </nav>
+
+    <div class="hero">
+        <h1>🎓 عن مسار</h1>
+        <p>منصة تونسية مجانية تُيسّر الدراسة وتُمكّن التلاميذ والأساتذة من أدوات احترافية بسهولة تامة</p>
+    </div>
+
+    <main class="page-wrapper">
+
+        <!-- من نحن -->
+        <div class="prose-card">
+            <h2>🧭 من نحن</h2>
+            <p>
+                <strong>مسار - تميّز</strong> هي منصة تعليمية تونسية مجانية بالكامل، أُنشئت لمساعدة التلاميذ والأساتذة على تحويل الواجبات والكراسات إلى ملفات احترافية بسرعة وسهولة، دون الحاجة إلى خبرة تقنية مسبقة.
+            </p>
+            <p>
+                انطلقت الفكرة من ملاحظة بسيطة: التلاميذ التونسيون يحتاجون يومياً إلى أدوات لتحويل الصور إلى PDF، وضغط الملفات، وإنشاء الفروض، ولكن معظم المنصات المتاحة إما مدفوعة، أو تفتقر إلى دعم اللغة العربية، أو لا تلائم احتياجات المنهج التونسي.
+            </p>
+            <p>
+                جاءت مسار لتملأ هذه الفجوة بأدوات مبنية خصيصاً للتلميذ التونسي، تعمل بالكامل داخل المتصفح دون رفع أي ملف إلى السيرفر، مما يضمن الخصوصية التامة والأمان.
+            </p>
+
+            <div class="stat-row">
+                <div class="stat-box"><div class="num">7+</div><div class="lbl">أدوات مجانية</div></div>
+                <div class="stat-box"><div class="num">100%</div><div class="lbl">خصوصية وأمان</div></div>
+                <div class="stat-box"><div class="num">0 ₫</div><div class="lbl">مجاني بالكامل</div></div>
+            </div>
+        </div>
+
+        <!-- قيمنا -->
+        <div class="prose-card">
+            <h2>💡 قيمنا</h2>
+            <div class="value-grid">
+                <div class="value-item">
+                    <div class="v-icon">🆓</div>
+                    <h4>مجاني دائماً</h4>
+                    <p>جميع الأدوات مجانية بدون حدود أو اشتراكات</p>
+                </div>
+                <div class="value-item">
+                    <div class="v-icon">🔒</div>
+                    <h4>خصوصية تامة</h4>
+                    <p>كل المعالجة تتم داخل متصفحك فقط، لا شيء يُرفع لسيرفرنا</p>
+                </div>
+                <div class="value-item">
+                    <div class="v-icon">⚡</div>
+                    <h4>سرعة وسهولة</h4>
+                    <p>واجهة بسيطة تناسب جميع الأعمار والمستويات</p>
+                </div>
+                <div class="value-item">
+                    <div class="v-icon">🇹🇳</div>
+                    <h4>صُنع لتونس</h4>
+                    <p>أدوات مصمّمة للمنهج والبيئة التعليمية التونسية</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ماذا نقدم -->
+        <div class="prose-card">
+            <h2>🛠️ ماذا نقدم</h2>
+            <ul>
+                <li><strong>تحويل الصور إلى PDF</strong> — لإرسال الواجبات والكراسات بشكل احترافي</li>
+                <li><strong>ضغط الصور</strong> — تقليل حجم الملفات دون فقدان واضح في الجودة</li>
+                <li><strong>دمج وتقسيم وتحويل PDF</strong> — إدارة كاملة لملفات PDF</li>
+                <li><strong>أدوات الرياضيات</strong> — جدول الضرب، الهندسة، المعادلات، الرسم البياني، وتحويل الوحدات</li>
+                <li><strong>إنشاء الفروض والاختبارات</strong> — أسئلة جاهزة حسب المستوى والمادة</li>
+            </ul>
+        </div>
+
+        <!-- مستقبل المنصة -->
+        <div class="prose-card">
+            <h2>🚀 المستقبل</h2>
+            <p>نعمل باستمرار على إضافة أدوات جديدة وتطوير الموجودة، بما في ذلك:</p>
+            <ul>
+                <li>محرر نصوص عربي متخصص للمواد الدراسية</li>
+                <li>مولّد اختبارات بالذكاء الاصطناعي</li>
+                <li>مكتبة مراجع ومذكرات للمنهج التونسي</li>
+                <li>تطبيق موبايل Android و iOS</li>
+            </ul>
+            <p>اقتراحاتك تهمنا! <a href="../contact.html" style="color:var(--primary);font-weight:600;">تواصل معنا</a> وشاركنا أفكارك.</p>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© <span id="copyrightYear">2026</span> <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+        <p>جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+</body>
+</html>
