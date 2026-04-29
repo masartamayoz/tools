@@ -132,8 +132,14 @@
     </main>
 
     <footer>
-        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
-        <p>جميع الحقوق محفوظة</p>
+        <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+            <p>© <span id="copyrightYear">2026</span> <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+            <nav style="display:flex;gap:20px;flex-wrap:wrap;">
+                <a href="../legal/about.html"  style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">عن مسار</a>
+                <a href="../legal/privacy.html"   style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">سياسة الخصوصية</a>
+                <a href="../legal/terms.html"  style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">شروط الاستخدام</a>
+            </nav>
+        </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -263,46 +269,42 @@
     <script>
     /* ─── Hamburger Menu ─── */
     (function() {
-        const hamburger = document.getElementById('hamburger');
-        const links     = document.querySelector('nav .links');
-        const nav       = document.querySelector('nav');
+        var hamburger = document.getElementById('hamburger');
+        var links     = document.querySelector('nav .links');
+
+        if (!hamburger || !links) return;
 
         // إنشاء طبقة التعتيم
-        const overlay = document.createElement('div');
+        var overlay = document.createElement('div');
         overlay.className = 'nav-overlay';
-        document.body.appendChild(overlay);
+        document.body.insertBefore(overlay, document.body.firstChild);
 
         function openMenu() {
             links.classList.add('open');
             overlay.classList.add('open');
-            hamburger.innerHTML = '&#10005;'; // X
+            hamburger.innerHTML = '&#10005;';
             document.body.style.overflow = 'hidden';
         }
 
         function closeMenu() {
             links.classList.remove('open');
             overlay.classList.remove('open');
-            hamburger.innerHTML = '&#9776;'; // ☰
+            hamburger.innerHTML = '&#9776;';
             document.body.style.overflow = '';
         }
 
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                links.classList.contains('open') ? closeMenu() : openMenu();
-            });
-        }
+        hamburger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            links.classList.contains('open') ? closeMenu() : openMenu();
+        });
 
         overlay.addEventListener('click', closeMenu);
 
-        // إغلاق عند الضغط على رابط
-        if (links) {
-            links.querySelectorAll('a').forEach(a => {
-                a.addEventListener('click', closeMenu);
-            });
-        }
+        links.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', closeMenu);
+        });
 
-        // إغلاق عند تغيير حجم الشاشة
-        window.addEventListener('resize', () => {
+        window.addEventListener('resize', function() {
             if (window.innerWidth > 768) closeMenu();
         });
     })();

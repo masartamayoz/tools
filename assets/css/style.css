@@ -598,15 +598,17 @@ footer a:hover {
 }
 
 /* =============================================
-   12. Hamburger — قائمة الموبايل
+   12. Hamburger — قائمة الموبايل (RTL)
    ============================================= */
 
+/* زر الهامبرغر — مخفي على الشاشات الكبيرة */
 .hamburger {
     display:         none;
     background:      none;
     border:          1px solid var(--border);
     border-radius:   var(--radius-sm);
-    font-size:       1.35rem;
+    font-size:       1.4rem;
+    line-height:     1;
     color:           var(--text);
     width:           40px;
     height:          40px;
@@ -615,100 +617,110 @@ footer a:hover {
     justify-content: center;
     transition:      all var(--transition-fast);
     flex-shrink:     0;
+    z-index:         2001;
 }
 
 .hamburger:hover {
-    background:   rgba(79,70,229,0.08);
+    background:   rgba(79,70,229,0.10);
     border-color: var(--primary);
     color:        var(--primary);
 }
 
 /* طبقة التعتيم */
 .nav-overlay {
-    display:    none;
-    position:   fixed;
-    inset:      0;
-    background: rgba(0,0,0,0.42);
-    z-index:    1998;
-    backdrop-filter: blur(2px);
+    display:             none;
+    position:            fixed;
+    inset:               0;
+    background:          rgba(0,0,0,0.45);
+    z-index:             2000;
+    backdrop-filter:     blur(2px);
     -webkit-backdrop-filter: blur(2px);
+    transition:          opacity 0.3s ease;
 }
 
 .nav-overlay.open { display: block; }
 
+/* ── على الموبايل فقط ── */
 @media (max-width: 768px) {
 
-    /* إظهار زر الهامبرغر */
     .hamburger { display: flex; }
 
-    /* إخفاء الروابط افتراضياً وتحويلها إلى قائمة جانبية */
-    nav .links {
-        display:        flex !important;   /* نتحكم بها عبر transform */
-        position:       fixed;
-        top:            0;
-        right:          0;
-        width:          72vw;
-        max-width:      280px;
-        height:         100vh;
-        background:     var(--card-bg);
-        box-shadow:     -6px 0 28px rgba(0,0,0,0.16);
-        flex-direction: column;
-        gap:            0;
-        padding:        72px 0 40px;
-        z-index:        1999;
-        transform:      translateX(110%);
-        transition:     transform 0.3s cubic-bezier(0.4,0,0.2,1);
-        overflow-y:     auto;
-    }
-
-    nav .links.open {
-        transform: translateX(0);
-    }
-
-    nav .links a {
-        padding:       15px 28px;
-        margin:        0;
-        font-size:     1rem;
-        border-bottom: 1px solid var(--border);
-        border-radius: 0;
-        width:         100%;
-        display:       block;
-    }
-
-    nav .links a:hover,
-    nav .links a.active {
-        background: rgba(79,70,229,0.08);
-        color:      var(--primary);
-    }
-
-    /* زر إغلاق داخل القائمة */
-    nav .links::before {
-        content:     '✕';
-        position:    absolute;
-        top:         20px;
-        left:        20px;
-        font-size:   1.3rem;
-        color:       var(--gray);
-        cursor:      pointer;
-        pointer-events: none;  /* يُتحكم به عبر JS */
-    }
-
-    /* تعديل الـ nav للموبايل */
     nav {
         flex-wrap:       nowrap;
         justify-content: space-between;
-        padding:         14px 5%;
+        padding:         12px 5%;
         gap:             8px;
     }
 
-    /* تجميع الأزرار اليسرى */
-    .nav-actions {
-        display:     flex;
-        align-items: center;
-        gap:         8px;
+    /* القائمة الجانبية — RTL: تنزلق من اليسار */
+    nav .links {
+        display:        flex !important;
+        position:       fixed;
+        top:            0;
+        left:           0;           /* RTL: من اليسار */
+        right:          auto;
+        width:          75vw;
+        max-width:      300px;
+        height:         100vh;
+        background:     var(--card-bg);
+        box-shadow:     4px 0 32px rgba(0,0,0,0.18);
+        flex-direction: column;
+        gap:            0;
+        padding:        0;
+        z-index:        2001;
+        transform:      translateX(-110%);   /* مخفي لليسار */
+        transition:     transform 0.32s cubic-bezier(0.4,0,0.2,1);
+        overflow-y:     auto;
+        overflow-x:     hidden;
+        pointer-events: none;   /* معطّل حتى يُفتح */
+    }
+
+    nav .links.open {
+        transform:      translateX(0);
+        pointer-events: all;
+    }
+
+    /* رأس القائمة */
+    nav .links::before {
+        content:       "القائمة";
+        display:       block;
+        padding:       20px 24px 16px;
+        font-size:     1rem;
+        font-weight:   700;
+        color:         var(--primary);
+        border-bottom: 2px solid var(--border);
+        background:    var(--card-bg);
+        position:      sticky;
+        top:           0;
+        z-index:       1;
+    }
+
+    nav .links a {
+        display:       block;
+        padding:       16px 24px;
+        margin:        0;
+        font-size:     1rem;
+        font-weight:   500;
+        color:         var(--text);
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        width:         100%;
+        transition:    background var(--transition-fast), color var(--transition-fast);
+    }
+
+    nav .links a:hover {
+        background: rgba(79,70,229,0.07);
+        color:      var(--primary);
+    }
+
+    nav .links a.active {
+        color:           var(--primary);
+        font-weight:     700;
+        background:      rgba(79,70,229,0.06);
+        border-right:    3px solid var(--primary);
     }
 }
 
 @media (max-width: 480px) {
-    nav .logo-img { height: 38px; }
+    nav .logo-img { height: 36px; max-width: 130px; }
 }

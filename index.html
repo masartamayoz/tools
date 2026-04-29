@@ -11,8 +11,6 @@
     <meta name="author"             content="مسار التميز">
     <meta name="robots"             content="index, follow">
     <link rel="canonical"           href="https://tools.masartamayoz.com/">
-
-    <!-- Open Graph -->
     <meta property="og:type"        content="website">
     <meta property="og:locale"      content="ar_TN">
     <meta property="og:site_name"   content="مسار التميز">
@@ -20,59 +18,174 @@
     <meta property="og:description" content="منصة تونسية مجانية للتلاميذ والأساتذة — تحويل الصور إلى PDF، ضغط الملفات، أدوات رياضيات، وإنشاء الفروض بسهولة تامة.">
     <meta property="og:url"         content="https://tools.masartamayoz.com/">
     <meta property="og:image"       content="https://tools.masartamayoz.com/assets/images/logo.png">
-    <meta property="og:image:width" content="256">
-    <meta property="og:image:height"content="256">
-    <meta property="og:image:alt"   content="شعار مسار التميز">
-
-    <!-- Twitter Card -->
     <meta name="twitter:card"       content="summary">
     <meta name="twitter:title"      content="مسار التميز | أدوات التلميذ الذكي">
-    <meta name="twitter:description"content="منصة تونسية مجانية للتلاميذ والأساتذة — تحويل الصور إلى PDF، ضغط الملفات، أدوات رياضيات، وإنشاء الفروض بسهولة تامة.">
     <meta name="twitter:image"      content="https://tools.masartamayoz.com/assets/images/logo.png">
     <!-- ════════════════════ -->
-
-    <!-- ربط ملف التصميم الخارجي -->
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* ── أقسام الصفحة الرئيسية ── */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        .section-title p { color: var(--gray); }
+
+        /* ── إحصائيات ── */
+        .stats-bar {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 5%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .stat-item .num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .stat-item .lbl {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* ── لماذا مسار ── */
+        .why-section {
+            padding: 60px 5%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 36px;
+        }
+        .why-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+        .why-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+        }
+        .why-card .w-icon { font-size: 2.2rem; margin-bottom: 14px; }
+        .why-card h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--primary); }
+        .why-card p  { font-size: 0.88rem; color: var(--gray); line-height: 1.7; }
+
+        /* ── CTA ── */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            text-align: center;
+            padding: 70px 20px;
+            margin-top: 60px;
+        }
+        .cta-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 14px; }
+        .cta-section p  { opacity: 0.9; max-width: 560px; margin: 0 auto 28px; }
+        .btn-white {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 14px 36px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all var(--transition-base);
+            text-decoration: none;
+        }
+        .btn-white:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* ── Hero CTA زر ── */
+        .hero-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+        .btn-outline-white {
+            display: inline-block;
+            border: 2px solid rgba(255,255,255,0.7);
+            color: white;
+            padding: 12px 28px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition-base);
+        }
+        .btn-outline-white:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        @media(max-width:768px) {
+            .stats-bar { grid-template-columns: repeat(2,1fr); }
+        }
+        @media(max-width:480px) {
+            .stats-bar { grid-template-columns: repeat(2,1fr); padding:20px 5%; }
+            .stat-item .num { font-size:1.6rem; }
+            .section-title h2 { font-size:1.4rem; }
+            .cta-section h2 { font-size:1.4rem; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- =============================================
-         شريط التنقل (Navbar)
-         ============================================= -->
+    <!-- ═══ Navbar ═══ -->
     <nav>
         <a href="index.html" class="logo">
             <img src="assets/images/logo-nav.png" alt="مسار التميز" class="logo-img">
         </a>
-
         <div class="links">
             <a href="index.html" class="active">الرئيسية</a>
             <a href="tools/index.html">الأدوات</a>
             <a href="legal/about.html">عن مسار</a>
             <a href="contact.html">اتصل بنا</a>
         </div>
-
-        <!-- زر Hamburger للموبايل -->
         <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
-
-        <!-- زر تبديل السمة -->
-        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">
-            🌙
-        </button>
+        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
     </nav>
 
-
-    <!-- =============================================
-         القسم الرئيسي (Hero)
-         ============================================= -->
+    <!-- ═══ Hero ═══ -->
     <div class="hero">
         <h1>🧠 أدوات التلميذ الذكي</h1>
-        <p>منصة تونسية متكاملة تساعد التلاميذ والأساتذة على تحويل الواجبات والفروض إلى ملفات احترافية بسرعة وسهولة</p>
+        <p>منصة تونسية مجانية تساعد التلاميذ والأساتذة على تحويل الواجبات والفروض إلى ملفات احترافية بسرعة وسهولة</p>
+        <div class="hero-btns">
+            <a href="tools/index.html" class="btn" style="background:white;color:var(--primary);font-weight:700;">🛠️ اكتشف الأدوات</a>
+            <a href="legal/about.html" class="btn-outline-white">عن مسار</a>
+        </div>
     </div>
 
+    <!-- ═══ إحصائيات ═══ -->
+    <div class="stats-bar">
+        <div class="stat-item"><div class="num">7+</div><div class="lbl">أداة مجانية</div></div>
+        <div class="stat-item"><div class="num">100%</div><div class="lbl">خصوصية تامة</div></div>
+        <div class="stat-item"><div class="num">0 ₫</div><div class="lbl">مجاني دائماً</div></div>
+        <div class="stat-item"><div class="num">🇹🇳</div><div class="lbl">صُنع لتونس</div></div>
+    </div>
 
-    <!-- =============================================
-         التصنيفات (Categories)
-         ============================================= -->
+    <!-- ═══ التصنيفات ═══ -->
     <div class="categories" role="group" aria-label="تصفية الأدوات">
         <button class="cat-btn active" data-category="all">جميع الأدوات</button>
         <button class="cat-btn" data-category="pdf">📄 PDF ومستندات</button>
@@ -81,142 +194,171 @@
         <button class="cat-btn" data-category="exam">📝 اختبارات وفروض</button>
     </div>
 
-
-    <!-- =============================================
-         شبكة الأدوات (Tools Grid)
-         ============================================= -->
+    <!-- ═══ شبكة الأدوات ═══ -->
     <main>
         <div class="grid" id="tools-grid">
 
-            <!-- بطاقة: تحويل الصور إلى PDF -->
             <div class="card" data-category="pdf">
                 <div class="card-icon">📄</div>
                 <h3>تحويل الصور إلى PDF</h3>
-                <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات واختيار الحجم.</p>
+                <p>حوّل صور الواجبات أو الكراسات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات.</p>
                 <a href="tools/image-to-pdf.html" class="btn">جرب الآن</a>
             </div>
 
-            <!-- بطاقة: ضغط الصور -->
             <div class="card" data-category="image">
                 <div class="card-icon">🖼️</div>
                 <h3>ضغط الصور</h3>
-                <p>قلل حجم صور الواجبات والملفات دون فقدان واضح في الجودة لتسهيل الإرسال عبر الإنترنت.</p>
+                <p>قلل حجم الصور دون فقدان واضح في الجودة واحصل على ملف ZIP جاهز للإرسال.</p>
                 <a href="tools/compress-image.html" class="btn">جرب الآن</a>
             </div>
 
-            <!-- بطاقة: إنشاء فروض واختبارات -->
+            <div class="card" data-category="pdf">
+                <div class="card-icon">🔗</div>
+                <h3>دمج ملفات PDF</h3>
+                <p>ادمج عدة ملفات PDF في ملف واحد احترافي بالترتيب الذي تريده.</p>
+                <a href="tools/merge-pdf.html" class="btn">جرب الآن</a>
+            </div>
+
+            <div class="card" data-category="pdf">
+                <div class="card-icon">✂️</div>
+                <h3>تقسيم ملف PDF</h3>
+                <p>استخرج صفحات معينة أو قسّم ملف PDF كبير إلى ملفات أصغر بسهولة.</p>
+                <a href="tools/split-pdf.html" class="btn">جرب الآن</a>
+            </div>
+
+            <div class="card" data-category="pdf">
+                <div class="card-icon">📸</div>
+                <h3>تحويل PDF إلى صور</h3>
+                <p>حوّل صفحات PDF إلى صور JPG أو PNG عالية الجودة جاهزة للمشاركة.</p>
+                <a href="tools/pdf-to-images.html" class="btn">جرب الآن</a>
+            </div>
+
+            <div class="card" data-category="math">
+                <div class="card-icon">🔢</div>
+                <h3>أدوات الرياضيات</h3>
+                <p>جدول الضرب، الهندسة، المجسمات، الرسم البياني، المعادلات، وتحويل الوحدات.</p>
+                <a href="tools/math-tools.html" class="btn">جرب الآن</a>
+            </div>
+
             <div class="card" data-category="exam">
                 <div class="card-icon">📝</div>
                 <h3>إنشاء فروض واختبارات</h3>
-                <p>أنشئ اختبارات وفروضاً مدرسية جاهزة للطباعة حسب المستوى والمادة الدراسية.</p>
+                <p>أنشئ اختبارات مدرسية جاهزة للطباعة حسب المستوى والمادة الدراسية.</p>
                 <a href="tools/exam-generator.html" class="btn">جرب الآن</a>
             </div>
-
-            <!-- يمكن إضافة المزيد من البطاقات هنا -->
 
         </div>
     </main>
 
+    <!-- ═══ لماذا مسار ═══ -->
+    <section class="why-section">
+        <div class="section-title">
+            <h2>💡 لماذا تختار مسار التميز؟</h2>
+            <p>منصة مصممة خصيصاً لاحتياجات التلميذ التونسي</p>
+        </div>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="w-icon">🆓</div>
+                <h3>مجاني 100%</h3>
+                <p>جميع الأدوات مجانية بدون حدود أو اشتراكات أو إعلانات مزعجة</p>
+            </div>
+            <div class="why-card">
+                <div class="w-icon">🔒</div>
+                <h3>خصوصية تامة</h3>
+                <p>ملفاتك تُعالَج داخل متصفحك فقط — لا شيء يُرفع لأي سيرفر</p>
+            </div>
+            <div class="why-card">
+                <div class="w-icon">⚡</div>
+                <h3>سريع وسهل</h3>
+                <p>واجهة بسيطة تناسب جميع الأعمار بدون خبرة تقنية مسبقة</p>
+            </div>
+            <div class="why-card">
+                <div class="w-icon">📱</div>
+                <h3>يعمل على الموبايل</h3>
+                <p>متوافق مع جميع الأجهزة — هاتف، جهاز لوحي، أو حاسوب</p>
+            </div>
+        </div>
+    </section>
 
-    <!-- =============================================
-         التذييل (Footer)
-         ============================================= -->
+    <!-- ═══ CTA ═══ -->
+    <section class="cta-section">
+        <h2>🚀 ابدأ الآن مجاناً</h2>
+        <p>انضم لآلاف التلاميذ والأساتذة الذين يستخدمون مسار يومياً</p>
+        <a href="tools/index.html" class="btn-white">استكشف جميع الأدوات ←</a>
+    </section>
+
+    <!-- ═══ Footer ═══ -->
     <footer>
-        <p>© 2026 <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
-        <p>جميع الحقوق محفوظة</p>
+        <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+            <p>© <span id="copyrightYear">2026</span> <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
+            <nav style="display:flex;gap:20px;flex-wrap:wrap;">
+                <a href="legal/about.html"   style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">عن مسار</a>
+                <a href="legal/privacy.html" style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">سياسة الخصوصية</a>
+                <a href="legal/terms.html"   style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">شروط الاستخدام</a>
+                <a href="contact.html"       style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">اتصل بنا</a>
+            </nav>
+        </div>
     </footer>
 
-
-    <!-- =============================================
-         JavaScript
-         ============================================= -->
     <script>
-        /* ─── تبديل السمة (Dark / Light Mode) ─── */
+        /* ─── السمة ─── */
         const themeToggle = document.getElementById('themeToggle');
         const html = document.documentElement;
-
-        // استرجاع السمة المحفوظة
         const savedTheme = localStorage.getItem('theme') || 'light';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
         themeToggle.addEventListener('click', () => {
-            const current = html.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', next);
             themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
             localStorage.setItem('theme', next);
         });
 
-
-        /* ─── تصفية البطاقات حسب التصنيف ─── */
-        const catBtns = document.querySelectorAll('.cat-btn');
-        const cards   = document.querySelectorAll('.card');
-
-        catBtns.forEach(btn => {
+        /* ─── تصفية البطاقات ─── */
+        document.querySelectorAll('.cat-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                // تحديث الزر النشط
-                catBtns.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                const selected = btn.dataset.category;
-
-                // إظهار / إخفاء البطاقات
-                cards.forEach(card => {
-                    const match = selected === 'all' || card.dataset.category === selected;
-                    card.style.display = match ? '' : 'none';
+                const sel = btn.dataset.category;
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.display = (sel === 'all' || card.dataset.category === sel) ? '' : 'none';
                 });
             });
         });
-    </script>
 
-
-    <script>
-    /* ─── Hamburger Menu ─── */
-    (function() {
-        const hamburger = document.getElementById('hamburger');
-        const links     = document.querySelector('nav .links');
-        const nav       = document.querySelector('nav');
-
-        // إنشاء طبقة التعتيم
-        const overlay = document.createElement('div');
-        overlay.className = 'nav-overlay';
-        document.body.appendChild(overlay);
-
-        function openMenu() {
-            links.classList.add('open');
-            overlay.classList.add('open');
-            hamburger.innerHTML = '&#10005;'; // X
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMenu() {
-            links.classList.remove('open');
-            overlay.classList.remove('open');
-            hamburger.innerHTML = '&#9776;'; // ☰
-            document.body.style.overflow = '';
-        }
-
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
+        /* ─── Hamburger Menu ─── */
+        (function() {
+            var hamburger = document.getElementById('hamburger');
+            var links     = document.querySelector('nav .links');
+            if (!hamburger || !links) return;
+            var overlay = document.createElement('div');
+            overlay.className = 'nav-overlay';
+            document.body.insertBefore(overlay, document.body.firstChild);
+            function openMenu() {
+                links.classList.add('open');
+                overlay.classList.add('open');
+                hamburger.innerHTML = '&#10005;';
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMenu() {
+                links.classList.remove('open');
+                overlay.classList.remove('open');
+                hamburger.innerHTML = '&#9776;';
+                document.body.style.overflow = '';
+            }
+            hamburger.addEventListener('click', function(e) {
+                e.stopPropagation();
                 links.classList.contains('open') ? closeMenu() : openMenu();
             });
-        }
+            overlay.addEventListener('click', closeMenu);
+            links.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeMenu); });
+            window.addEventListener('resize', function() { if (window.innerWidth > 768) closeMenu(); });
+        })();
 
-        overlay.addEventListener('click', closeMenu);
-
-        // إغلاق عند الضغط على رابط
-        if (links) {
-            links.querySelectorAll('a').forEach(a => {
-                a.addEventListener('click', closeMenu);
-            });
-        }
-
-        // إغلاق عند تغيير حجم الشاشة
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) closeMenu();
-        });
-    })();
+        /* ─── تحديث السنة ─── */
+        var yr = document.getElementById('copyrightYear');
+        if (yr) yr.textContent = new Date().getFullYear();
     </script>
+
 </body>
 </html>
