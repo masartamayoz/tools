@@ -598,26 +598,25 @@ footer a:hover {
 }
 
 /* =============================================
-   12. Hamburger — قائمة الموبايل (RTL)
+   12. Hamburger — قائمة الموبايل (RTL - من اليمين)
    ============================================= */
 
-/* زر الهامبرغر — مخفي على الشاشات الكبيرة */
 .hamburger {
     display:         none;
     background:      none;
     border:          1px solid var(--border);
     border-radius:   var(--radius-sm);
-    font-size:       1.4rem;
+    font-size:       1.5rem;
     line-height:     1;
     color:           var(--text);
-    width:           40px;
-    height:          40px;
+    width:           42px;
+    height:          42px;
     cursor:          pointer;
     align-items:     center;
     justify-content: center;
     transition:      all var(--transition-fast);
     flex-shrink:     0;
-    z-index:         2001;
+    order:           0;
 }
 
 .hamburger:hover {
@@ -628,99 +627,105 @@ footer a:hover {
 
 /* طبقة التعتيم */
 .nav-overlay {
-    display:             none;
-    position:            fixed;
-    inset:               0;
-    background:          rgba(0,0,0,0.45);
-    z-index:             2000;
-    backdrop-filter:     blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    transition:          opacity 0.3s ease;
+    display:  none;
+    position: fixed;
+    inset:    0;
+    background: rgba(0,0,0,0.5);
+    z-index:  2000;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: opacity 0.3s ease;
 }
-
 .nav-overlay.open { display: block; }
 
-/* ── على الموبايل فقط ── */
 @media (max-width: 768px) {
 
+    /* إظهار الهامبرغر */
     .hamburger { display: flex; }
 
+    /* ضبط الـ nav */
     nav {
-        flex-wrap:       nowrap;
-        justify-content: space-between;
-        padding:         12px 5%;
-        gap:             8px;
+        flex-wrap:       nowrap !important;
+        justify-content: space-between !important;
+        padding:         12px 5% !important;
+        gap:             10px !important;
     }
 
-    /* القائمة الجانبية — RTL: تنزلق من اليسار */
+    /* إخفاء الروابط وتجهيزها كدرج جانبي من اليمين */
     nav .links {
         display:        flex !important;
-        position:       fixed;
-        top:            0;
-        left:           0;           /* RTL: من اليسار */
-        right:          auto;
-        width:          75vw;
-        max-width:      300px;
-        height:         100vh;
-        background:     var(--card-bg);
-        box-shadow:     4px 0 32px rgba(0,0,0,0.18);
-        flex-direction: column;
-        gap:            0;
-        padding:        0;
-        z-index:        2001;
-        transform:      translateX(-110%);   /* مخفي لليسار */
-        transition:     transform 0.32s cubic-bezier(0.4,0,0.2,1);
-        overflow-y:     auto;
-        overflow-x:     hidden;
-        pointer-events: none;   /* معطّل حتى يُفتح */
+        position:       fixed !important;
+        top:            0 !important;
+        right:          0 !important;      /* من اليمين */
+        left:           auto !important;
+        bottom:         0 !important;
+        width:          78vw !important;
+        max-width:      300px !important;
+        height:         100vh !important;
+        background:     var(--card-bg) !important;
+        box-shadow:     -6px 0 32px rgba(0,0,0,0.20) !important;
+        flex-direction: column !important;
+        gap:            0 !important;
+        padding:        0 !important;
+        margin:         0 !important;
+        z-index:        2001 !important;
+        transform:      translateX(105%) !important;   /* مخفي لليمين */
+        transition:     transform 0.32s cubic-bezier(0.4,0,0.2,1) !important;
+        overflow-y:     auto !important;
+        pointer-events: none !important;
+        border-radius:  0 !important;
     }
 
     nav .links.open {
-        transform:      translateX(0);
-        pointer-events: all;
+        transform:      translateX(0) !important;
+        pointer-events: all !important;
     }
 
     /* رأس القائمة */
     nav .links::before {
         content:       "القائمة";
-        display:       block;
-        padding:       20px 24px 16px;
-        font-size:     1rem;
-        font-weight:   700;
-        color:         var(--primary);
-        border-bottom: 2px solid var(--border);
-        background:    var(--card-bg);
-        position:      sticky;
-        top:           0;
-        z-index:       1;
+        display:       block !important;
+        padding:       22px 24px 18px !important;
+        font-size:     1.05rem !important;
+        font-weight:   700 !important;
+        color:         var(--primary) !important;
+        border-bottom: 2px solid var(--border) !important;
+        background:    var(--card-bg) !important;
+        position:      sticky !important;
+        top:           0 !important;
+        z-index:       1 !important;
     }
 
     nav .links a {
-        display:       block;
-        padding:       16px 24px;
-        margin:        0;
-        font-size:     1rem;
-        font-weight:   500;
-        color:         var(--text);
-        border-bottom: 1px solid var(--border);
-        border-radius: 0;
-        width:         100%;
-        transition:    background var(--transition-fast), color var(--transition-fast);
+        display:       block !important;
+        padding:       17px 24px !important;
+        margin:        0 !important;
+        font-size:     1rem !important;
+        font-weight:   500 !important;
+        color:         var(--text) !important;
+        border-bottom: 1px solid var(--border) !important;
+        border-radius: 0 !important;
+        width:         100% !important;
+        text-align:    right !important;
+        transition:    background 0.2s, color 0.2s !important;
     }
 
     nav .links a:hover {
-        background: rgba(79,70,229,0.07);
-        color:      var(--primary);
+        background: rgba(79,70,229,0.08) !important;
+        color:      var(--primary) !important;
     }
 
     nav .links a.active {
-        color:           var(--primary);
-        font-weight:     700;
-        background:      rgba(79,70,229,0.06);
-        border-right:    3px solid var(--primary);
+        color:            var(--primary) !important;
+        font-weight:      700 !important;
+        background:       rgba(79,70,229,0.07) !important;
+        border-right:     4px solid var(--primary) !important;
     }
+
+    /* إخفاء الروابط على الشاشات الكبيرة كان في CSS القديم */
+    nav .logo-img { height: 38px; }
 }
 
 @media (max-width: 480px) {
-    nav .logo-img { height: 36px; max-width: 130px; }
+    nav .logo-img { height: 34px; max-width: 120px; }
 }

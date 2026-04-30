@@ -260,25 +260,24 @@
     (function() {
         var hamburger = document.getElementById('hamburger');
         var links     = document.querySelector('nav .links');
-
         if (!hamburger || !links) return;
 
         // إنشاء طبقة التعتيم
         var overlay = document.createElement('div');
         overlay.className = 'nav-overlay';
-        document.body.insertBefore(overlay, document.body.firstChild);
+        document.body.appendChild(overlay);
 
         function openMenu() {
             links.classList.add('open');
             overlay.classList.add('open');
-            hamburger.innerHTML = '&#10005;';
+            hamburger.innerHTML = '&#10005;'; // X
             document.body.style.overflow = 'hidden';
         }
 
         function closeMenu() {
             links.classList.remove('open');
             overlay.classList.remove('open');
-            hamburger.innerHTML = '&#9776;';
+            hamburger.innerHTML = '&#9776;'; // ☰
             document.body.style.overflow = '';
         }
 

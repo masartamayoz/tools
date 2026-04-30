@@ -5,354 +5,332 @@
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إنشاء فروض واختبارات | مسار التميز</title>
-    <!-- ═══ SEO & Meta ═══ -->
-    <meta name="description"        content="أنشئ فروضاً واختبارات مدرسية جاهزة للطباعة حسب المستوى والمادة — للتلاميذ والأساتذة التونسيين.">
-    <meta name="keywords"           content="فروض مدرسية، اختبارات، امتحانات، مسار التميز، تونس">
-    <meta name="author"             content="مسار التميز">
-    <meta name="robots"             content="index, follow">
-    <link rel="canonical"           href="https://tools.masartamayoz.com/tools/exam-generator.html">
-
-    <!-- Open Graph -->
-    <meta property="og:type"        content="website">
-    <meta property="og:locale"      content="ar_TN">
-    <meta property="og:site_name"   content="مسار التميز">
-    <meta property="og:title"       content="إنشاء فروض واختبارات | مسار التميز">
-    <meta property="og:description" content="أنشئ فروضاً واختبارات مدرسية جاهزة للطباعة حسب المستوى والمادة — للتلاميذ والأساتذة التونسيين.">
-    <meta property="og:url"         content="https://tools.masartamayoz.com/tools/exam-generator.html">
-    <meta property="og:image"       content="https://tools.masartamayoz.com/assets/images/logo.png">
-    <meta property="og:image:width" content="256">
-    <meta property="og:image:height"content="256">
-    <meta property="og:image:alt"   content="شعار مسار التميز">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card"       content="summary">
-    <meta name="twitter:title"      content="إنشاء فروض واختبارات | مسار التميز">
-    <meta name="twitter:description"content="أنشئ فروضاً واختبارات مدرسية جاهزة للطباعة حسب المستوى والمادة — للتلاميذ والأساتذة التونسيين.">
-    <meta name="twitter:image"      content="https://tools.masartamayoz.com/assets/images/logo.png">
-    <!-- ════════════════════ -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        .tool-wrapper { max-width: 1100px; margin: 0 auto; padding: 40px 5% 80px; }
-        .tool-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-md); }
-
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .form-group { margin-bottom: 0; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 8px; }
-        .form-group select { width: 100%; padding: 13px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--light-bg); color: var(--text); font-size: var(--font-size-base); font-family: var(--font-base); transition: border-color var(--transition-fast); }
-        .form-group select:focus { outline: none; border-color: var(--primary); }
-
-        .status-msg { text-align: center; font-weight: 500; min-height: 28px; margin-top: 20px; color: #10b981; }
-        .status-msg.error { color: #ef4444; }
-
-        /* معاينة الفرض */
-        .exam-preview {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 50px;
-            margin-top: 40px;
-            box-shadow: var(--shadow-md);
-            line-height: 2;
-        }
-
-        .exam-header {
-            text-align: center;
-            padding-bottom: 24px;
-            border-bottom: 2px dashed var(--border);
-            margin-bottom: 36px;
-        }
-
-        .exam-header h2 { color: var(--primary); margin-bottom: 6px; }
-        .exam-header p  { color: var(--gray); }
-
-        .question-item {
-            margin-bottom: 30px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .question-item:last-child { border-bottom: none; }
-
-        .question-text { font-weight: 600; margin-bottom: 12px; }
-
-        .option-item {
-            padding: 6px 0 6px 24px;
-            color: var(--text);
-        }
-
-        .answer-line {
-            height: 60px;
-            background: var(--light-bg);
-            border-radius: var(--radius-sm);
-            margin-top: 12px;
-            border: 1px dashed var(--border);
-        }
-
-        @media print {
-            nav, footer, .no-print { display: none !important; }
-            .exam-preview { box-shadow: none; border: none; }
-            body { background: white; }
-        }
+        .tool-wrapper{max-width:1100px;margin:0 auto;padding:36px 5% 100px}
+        .setup-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-md);margin-bottom:24px}
+        .setup-card h2{font-size:1.2rem;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);color:var(--primary)}
+        .setup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:24px}
+        .fg label{display:block;font-size:0.82rem;font-weight:700;color:var(--gray);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px}
+        .fg select,.fg input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--light-bg);color:var(--text);font-family:var(--font-base);font-size:.95rem;transition:border-color .2s,box-shadow .2s}
+        .fg select:focus,.fg input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+        .mode-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+        .mode-btn{padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card-bg);color:var(--gray);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+        .mode-btn:hover{border-color:var(--primary);color:var(--primary)}
+        .mode-btn.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 4px 12px rgba(79,70,229,.25)}
+        .ai-box{background:linear-gradient(135deg,rgba(79,70,229,.06),rgba(6,182,212,.06));border:1px solid rgba(79,70,229,.15);border-radius:var(--radius-md);padding:20px;margin-bottom:20px}
+        .ai-label{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--primary);margin-bottom:10px}
+        .ai-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:var(--radius-full);font-size:.7rem;font-weight:700}
+        .ai-prompt{width:100%;padding:11px 14px;border:1px solid rgba(79,70,229,.2);border-radius:var(--radius-md);background:var(--card-bg);color:var(--text);font-family:var(--font-base);font-size:.9rem;resize:vertical;min-height:72px}
+        .ai-prompt:focus{outline:none;border-color:var(--primary)}
+        .prog-wrap{display:none;margin-top:16px}
+        .prog-wrap.show{display:block}
+        .prog-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px}
+        .prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;width:0%;transition:width .4s ease}
+        .prog-txt{font-size:.82rem;color:var(--gray);text-align:center}
+        .preview-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);display:none;margin-top:28px}
+        .preview-card.show{display:block}
+        .preview-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
+        .preview-toolbar h3{font-size:1rem}
+        .tbtn{padding:8px 16px;border-radius:var(--radius-md);font-size:.84rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--text);transition:all .2s}
+        .tbtn:hover{border-color:var(--primary);color:var(--primary)}
+        .tbtn.ok{background:#10b981;color:white;border-color:#10b981}
+        .paper{padding:36px 44px;line-height:2;direction:rtl}
+        .paper-header{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;padding-bottom:18px;border-bottom:3px double var(--border);margin-bottom:26px;font-size:.86rem}
+        .ph-center{text-align:center;font-weight:800;font-size:1.05rem;color:var(--primary)}
+        .ph-right,.ph-left{color:var(--gray);line-height:1.8}
+        .ph-left{text-align:left}
+        .dline{display:flex;gap:6px;align-items:center;margin-bottom:3px}
+        .dline strong{color:var(--text)}
+        .dotline{flex:1;border-bottom:1px dotted var(--border);height:1px;min-width:50px}
+        .qblock{margin-bottom:26px;padding-bottom:18px;border-bottom:1px dashed var(--border)}
+        .qblock:last-child{border-bottom:none}
+        .qhead{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+        .qnum{background:var(--primary);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;margin-top:2px}
+        .qscore{background:var(--light-bg);border:1px solid var(--border);color:var(--gray);padding:2px 8px;border-radius:var(--radius-full);font-size:.72rem;flex-shrink:0;margin-top:3px}
+        .qtext{font-weight:600;flex:1;font-size:.95rem}
+        .opts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px;padding-right:36px}
+        .opt{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--light-bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem}
+        .optc{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+        .alines{padding-right:36px;margin-top:7px}
+        .aline{height:30px;border-bottom:1px solid var(--border);margin-bottom:3px}
+        @media print{nav,footer,.setup-card,.preview-toolbar,.no-print{display:none!important}.preview-card{box-shadow:none;border:none;display:block!important}.paper{padding:16px}body{background:white}}
+        @media(max-width:600px){.setup-grid{grid-template-columns:1fr 1fr}.paper{padding:18px 14px}.paper-header{grid-template-columns:1fr;text-align:center}.ph-left{text-align:right}.opts{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
 
-    <nav>
-        <a href="../index.html" class="logo"><img src="../assets/images/logo-nav.png" alt="مسار التميز" class="logo-img"></a>
-        <div class="links">
-            <a href="../index.html">الرئيسية</a>
-            <a href="../tools/index.html" class="active">الأدوات</a>
-            <a href="../legal/about.html">عن مسار</a>
-            <a href="../contact.html">اتصل بنا</a>
-        </div>
-        <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
-        <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
-    </nav>
+<nav>
+    <a href="../index.html" class="logo"><img src="../assets/images/logo-nav.png" alt="مسار التميز" class="logo-img"></a>
+    <div class="links">
+        <a href="../index.html">الرئيسية</a>
+        <a href="../tools/index.html" class="active">الأدوات</a>
+        <a href="../legal/about.html">عن مسار</a>
+        <a href="../contact.html">اتصل بنا</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+</nav>
 
-    <div class="hero">
-        <h1>📝 إنشاء فروض واختبارات</h1>
-        <p>أنشئ اختبارات وفروضاً مدرسية جاهزة للطباعة في ثوانٍ</p>
+<div class="hero">
+    <h1>📝 إنشاء فروض واختبارات</h1>
+    <p>جميع المستويات 1→9 · جميع المواد · بمساعدة الذكاء الاصطناعي</p>
+</div>
+
+<main class="tool-wrapper">
+
+<div class="setup-card">
+    <h2>⚙️ إعداد الفرض</h2>
+
+    <div class="setup-grid">
+        <div class="fg">
+            <label>المستوى الدراسي</label>
+            <select id="level">
+                <optgroup label="المرحلة الابتدائية">
+                    <option value="1">السنة 1 ابتدائي</option>
+                    <option value="2">السنة 2 ابتدائي</option>
+                    <option value="3">السنة 3 ابتدائي</option>
+                    <option value="4">السنة 4 ابتدائي</option>
+                    <option value="5">السنة 5 ابتدائي</option>
+                    <option value="6">السنة 6 ابتدائي</option>
+                </optgroup>
+                <optgroup label="المرحلة الإعدادية">
+                    <option value="7" selected>السنة 7 أساسي</option>
+                    <option value="8">السنة 8 أساسي</option>
+                    <option value="9">السنة 9 أساسي</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="fg">
+            <label>المادة</label>
+            <select id="subject">
+                <optgroup label="العلوم"><option>رياضيات</option><option>علوم حياة وأرض</option><option>فيزياء وكيمياء</option><option>تكنولوجيا</option><option>إعلامية</option></optgroup>
+                <optgroup label="اللغات"><option>عربية</option><option>فرنسية</option><option>إنجليزية</option></optgroup>
+                <optgroup label="الإنسانيات"><option>تاريخ وجغرافيا</option><option>تربية مدنية</option><option>تربية إسلامية</option></optgroup>
+            </select>
+        </div>
+        <div class="fg">
+            <label>الثلاثي</label>
+            <select id="tri"><option value="1">الثلاثي 1</option><option value="2">الثلاثي 2</option><option value="3">الثلاثي 3</option></select>
+        </div>
+        <div class="fg">
+            <label>نوع التقييم</label>
+            <select id="etype"><option>فرض</option><option>اختبار</option><option>فرض محروس</option><option>امتحان</option><option>مراجعة</option></select>
+        </div>
+        <div class="fg">
+            <label>عدد الأسئلة</label>
+            <select id="qcount"><option value="3">3</option><option value="5" selected>5</option><option value="7">7</option><option value="10">10</option><option value="15">15</option></select>
+        </div>
+        <div class="fg">
+            <label>المجموع / 20</label>
+            <input type="number" id="total" value="20" min="5" max="40">
+        </div>
     </div>
 
-    <main class="tool-wrapper">
-        <div class="tool-card no-print">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>المستوى الدراسي</label>
-                    <select id="level">
-                        <option value="">اختر المستوى</option>
-                        <option value="ابتدائي">ابتدائي</option>
-                        <option value="إعدادي">إعدادي</option>
-                        <option value="ثانوي">ثانوي</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>المادة</label>
-                    <select id="subject">
-                        <option value="">اختر المادة</option>
-                        <option value="رياضيات">رياضيات</option>
-                        <option value="عربية">لغة عربية</option>
-                        <option value="فرنسية">لغة فرنسية</option>
-                        <option value="علوم">علوم</option>
-                        <option value="تاريخ">تاريخ وجغرافيا</option>
-                        <option value="إسلامية">تربية إسلامية</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>عدد الأسئلة</label>
-                    <select id="questionCount">
-                        <option value="5">5 أسئلة</option>
-                        <option value="10" selected>10 أسئلة</option>
-                        <option value="15">15 سؤال</option>
-                        <option value="20">20 سؤال</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>نوع الاختبار</label>
-                    <select id="examType">
-                        <option value="اختبار">اختبار قصير</option>
-                        <option value="فرض">فرض منزلي</option>
-                        <option value="امتحان">امتحان فصلي</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 36px;">
-                <button onclick="generateExam()" class="btn" style="padding: 14px 60px; font-size: 1.1rem;">
-                    📄 إنشاء الفرض
-                </button>
-            </div>
-
-            <p id="status" class="status-msg"></p>
+    <div style="margin-bottom:18px;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--gray);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;">نوع الأسئلة</div>
+        <div class="mode-tabs">
+            <button class="mode-btn active" data-m="mixed">🔀 مختلطة</button>
+            <button class="mode-btn" data-m="mcq">✅ اختيار متعدد</button>
+            <button class="mode-btn" data-m="open">✍️ مفتوحة</button>
+            <button class="mode-btn" data-m="truefalse">☑️ صح/خطأ</button>
+            <button class="mode-btn" data-m="fill">📝 أكمل الفراغات</button>
         </div>
+    </div>
 
-        <!-- معاينة الفرض -->
-        <div id="examPreview" class="exam-preview" style="display:none;">
-            <div class="exam-header">
-                <h2 id="examTitle"></h2>
-                <p id="examSubtitle"></p>
-            </div>
-            <div id="questionsContainer"></div>
-            <div style="text-align:center; margin-top:50px;" class="no-print">
-                <button onclick="window.print()" class="btn" style="background:#10b981; padding:13px 44px;">
-                    🖨️ طباعة الفرض
-                </button>
-            </div>
+    <div class="ai-box">
+        <div class="ai-label">🤖 الذكاء الاصطناعي <span class="ai-badge">AI</span></div>
+        <textarea class="ai-prompt" id="aiPrompt" placeholder="أدخل الوحدة أو الموضوع المراد توليد أسئلة منه...
+مثال: الكسور، نظرية فيثاغورس، الجملة الاسمية، الثورة التونسية 1956...
+اتركه فارغاً لفرض عام حسب المنهج"></textarea>
+        <p style="font-size:.78rem;color:var(--gray);margin-top:7px;">💡 كلما كانت التعليمات أدق، كانت الأسئلة أنسب للمنهج التونسي</p>
+    </div>
+
+    <div style="text-align:center;">
+        <button onclick="generate()" class="btn" id="genBtn" style="padding:14px 48px;font-size:1rem;">
+            🚀 توليد الفرض
+        </button>
+    </div>
+
+    <div class="prog-wrap" id="pw">
+        <div class="prog-bg"><div class="prog-fill" id="pf"></div></div>
+        <p class="prog-txt" id="pt">جاري التوليد...</p>
+    </div>
+</div>
+
+<div class="preview-card" id="previewCard">
+    <div class="preview-toolbar no-print">
+        <h3>📄 الفرض جاهز للطباعة</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="tbtn" onclick="generate()">🔄 إعادة</button>
+            <button class="tbtn ok" onclick="window.print()">🖨️ طباعة</button>
         </div>
-    </main>
+    </div>
+    <div class="paper" id="paper"></div>
+</div>
 
-    <footer>
-        <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
-            <p>© <span id="copyrightYear">2026</span> <strong>مسار - تميّز</strong> | أدوات التلميذ الذكي</p>
-            <nav style="display:flex;gap:20px;flex-wrap:wrap;">
-                <a href="../legal/about.html"  style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">عن مسار</a>
-                <a href="../legal/privacy.html"   style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">سياسة الخصوصية</a>
-                <a href="../legal/terms.html"  style="color:var(--gray);font-size:0.9rem;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--gray)'">شروط الاستخدام</a>
-            </nav>
-        </div>
-    </footer>
+</main>
 
-    <script>
-        /* ─── السمة ─── */
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-        const saved = localStorage.getItem('theme') || 'light';
-        html.setAttribute('data-theme', saved);
-        themeToggle.textContent = saved === 'dark' ? '☀️' : '🌙';
-        themeToggle.addEventListener('click', () => {
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
-            localStorage.setItem('theme', next);
+<footer>
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+        <p>© <span id="yr">2026</span> <strong>مسار - تميّز</strong></p>
+        <nav style="display:flex;gap:18px;flex-wrap:wrap;">
+            <a href="../legal/about.html" style="color:var(--gray);font-size:.88rem;">عن مسار</a>
+            <a href="../legal/privacy.html" style="color:var(--gray);font-size:.88rem;">الخصوصية</a>
+            <a href="../legal/terms.html" style="color:var(--gray);font-size:.88rem;">الشروط</a>
+        </nav>
+    </div>
+</footer>
+
+<script>
+/* السمة */
+const TT=document.getElementById('themeToggle'),H=document.documentElement;
+const sv=localStorage.getItem('theme')||'light';
+H.setAttribute('data-theme',sv); TT.textContent=sv==='dark'?'☀️':'🌙';
+TT.addEventListener('click',()=>{
+    const n=H.getAttribute('data-theme')==='dark'?'light':'dark';
+    H.setAttribute('data-theme',n); TT.textContent=n==='dark'?'☀️':'🌙';
+    localStorage.setItem('theme',n);
+});
+
+/* Hamburger */
+(function(){
+    var hb=document.getElementById('hamburger'),lk=document.querySelector('nav .links');
+    if(!hb||!lk)return;
+    var ov=document.createElement('div'); ov.className='nav-overlay'; document.body.appendChild(ov);
+    function open(){lk.classList.add('open');ov.classList.add('open');hb.innerHTML='&#10005;';document.body.style.overflow='hidden';}
+    function close(){lk.classList.remove('open');ov.classList.remove('open');hb.innerHTML='&#9776;';document.body.style.overflow='';}
+    hb.addEventListener('click',function(e){e.stopPropagation();lk.classList.contains('open')?close():open();});
+    ov.addEventListener('click',close);
+    lk.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+    window.addEventListener('resize',function(){if(window.innerWidth>768)close();});
+})();
+
+/* أنواع الأسئلة */
+let mode='mixed';
+document.querySelectorAll('.mode-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+        document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); mode=b.dataset.m;
+    });
+});
+
+function prog(p,t){document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=t;}
+
+async function generate(){
+    const level=document.getElementById('level');
+    const levelTxt=level.options[level.selectedIndex].text;
+    const subj=document.getElementById('subject').value;
+    const tri=document.getElementById('tri').value;
+    const etype=document.getElementById('etype').value;
+    const qcount=parseInt(document.getElementById('qcount').value);
+    const total=parseInt(document.getElementById('total').value)||20;
+    const prompt=document.getElementById('aiPrompt').value.trim();
+    const spq=(total/qcount).toFixed(1);
+    const modeMap={mixed:'مختلطة',mcq:'اختيار من متعدد (4 خيارات)',open:'مفتوحة',truefalse:'صح/خطأ',fill:'أكمل الفراغات'};
+    const btn=document.getElementById('genBtn');
+    btn.disabled=true; btn.textContent='⏳ جاري التوليد...';
+    document.getElementById('pw').classList.add('show');
+    prog(15,'جاري إرسال الطلب...');
+
+    const sys=`أنت أستاذ متخصص في المنهج التونسي. أنشئ فروضاً دقيقة ومتوافقة مع البرامج الرسمية.
+قواعد: استخدم أرقاماً لاتينية (1,2,3). الأسئلة متدرجة. لا إجابات في الفرض. أعِد JSON فقط.`;
+
+    const usr=`أنشئ ${etype} - مادة ${subj} - ${levelTxt} - الثلاثي ${tri}
+عدد الأسئلة: ${qcount} | نوع: ${modeMap[mode]} | المجموع: ${total}ن (${spq}ن/سؤال)
+الوحدة/الموضوع: ${prompt||'عام حسب المنهج'}
+
+JSON:
+{"title":"...","topic":"...","questions":[{"num":1,"type":"mcq|open|truefalse|fill","text":"...","score":${spq},"options":["أ....","ب....","ج....","د...."],"lines":3}]}
+ملاحظة: options فقط لـ mcq, lines فقط لـ open/fill`;
+
+    try {
+        prog(35,'جاري الاتصال بالذكاء الاصطناعي...');
+        const res=await fetch('https://api.anthropic.com/v1/messages',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:usr}]})
         });
+        prog(70,'جاري معالجة الأسئلة...');
+        const data=await res.json();
+        const raw=data.content[0].text.trim();
+        const jm=raw.match(/\{[\s\S]*\}/);
+        if(!jm)throw new Error('no json');
+        const exam=JSON.parse(jm[0]);
+        prog(95,'جاري بناء الفرض...');
+        render(exam,{levelTxt,subj,tri,etype,total,spq});
+        prog(100,'✅ تم!');
+        setTimeout(()=>{document.getElementById('pw').classList.remove('show');document.getElementById('previewCard').scrollIntoView({behavior:'smooth'});},700);
+    } catch(e){
+        console.warn('API error, using fallback');
+        prog(0,''); document.getElementById('pw').classList.remove('show');
+        fallback(levelTxt,subj,tri,etype,qcount,total,spq,prompt);
+    }
+    btn.disabled=false; btn.textContent='🚀 توليد الفرض';
+}
 
-        /* ─── بيانات الأسئلة ─── */
-        const questionBank = {
-            رياضيات: [
-                { q: 'ما هو ناتج ٢٥ × ٨؟',             opts: ['١٦٠', '٢٠٠', '١٨٠', '٢٢٠'] },
-                { q: 'حل المعادلة: x + ١٥ = ٤٢',        opts: ['x = ٢٧', 'x = ٥٧', 'x = ٢٨', 'x = ٢٥'] },
-                { q: 'ما هو مربع العدد ٩؟',              opts: ['٧٢', '٨١', '٦٣', '٩٠'] },
-                { q: 'ما هو ناتج ١٤٤ ÷ ١٢؟',           opts: ['١١', '١٢', '١٣', '١٤'] },
-                { q: 'ما هو المجموع: ٣/٤ + ١/٢؟',       opts: ['٥/٤', '٧/٤', '١', '٣/٢'] },
-                { q: 'احسب محيط مربع طول ضلعه ٧ سم',    opts: ['٢٨ سم', '٤٩ سم', '٢١ سم', '١٤ سم'] },
-                { q: 'ما هو ناتج ٥! (مضروب ٥)؟',        opts: ['١٢٠', '٦٠', '٢٤', '٢٤٠'] },
-                { q: 'ما هو الجذر التربيعي لـ ٦٤؟',      opts: ['٦', '٧', '٨', '٩'] },
-                { q: 'ما قيمة π تقريباً؟',               opts: ['٣.١٤', '٣.٤١', '٣.١٢', '٣.٢١'] },
-                { q: 'احسب مساحة مثلث قاعدته ٦ وارتفاعه ٤', opts: ['١٢', '٢٤', '١٠', '٢٠'] },
-            ],
-            عربية: [
-                { q: 'ما معنى كلمة "مُجتهد"؟',             opts: ['كسول', 'مجدّ', 'غاضب', 'فرحان'] },
-                { q: 'استخرج المبتدأ في: الطالبُ ناجحٌ',   opts: null },
-                { q: 'ما جمع كلمة "كتاب"؟',               opts: ['كُتُب', 'كُتّاب', 'أكتاب', 'كتابات'] },
-                { q: 'أعرب كلمة "محمدٌ" في: جاء محمدٌ',    opts: null },
-                { q: 'ما نوع الأسلوب: أكرِم الضيفَ!',       opts: ['خبري', 'إنشائي طلبي', 'نهي', 'استفهام'] },
-                { q: 'ما مفرد كلمة "أطباء"؟',              opts: ['طبيب', 'طبّاء', 'طبيبة', 'طبّ'] },
-                { q: 'ما نوع الجملة: الأمانةُ خُلُقٌ حسنٌ؟', opts: ['فعلية', 'اسمية', 'شرطية', 'ظرفية'] },
-                { q: 'أكمل: الصبرُ مفتاحُ ...',             opts: null },
-                { q: 'ما متضاد كلمة "الحزن"؟',             opts: ['الفرح', 'الألم', 'الغضب', 'الحب'] },
-                { q: 'ما وزن كلمة "كاتب"؟',                opts: ['فاعل', 'فعّال', 'مفعول', 'فعيل'] },
-            ],
-            فرنسية: [
-                { q: 'Conjugue "être" au présent pour "nous"', opts: ['sommes', 'êtes', 'suis', 'est'] },
-                { q: 'Quel est le pluriel de "cheval"?',       opts: ['chevals', 'chevaux', 'chevales', 'chevauts'] },
-                { q: 'Traduis: "Je vais à l\'école"',          opts: null },
-                { q: 'Conjugue "avoir" au présent pour "ils"', opts: ['avons', 'avez', 'ont', 'as'] },
-                { q: 'Quel est l\'article indéfini de "livre"?', opts: ['le', 'un', 'la', 'une'] },
-                { q: 'Complète: Elle ___ étudiante (être)',     opts: ['est', 'es', 'suis', 'sommes'] },
-                { q: 'Quel est l\'antonyme de "grand"?',       opts: ['petit', 'haut', 'large', 'fort'] },
-                { q: 'Traduis: "Bonjour"',                     opts: ['Bonsoir', 'Salut', 'Bonjour = صباح الخير', 'Merci'] },
-                { q: 'Quel est le féminin de "acteur"?',       opts: ['acteure', 'actrice', 'acteuresse', 'acteurette'] },
-                { q: 'Conjugue "aller" au présent pour "je"',  opts: ['allons', 'allez', 'va', 'vais'] },
-            ],
-            علوم: [
-                { q: 'ما وظيفة القلب في جسم الإنسان؟',         opts: null },
-                { q: 'ما العضو الذي يقوم بعملية التمثيل الضوئي؟', opts: ['الجذر', 'الورقة', 'الساق', 'الزهرة'] },
-                { q: 'ما الصيغة الكيميائية للماء؟',              opts: ['H2O', 'CO2', 'O2', 'NaCl'] },
-                { q: 'ما المقياس المستخدم لقياس درجة الحرارة؟',  opts: ['كيلوغرام', 'سلسيوس', 'متر', 'أمبير'] },
-                { q: 'ما الطاقة الناتجة عن الشمس؟',              opts: ['كيميائية', 'ضوئية وحرارية', 'كهربائية', 'حركية'] },
-                { q: 'ما عدد نجوم المجموعة الشمسية؟',            opts: ['صفر', '١', '٨', '١٠٠'] },
-                { q: 'ما نوع تكاثر الإنسان؟',                    opts: ['لاجنسي', 'جنسي', 'تبرعم', 'انشطار'] },
-                { q: 'ما سرعة الضوء تقريباً؟',                   opts: ['٣٠٠ كم/ث', '٣٠٠٠٠٠ كم/ث', '١٠٠٠ كم/ث', '٣ كم/ث'] },
-                { q: 'ما عضو الجسم المسؤول عن التنفس؟',          opts: ['القلب', 'الرئة', 'الكبد', 'الكلية'] },
-                { q: 'ما البروتين الموجود في كريات الدم الحمراء؟', opts: ['الإنزيم', 'الهيموغلوبين', 'الكولاجين', 'الكيراتين'] },
-            ],
-        };
-
-        const defaultQuestions = [
-            { q: 'ما مفهوم هذا الموضوع؟', opts: null },
-            { q: 'اشرح المقصود بـ...', opts: null },
-            { q: 'قارن بين مفهومَين في هذه المادة', opts: null },
-            { q: 'أعطِ مثالاً على...', opts: null },
-            { q: 'ما الفرق بين... و...؟', opts: null },
-        ];
-
-        function generateExam() {
-            const level   = document.getElementById('level').value;
-            const subject = document.getElementById('subject').value;
-            const count   = parseInt(document.getElementById('questionCount').value);
-            const type    = document.getElementById('examType').value;
-            const status  = document.getElementById('status');
-
-            if (!level || !subject) {
-                status.className = 'status-msg error';
-                status.textContent = '⚠️ الرجاء اختيار المستوى والمادة أولاً';
-                return;
-            }
-
-            status.className = 'status-msg';
-            status.textContent = 'جاري إنشاء الفرض...';
-
-            const bank = questionBank[subject] || defaultQuestions;
-            let questions = [];
-            while (questions.length < count) questions = [...questions, ...bank];
-            questions = questions.slice(0, count);
-
-            document.getElementById('examTitle').textContent = `${type} في مادة ${subject} — ${level}`;
-            document.getElementById('examSubtitle').textContent =
-                `عدد الأسئلة: ${count} | التاريخ: ${new Date().toLocaleDateString('ar-TN')}`;
-
-            const container = document.getElementById('questionsContainer');
-            container.innerHTML = questions.map((q, i) => `
-                <div class="question-item">
-                    <div class="question-text">${i + 1}. ${q.q}</div>
-                    ${q.opts
-                        ? q.opts.map((opt, j) => `
-                            <div class="option-item">${String.fromCharCode(0x0623 + j)} . ${opt}</div>
-                          `).join('')
-                        : '<div class="answer-line"></div>'
-                    }
-                </div>
-            `).join('');
-
-            document.getElementById('examPreview').style.display = 'block';
-            document.getElementById('examPreview').scrollIntoView({ behavior: 'smooth' });
-            status.textContent = '✅ تم إنشاء الفرض بنجاح!';
+function render(data,m){
+    const today=new Date().toLocaleDateString('ar-TN');
+    let h=`<div class="paper-header">
+        <div class="ph-right">الجمهورية التونسية<br>وزارة التربية<br>المؤسسة: .............</div>
+        <div class="ph-center"><div style="font-size:.8rem;color:var(--gray);margin-bottom:5px;">${m.subj} | ${m.levelTxt}</div>${m.etype}<div style="font-size:.78rem;color:var(--gray);margin-top:4px;">الثلاثي ${m.tri} | ${today}</div></div>
+        <div class="ph-left"><div class="dline"><strong>الاسم:</strong><div class="dotline"></div></div><div class="dline"><strong>الرقم:</strong><div class="dotline"></div></div><div class="dline"><strong>العدد:</strong><span style="font-weight:700;">...... / ${m.total}</span></div></div>
+    </div>`;
+    if(data.topic) h+=`<p style="text-align:center;color:var(--gray);font-size:.87rem;margin-bottom:20px;">الموضوع: <strong>${data.topic}</strong></p>`;
+    data.questions.forEach((q,i)=>{
+        h+=`<div class="qblock"><div class="qhead"><div class="qnum">${q.num||i+1}</div><div class="qtext">${q.text}</div><div class="qscore">${q.score||m.spq} ن</div></div>`;
+        if(q.type==='mcq'&&q.options?.length){
+            h+=`<div class="opts">`;
+            q.options.forEach(o=>{ h+=`<div class="opt"><div class="optc"></div>${o}</div>`; });
+            h+=`</div>`;
+        } else if(q.type==='truefalse'){
+            h+=`<div class="opts" style="max-width:260px;"><div class="opt"><div class="optc"></div>صحيح ✓</div><div class="opt"><div class="optc"></div>خطأ ✗</div></div>`;
+        } else {
+            const ln=q.lines||3;
+            h+=`<div class="alines">`;
+            for(let l=0;l<ln;l++) h+=`<div class="aline"></div>`;
+            h+=`</div>`;
         }
-    </script>
+        h+=`</div>`;
+    });
+    document.getElementById('paper').innerHTML=h;
+    document.getElementById('previewCard').classList.add('show');
+}
 
+function fallback(lt,s,tri,et,qc,tot,spq,tp){
+    const banks={
+        'رياضيات':[
+            {type:'mcq',text:'ما حاصل ضرب 7 × 8؟',options:['أ. 54','ب. 56','ج. 48','د. 63']},
+            {type:'open',text:'احسب: 125 × 4 =',lines:2},
+            {type:'fill',text:'أكمل: مجموع زوايا المثلث = .........°',lines:2},
+            {type:'truefalse',text:'العدد 17 عدد أولي'},
+            {type:'open',text:'حل المعادلة: 3x + 5 = 20',lines:3},
+            {type:'mcq',text:'ما قيمة π التقريبية؟',options:['أ. 3.00','ب. 3.14','ج. 3.41','د. 3.24']},
+            {type:'open',text:'احسب مساحة مستطيل طوله 8 cm وعرضه 5 cm',lines:3},
+        ],
+        'عربية':[
+            {type:'open',text:'أعرب الكلمة المسطر تحتها: جاء الطالبُ مبكراً',lines:3},
+            {type:'fill',text:'أكمل: الفعل المضارع المرفوع علامة رفعه ..........',lines:2},
+            {type:'mcq',text:'ما جمع كلمة "كتاب"؟',options:['أ. كُتُب','ب. كُتّاب','ج. أكتاب','د. كتابات']},
+            {type:'truefalse',text:'الجملة الفعلية تبدأ دائماً بفعل'},
+            {type:'open',text:'اكتب فقرة قصيرة (4 أسطر) عن فصل الربيع',lines:5},
+        ],
+        'فرنسية':[
+            {type:'mcq',text:'Conjugue "être" au présent — "nous"',options:['أ. sommes','ب. êtes','ج. sont','د. suis']},
+            {type:'fill',text:'Complète: Il ___ à l\'école. (aller)',lines:2},
+            {type:'open',text:'Écris une phrase avec "avoir" au présent',lines:2},
+            {type:'truefalse',text:'Le pluriel de "cheval" est "chevaux"'},
+            {type:'open',text:'Décris ta chambre en 3 phrases',lines:4},
+        ],
+    };
+    const pool=banks[s]||banks['رياضيات'];
+    const qs=[];
+    for(let i=0;i<qc;i++) qs.push({...pool[i%pool.length],num:i+1,score:spq});
+    render({title:`${et} في ${s}`,topic:tp||`${s} - الثلاثي ${tri}`,questions:qs},{levelTxt:lt,subj:s,tri,etype:et,total:tot,spq});
+    document.getElementById('previewCard').scrollIntoView({behavior:'smooth'});
+}
 
-    <script>
-    /* ─── Hamburger Menu ─── */
-    (function() {
-        var hamburger = document.getElementById('hamburger');
-        var links     = document.querySelector('nav .links');
-
-        if (!hamburger || !links) return;
-
-        // إنشاء طبقة التعتيم
-        var overlay = document.createElement('div');
-        overlay.className = 'nav-overlay';
-        document.body.insertBefore(overlay, document.body.firstChild);
-
-        function openMenu() {
-            links.classList.add('open');
-            overlay.classList.add('open');
-            hamburger.innerHTML = '&#10005;';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMenu() {
-            links.classList.remove('open');
-            overlay.classList.remove('open');
-            hamburger.innerHTML = '&#9776;';
-            document.body.style.overflow = '';
-        }
-
-        hamburger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            links.classList.contains('open') ? closeMenu() : openMenu();
-        });
-
-        overlay.addEventListener('click', closeMenu);
-
-        links.querySelectorAll('a').forEach(function(a) {
-            a.addEventListener('click', closeMenu);
-        });
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) closeMenu();
-        });
-    })();
-    </script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
 </body>
 </html>
