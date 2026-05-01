@@ -834,39 +834,57 @@
     <script>
     /* ─── Hamburger Menu ─── */
     (function() {
+        // استخراج الروابط من nav الأصلي
+        var navLinks = document.querySelector('nav .links');
         var hamburger = document.getElementById('hamburger');
-        var links     = document.querySelector('nav .links');
-        if (!hamburger || !links) return;
+        if (!hamburger || !navLinks) return;
 
-        // إنشاء طبقة التعتيم
+        // بناء الدرج الجانبي على body مباشرة
         var overlay = document.createElement('div');
-        overlay.className = 'nav-overlay';
+        overlay.id = 'mobileOverlay';
         document.body.appendChild(overlay);
 
+        var menu = document.createElement('div');
+        menu.id = 'mobileMenu';
+
+        // رأس الدرج
+        var header = document.createElement('div');
+        header.className = 'menu-header';
+        header.innerHTML = '<span>القائمة</span><button class="menu-close" aria-label="إغلاق">&#10005;</button>';
+        menu.appendChild(header);
+
+        // نسخ الروابط
+        navLinks.querySelectorAll('a').forEach(function(a) {
+            var link = document.createElement('a');
+            link.href = a.href;
+            link.textContent = a.textContent;
+            if (a.classList.contains('active')) link.classList.add('active');
+            link.addEventListener('click', closeMenu);
+            menu.appendChild(link);
+        });
+
+        document.body.appendChild(menu);
+
         function openMenu() {
-            links.classList.add('open');
+            menu.classList.add('open');
             overlay.classList.add('open');
-            hamburger.innerHTML = '&#10005;'; // X
+            hamburger.innerHTML = '&#9776;';
             document.body.style.overflow = 'hidden';
         }
 
         function closeMenu() {
-            links.classList.remove('open');
+            menu.classList.remove('open');
             overlay.classList.remove('open');
-            hamburger.innerHTML = '&#9776;'; // ☰
             document.body.style.overflow = '';
         }
 
         hamburger.addEventListener('click', function(e) {
             e.stopPropagation();
-            links.classList.contains('open') ? closeMenu() : openMenu();
+            menu.classList.contains('open') ? closeMenu() : openMenu();
         });
 
+        header.querySelector('.menu-close').addEventListener('click', closeMenu);
         overlay.addEventListener('click', closeMenu);
-
-        links.querySelectorAll('a').forEach(function(a) {
-            a.addEventListener('click', closeMenu);
-        });
 
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) closeMenu();
