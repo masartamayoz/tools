@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تخصيص ملفات PDF | أدوات التميز</title>
+    <meta name="description" content="أضف شعاراً أو ختماً أو علامة مائية لملفات PDF — مجاناً وبأمان تام داخل متصفحك">
+    <link rel="canonical" href="https://tools.masartamayoz.com/tools/pdf-stamp.html">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* ══════════════════════════════════════════
+           تخطيط الصفحة
+        ══════════════════════════════════════════ */
+        .tool-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 5% 100px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ══ لوحة الإعداد ══ */
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 88px;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ptab {
+            flex: 1;
+            padding: 14px 8px;
+            border: none;
+            background: none;
+            font-family: var(--font-base);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .ptab .ptab-icon { font-size: 1.3rem; }
+        .ptab:hover { color: var(--primary); background: rgba(79,70,229,0.04); }
+        .ptab.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(79,70,229,0.04); }
+
+        .panel-body { padding: 24px; }
+
+        .panel-section { display: none; }
+        .panel-section.active { display: block; }
+
+        /* ══ مدخلات ══ */
+        .fg { margin-bottom: 16px; }
+        .fg label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .fg input[type="text"],
+        .fg input[type="number"],
+        .fg input[type="range"],
+        .fg select,
+        .fg textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--light-bg);
+            color: var(--text);
+            font-family: var(--font-base);
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .fg input:focus,
+        .fg select:focus,
+        .fg textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+        }
+
+        .fg input[type="range"] {
+            padding: 6px 0;
+            accent-color: var(--primary);
+        }
+
+        .fg input[type="color"] {
+            width: 100%;
+            height: 40px;
+            padding: 3px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--light-bg);
+            cursor: pointer;
+        }
+
+        .range-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-val {
+            min-width: 38px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.88rem;
+        }
+
+        /* ══ شبكة الموضع ══ */
+        .pos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .pos-btn {
+            aspect-ratio: 1;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--light-bg);
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--gray);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pos-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .pos-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* ══ منطقة رفع PDF ══ */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--light-bg);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag { border-color: var(--primary); background: rgba(79,70,229,0.04); }
+        .upload-zone input { display: none; }
+        .upload-icon { font-size: 2.8rem; margin-bottom: 10px; }
+
+        /* ══ منطقة المعاينة ══ */
+        .preview-area {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .preview-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .preview-toolbar h3 { font-size: 0.95rem; margin: 0; }
+
+        .preview-canvas-wrap {
+            padding: 20px;
+            background: #e5e7eb;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            max-height: 600px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            background: white;
+        }
+
+        /* ══ أزرار ══ */
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .tbtn {
+            padding: 9px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            font-family: var(--font-base);
+            transition: all 0.2s;
+        }
+
+        .tbtn:hover { border-color: var(--primary); color: var(--primary); }
+        .tbtn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .tbtn.primary:hover { background: var(--primary-light); }
+        .tbtn.success { background: #10b981; color: white; border-color: #10b981; }
+
+        /* ══ شريط التقدم ══ */
+        .prog { display: none; margin-top: 14px; }
+        .prog.show { display: block; }
+        .prog-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: width 0.3s; }
+        .prog-txt { font-size: 0.82rem; color: var(--gray); text-align: center; margin-top: 6px; }
+
+        /* ══ قسم رفع الصورة ══ */
+        .img-upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--light-bg);
+            position: relative;
+        }
+
+        .img-upload-zone:hover { border-color: var(--primary); }
+        .img-upload-zone input { display: none; }
+        .img-preview-thumb {
+            max-height: 80px;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        /* ══ رسالة الحالة ══ */
+        .status-msg {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            margin-top: 12px;
+        }
+
+        .status-msg.ok { display: block; background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.2); color: #059669; }
+        .status-msg.err { display: block; background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.2); color: #dc2626; }
+
+        /* ══ بطاقات الأمثلة الجاهزة ══ */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .preset-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--gray);
+            background: var(--light-bg);
+            transition: all 0.2s;
+        }
+
+        .preset-card:hover, .preset-card.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(79,70,229,0.06);
+        }
+
+        .preset-card .pc-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+        /* ══ استجابة ══ */
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .panel { position: static; }
+        }
+
+        @media (max-width: 480px) {
+            .panel-tabs .ptab { font-size: 0.72rem; padding: 12px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="../index.html" class="logo">
+        <img src="../assets/images/logo-nav.png" alt="أدوات التميز" class="logo-img">
+    </a>
+    <div class="links">
+        <a href="../index.html">الرئيسية</a>
+        <a href="../tools/index.html" class="active">الأدوات</a>
+        <a href="../legal/about.html">عن الموقع</a>
+        <a href="../contact.html">اتصل بنا</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+</nav>
+
+<div class="hero">
+    <h1>🎨 تخصيص ملفات PDF</h1>
+    <p>أضف شعاراً أو ختماً نصياً أو علامة مائية لملفاتك — مجاناً وبدون رفع ملفاتك لأي سيرفر</p>
+</div>
+
+<main class="tool-wrapper">
+
+    <!-- ══ رفع الملف ══ -->
+    <div class="upload-zone" id="pdfUploadZone" style="margin-bottom:24px;" onclick="document.getElementById('pdfInput').click()">
+        <input type="file" id="pdfInput" accept="application/pdf">
+        <div class="upload-icon">📂</div>
+        <strong>اضغط أو اسحب ملف PDF هنا</strong>
+        <p style="color:var(--gray);font-size:0.85rem;margin-top:6px;">يمكن معالجة ملف واحد في كل مرة</p>
+    </div>
+
+    <!-- ══ التخطيط الرئيسي ══ -->
+    <div class="main-layout" id="mainLayout" style="display:none;">
+
+        <!-- ══ لوحة الإعداد (يسار) ══ -->
+        <div class="panel">
+            <div class="panel-tabs">
+                <button class="ptab active" onclick="switchTab('logo',this)">
+                    <span class="ptab-icon">🖼️</span>شعار
+                </button>
+                <button class="ptab" onclick="switchTab('stamp',this)">
+                    <span class="ptab-icon">✍️</span>ختم نصي
+                </button>
+                <button class="ptab" onclick="switchTab('watermark',this)">
+                    <span class="ptab-icon">💧</span>علامة مائية
+                </button>
+            </div>
+
+            <div class="panel-body">
+
+                <!-- ══ قسم الشعار ══ -->
+                <div id="sec-logo" class="panel-section active">
+                    <div class="fg">
+                        <label>الشعار / الصورة</label>
+                        <div class="img-upload-zone" id="logoUploadZone" onclick="document.getElementById('logoInput').click()">
+                            <input type="file" id="logoInput" accept="image/*" onchange="loadLogoImage(this)">
+                            <div id="logoPlaceholder">
+                                <div style="font-size:2rem;">🖼️</div>
+                                <p style="font-size:0.82rem;color:var(--gray);margin-top:6px;">اضغط لرفع شعارك</p>
+                            </div>
+                            <img id="logoThumb" class="img-preview-thumb" style="display:none;">
+                        </div>
+                    </div>
+
+                    <!-- أمثلة جاهزة -->
+                    <div class="fg">
+                        <label>شعار جاهز</label>
+                        <div class="preset-grid">
+                            <div class="preset-card" onclick="usePresetLogo('masartamayoz')">
+                                <span class="pc-icon">📚</span>مسار التميز
+                            </div>
+                            <div class="preset-card" onclick="usePresetLogo('tools')">
+                                <span class="pc-icon">🛠️</span>أدوات التميز
+                            </div>
+                            <div class="preset-card" onclick="usePresetLogo('none')">
+                                <span class="pc-icon">🚫</span>بدون شعار
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>حجم الشعار</label>
+                        <div class="range-row">
+                            <input type="range" id="logoSize" min="30" max="200" value="80" oninput="updateVal('logoSizeVal',this.value+'px');updatePreview()">
+                            <span class="range-val" id="logoSizeVal">80px</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>الشفافية</label>
+                        <div class="range-row">
+                            <input type="range" id="logoOpacity" min="10" max="100" value="100" oninput="updateVal('logoOpacityVal',this.value+'%');updatePreview()">
+                            <span class="range-val" id="logoOpacityVal">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>الموضع</label>
+                        <div class="pos-grid" id="logoPosGrid">
+                            <button class="pos-btn" data-pos="top-right"    onclick="setPos('logo','top-right',this)">↗</button>
+                            <button class="pos-btn" data-pos="top-center"   onclick="setPos('logo','top-center',this)">↑</button>
+                            <button class="pos-btn" data-pos="top-left"     onclick="setPos('logo','top-left',this)">↖</button>
+                            <button class="pos-btn" data-pos="mid-right"    onclick="setPos('logo','mid-right',this)">→</button>
+                            <button class="pos-btn active" data-pos="center" onclick="setPos('logo','center',this)">⊙</button>
+                            <button class="pos-btn" data-pos="mid-left"     onclick="setPos('logo','mid-left',this)">←</button>
+                            <button class="pos-btn" data-pos="bottom-right" onclick="setPos('logo','bottom-right',this)">↘</button>
+                            <button class="pos-btn" data-pos="bottom-center" onclick="setPos('logo','bottom-center',this)">↓</button>
+                            <button class="pos-btn" data-pos="bottom-left"  onclick="setPos('logo','bottom-left',this)">↙</button>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>تطبيق على</label>
+                        <select id="logoPages" onchange="updatePreview()">
+                            <option value="all">جميع الصفحات</option>
+                            <option value="first">الصفحة الأولى فقط</option>
+                            <option value="last">الصفحة الأخيرة فقط</option>
+                            <option value="odd">الصفحات الفردية</option>
+                            <option value="even">الصفحات الزوجية</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ══ قسم الختم النصي ══ -->
+                <div id="sec-stamp" class="panel-section">
+                    <div class="fg">
+                        <label>نص الختم</label>
+                        <input type="text" id="stampText" value="مسار التميز" oninput="updatePreview()" placeholder="مثال: سري — للاستخدام الداخلي">
+                    </div>
+
+                    <div class="fg">
+                        <label>أمثلة جاهزة</label>
+                        <div class="preset-grid">
+                            <div class="preset-card" onclick="setStampPreset('مسار التميز')"><span class="pc-icon">📚</span>مسار التميز</div>
+                            <div class="preset-card" onclick="setStampPreset('سري')"><span class="pc-icon">🔒</span>سري</div>
+                            <div class="preset-card" onclick="setStampPreset('نسخة تجريبية')"><span class="pc-icon">🧪</span>تجريبي</div>
+                            <div class="preset-card" onclick="setStampPreset('للمراجعة فقط')"><span class="pc-icon">👁️</span>مراجعة</div>
+                            <div class="preset-card" onclick="setStampPreset('الأصل')"><span class="pc-icon">✅</span>الأصل</div>
+                            <div class="preset-card" onclick="setStampPreset('نسخة')"><span class="pc-icon">📋</span>نسخة</div>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>حجم الخط</label>
+                        <div class="range-row">
+                            <input type="range" id="stampSize" min="10" max="60" value="28" oninput="updateVal('stampSizeVal',this.value+'px');updatePreview()">
+                            <span class="range-val" id="stampSizeVal">28px</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>لون النص</label>
+                        <input type="color" id="stampColor" value="#4f46e5" onchange="updatePreview()">
+                    </div>
+
+                    <div class="fg">
+                        <label>الشفافية</label>
+                        <div class="range-row">
+                            <input type="range" id="stampOpacity" min="10" max="100" value="90" oninput="updateVal('stampOpacityVal',this.value+'%');updatePreview()">
+                            <span class="range-val" id="stampOpacityVal">90%</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>الإطار</label>
+                        <select id="stampBorder" onchange="updatePreview()">
+                            <option value="none">بدون إطار</option>
+                            <option value="box">مستطيل</option>
+                            <option value="rounded">مستطيل منحني</option>
+                            <option value="underline">خط سفلي</option>
+                        </select>
+                    </div>
+
+                    <div class="fg">
+                        <label>الموضع</label>
+                        <div class="pos-grid" id="stampPosGrid">
+                            <button class="pos-btn" data-pos="top-right"    onclick="setPos('stamp','top-right',this)">↗</button>
+                            <button class="pos-btn" data-pos="top-center"   onclick="setPos('stamp','top-center',this)">↑</button>
+                            <button class="pos-btn" data-pos="top-left"     onclick="setPos('stamp','top-left',this)">↖</button>
+                            <button class="pos-btn" data-pos="mid-right"    onclick="setPos('stamp','mid-right',this)">→</button>
+                            <button class="pos-btn" data-pos="center"       onclick="setPos('stamp','center',this)">⊙</button>
+                            <button class="pos-btn" data-pos="mid-left"     onclick="setPos('stamp','mid-left',this)">←</button>
+                            <button class="pos-btn active" data-pos="bottom-right" onclick="setPos('stamp','bottom-right',this)">↘</button>
+                            <button class="pos-btn" data-pos="bottom-center" onclick="setPos('stamp','bottom-center',this)">↓</button>
+                            <button class="pos-btn" data-pos="bottom-left"  onclick="setPos('stamp','bottom-left',this)">↙</button>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>تطبيق على</label>
+                        <select id="stampPages" onchange="updatePreview()">
+                            <option value="all">جميع الصفحات</option>
+                            <option value="first">الصفحة الأولى فقط</option>
+                            <option value="last">الصفحة الأخيرة فقط</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ══ قسم العلامة المائية ══ -->
+                <div id="sec-watermark" class="panel-section">
+                    <div class="fg">
+                        <label>نص العلامة المائية</label>
+                        <input type="text" id="wmText" value="أدوات التميز" oninput="updatePreview()" placeholder="النص الذي سيظهر بشكل قطري">
+                    </div>
+
+                    <div class="fg">
+                        <label>أمثلة جاهزة</label>
+                        <div class="preset-grid">
+                            <div class="preset-card" onclick="setWMPreset('أدوات التميز')"><span class="pc-icon">🛠️</span>أدوات التميز</div>
+                            <div class="preset-card" onclick="setWMPreset('مسار التميز')"><span class="pc-icon">📚</span>مسار التميز</div>
+                            <div class="preset-card" onclick="setWMPreset('سري')"><span class="pc-icon">🔒</span>سري</div>
+                            <div class="preset-card" onclick="setWMPreset('نسخة تجريبية')"><span class="pc-icon">🧪</span>تجريبي</div>
+                            <div class="preset-card" onclick="setWMPreset('للمراجعة')"><span class="pc-icon">👁️</span>مراجعة</div>
+                            <div class="preset-card" onclick="setWMPreset('محمي')"><span class="pc-icon">🛡️</span>محمي</div>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>حجم الخط</label>
+                        <div class="range-row">
+                            <input type="range" id="wmSize" min="20" max="120" value="60" oninput="updateVal('wmSizeVal',this.value+'px');updatePreview()">
+                            <span class="range-val" id="wmSizeVal">60px</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>اللون</label>
+                        <input type="color" id="wmColor" value="#94a3b8" onchange="updatePreview()">
+                    </div>
+
+                    <div class="fg">
+                        <label>الشفافية</label>
+                        <div class="range-row">
+                            <input type="range" id="wmOpacity" min="5" max="60" value="18" oninput="updateVal('wmOpacityVal',this.value+'%');updatePreview()">
+                            <span class="range-val" id="wmOpacityVal">18%</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>الزاوية</label>
+                        <div class="range-row">
+                            <input type="range" id="wmAngle" min="-90" max="90" value="-35" oninput="updateVal('wmAngleVal',this.value+'°');updatePreview()">
+                            <span class="range-val" id="wmAngleVal">-35°</span>
+                        </div>
+                    </div>
+
+                    <div class="fg">
+                        <label>نمط التوزيع</label>
+                        <select id="wmPattern" onchange="updatePreview()">
+                            <option value="center">مركزي واحد</option>
+                            <option value="grid" selected>شبكة متكررة</option>
+                            <option value="diagonal">قطري مزدوج</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div><!-- /panel-body -->
+        </div><!-- /panel -->
+
+        <!-- ══ منطقة المعاينة والتحميل (يمين) ══ -->
+        <div>
+            <div class="preview-area">
+                <div class="preview-toolbar">
+                    <div>
+                        <h3>👁️ معاينة</h3>
+                        <p style="font-size:0.78rem;color:var(--gray);margin:2px 0 0;" id="pageInfo">—</p>
+                    </div>
+                    <div class="btn-row">
+                        <button class="tbtn" onclick="prevPage()">◀ السابقة</button>
+                        <button class="tbtn" onclick="nextPage()">التالية ▶</button>
+                        <button class="tbtn primary" onclick="applyAndDownload()" id="downloadBtn">
+                            ⬇️ تطبيق وتحميل PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="preview-canvas-wrap">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+
+                <div style="padding:14px 20px;border-top:1px solid var(--border);">
+                    <div class="prog" id="progWrap">
+                        <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+                        <p class="prog-txt" id="progTxt">جاري المعالجة...</p>
+                    </div>
+                    <div class="status-msg" id="statusMsg"></div>
+                </div>
+            </div>
+
+            <!-- معلومات الملف -->
+            <div id="fileInfoCard" style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 20px;margin-top:16px;display:flex;align-items:center;gap:14px;">
+                <div style="font-size:2rem;">📄</div>
+                <div>
+                    <div style="font-weight:600;" id="fileName">—</div>
+                    <div style="font-size:0.82rem;color:var(--gray);" id="fileDetails">—</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main-layout -->
+
+</main>
+
+<footer>
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;padding:0 5%;">
+        <div>
+            <p style="font-weight:700;color:var(--text);margin-bottom:3px;">أدوات التميز</p>
+            <p style="font-size:0.82rem;">© <span class="copy-year">2026</span>
+                <a href="https://www.masartamayoz.com/" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600;">شبكة مسار التميز التعليمية</a>
+                — جميع الحقوق محفوظة</p>
+        </div>
+        <nav style="display:flex;gap:20px;flex-wrap:wrap;">
+            <a href="../legal/about.html"   style="color:var(--gray);font-size:0.88rem;">عن الموقع</a>
+            <a href="../legal/privacy.html" style="color:var(--gray);font-size:0.88rem;">الخصوصية</a>
+            <a href="../legal/terms.html"   style="color:var(--gray);font-size:0.88rem;">الشروط</a>
+        </nav>
+    </div>
+</footer>
+
+<!-- مكتبات -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<script>
+/* ══════════════════════════════════════════════
+   إعداد pdf.js
+══════════════════════════════════════════════ */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ══════════════════════════════════════════════
+   السمة
+══════════════════════════════════════════════ */
+const TT = document.getElementById('themeToggle');
+const H  = document.documentElement;
+const sv = localStorage.getItem('theme') || 'light';
+H.setAttribute('data-theme', sv);
+TT.textContent = sv === 'dark' ? '☀️' : '🌙';
+TT.addEventListener('click', () => {
+    const n = H.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    H.setAttribute('data-theme', n); TT.textContent = n === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('theme', n);
+});
+
+/* ══════════════════════════════════════════════
+   Hamburger
+══════════════════════════════════════════════ */
+(function() {
+    var hamburger = document.getElementById('hamburger');
+    var links = document.querySelector('nav .links');
+    if (!hamburger || !links) return;
+    var overlay = document.createElement('div'); overlay.id = 'mobileOverlay';
+    document.body.appendChild(overlay);
+    var menu = document.createElement('div'); menu.id = 'mobileMenu';
+    var header = document.createElement('div'); header.className = 'menu-header';
+    header.innerHTML = '<span>القائمة</span><button class="menu-close">&#10005;</button>';
+    menu.appendChild(header);
+    links.querySelectorAll('a').forEach(function(a) {
+        var link = document.createElement('a');
+        link.href = a.href; link.textContent = a.textContent;
+        if (a.classList.contains('active')) link.classList.add('active');
+        link.addEventListener('click', closeMenu); menu.appendChild(link);
+    });
+    document.body.appendChild(menu);
+    function openMenu() { menu.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeMenu() { menu.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+    hamburger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.contains('open') ? closeMenu() : openMenu(); });
+    header.querySelector('.menu-close').addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+    window.addEventListener('resize', function() { if (window.innerWidth > 768) closeMenu(); });
+})();
+
+/* ══════════════════════════════════════════════
+   الحالة العامة
+══════════════════════════════════════════════ */
+let pdfDoc        = null;   // pdf.js document
+let pdfBytes      = null;   // ArrayBuffer الأصلي
+let currentPage   = 1;
+let totalPages    = 0;
+let logoImage     = null;   // HTMLImageElement للشعار المحدد
+let logoImageB64  = null;   // base64 للشعار لـ pdf-lib
+let activeTab     = 'logo';
+
+const positions = {
+    logo:      'center',
+    stamp:     'bottom-right',
+};
+
+/* ══════════════════════════════════════════════
+   رفع PDF
+══════════════════════════════════════════════ */
+const pdfInput    = document.getElementById('pdfInput');
+const pdfUploadZone = document.getElementById('pdfUploadZone');
+
+pdfUploadZone.addEventListener('dragover', e => { e.preventDefault(); pdfUploadZone.classList.add('drag'); });
+pdfUploadZone.addEventListener('dragleave', () => pdfUploadZone.classList.remove('drag'));
+pdfUploadZone.addEventListener('drop', e => {
+    e.preventDefault(); pdfUploadZone.classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type === 'application/pdf') loadPDF(f);
+});
+
+pdfInput.addEventListener('change', e => {
+    if (e.target.files[0]) loadPDF(e.target.files[0]);
+});
+
+async function loadPDF(file) {
+    try {
+        pdfBytes = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
+        pdfDoc = await loadingTask.promise;
+        totalPages = pdfDoc.numPages;
+        currentPage = 1;
+
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileDetails').textContent =
+            `${totalPages} صفحة · ${(file.size/1024/1024).toFixed(2)} MB`;
+
+        document.getElementById('mainLayout').style.display = 'grid';
+        pdfUploadZone.style.display = 'none';
+
+        // تحميل الشعار الافتراضي
+        await loadPresetLogoImage('masartamayoz');
+        await updatePreview();
+    } catch(e) {
+        showStatus('❌ خطأ في قراءة الملف. تأكد أنه PDF صالح.', 'err');
+    }
+}
+
+/* ══════════════════════════════════════════════
+   تبديل التبويبات
+══════════════════════════════════════════════ */
+function switchTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + tab).classList.add('active');
+    updatePreview();
+}
+
+/* ══════════════════════════════════════════════
+   إدارة الشعار
+══════════════════════════════════════════════ */
+function loadLogoImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        logoImageB64 = ev.target.result;
+        const img = new Image();
+        img.onload = () => { logoImage = img; updatePreview(); };
+        img.src = ev.target.result;
+        document.getElementById('logoThumb').src = ev.target.result;
+        document.getElementById('logoThumb').style.display = 'block';
+        document.getElementById('logoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+async function loadPresetLogoImage(name) {
+    const urls = {
+        'masartamayoz': '../assets/images/masartamayoz-logo.png',
+        'tools':        '../assets/images/logo-nav.png',
+    };
+    if (name === 'none') { logoImage = null; logoImageB64 = null; return; }
+    const url = urls[name];
+    if (!url) return;
+    return new Promise(resolve => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            logoImage = img;
+            // تحويل إلى base64
+            const c = document.createElement('canvas');
+            c.width = img.width; c.height = img.height;
+            c.getContext('2d').drawImage(img, 0, 0);
+            logoImageB64 = c.toDataURL('image/png');
+            document.getElementById('logoThumb').src = logoImageB64;
+            document.getElementById('logoThumb').style.display = 'block';
+            document.getElementById('logoPlaceholder').style.display = 'none';
+            resolve();
+        };
+        img.onerror = resolve;
+        img.src = url;
+    });
+}
+
+async function usePresetLogo(name) {
+    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+    event.target.closest('.preset-card').classList.add('active');
+    await loadPresetLogoImage(name);
+    updatePreview();
+}
+
+/* ══════════════════════════════════════════════
+   إدارة الموضع
+══════════════════════════════════════════════ */
+function setPos(type, pos, btn) {
+    positions[type] = pos;
+    const grid = document.getElementById(type + 'PosGrid');
+    grid.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updatePreview();
+}
+
+/* ══════════════════════════════════════════════
+   أمثلة جاهزة للنصوص
+══════════════════════════════════════════════ */
+function setStampPreset(text) {
+    document.getElementById('stampText').value = text;
+    updatePreview();
+}
+
+function setWMPreset(text) {
+    document.getElementById('wmText').value = text;
+    updatePreview();
+}
+
+/* ══════════════════════════════════════════════
+   تحديث قيم الـ range
+══════════════════════════════════════════════ */
+function updateVal(id, val) {
+    document.getElementById(id).textContent = val;
+}
+
+/* ══════════════════════════════════════════════
+   المعاينة على Canvas
+══════════════════════════════════════════════ */
+async function updatePreview() {
+    if (!pdfDoc) return;
+    const canvas = document.getElementById('previewCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    // رسم صفحة PDF
+    const page     = await pdfDoc.getPage(currentPage);
+    const viewport = page.getViewport({ scale: 1.5 });
+    canvas.width   = viewport.width;
+    canvas.height  = viewport.height;
+
+    await page.render({ canvasContext: ctx, viewport }).promise;
+
+    // تطبيق التخصيص فوق الصفحة
+    if (activeTab === 'logo')      drawLogoOnCanvas(ctx, canvas.width, canvas.height);
+    if (activeTab === 'stamp')     drawStampOnCanvas(ctx, canvas.width, canvas.height);
+    if (activeTab === 'watermark') drawWatermarkOnCanvas(ctx, canvas.width, canvas.height);
+
+    document.getElementById('pageInfo').textContent =
+        `صفحة ${currentPage} من ${totalPages}`;
+}
+
+/* ── حساب الموضع ── */
+function calcPos(pos, w, h, ew, eh, margin = 18) {
+    const positions = {
+        'top-right':     { x: w - ew - margin,  y: margin },
+        'top-center':    { x: (w - ew) / 2,      y: margin },
+        'top-left':      { x: margin,             y: margin },
+        'mid-right':     { x: w - ew - margin,  y: (h - eh) / 2 },
+        'center':        { x: (w - ew) / 2,      y: (h - eh) / 2 },
+        'mid-left':      { x: margin,             y: (h - eh) / 2 },
+        'bottom-right':  { x: w - ew - margin,  y: h - eh - margin },
+        'bottom-center': { x: (w - ew) / 2,      y: h - eh - margin },
+        'bottom-left':   { x: margin,             y: h - eh - margin },
+    };
+    return positions[pos] || positions['center'];
+}
+
+/* ── رسم الشعار على Canvas ── */
+function drawLogoOnCanvas(ctx, w, h) {
+    if (!logoImage) return;
+    const size    = parseInt(document.getElementById('logoSize').value);
+    const opacity = parseInt(document.getElementById('logoOpacity').value) / 100;
+    const pos     = positions['logo'];
+
+    const ratio   = logoImage.width / logoImage.height;
+    const lw      = size * ratio;
+    const lh      = size;
+    const { x, y } = calcPos(pos, w, h, lw, lh);
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(logoImage, x, y, lw, lh);
+    ctx.restore();
+}
+
+/* ── رسم الختم النصي على Canvas ── */
+function drawStampOnCanvas(ctx, w, h) {
+    const text    = document.getElementById('stampText').value.trim();
+    if (!text) return;
+    const size    = parseInt(document.getElementById('stampSize').value);
+    const color   = document.getElementById('stampColor').value;
+    const opacity = parseInt(document.getElementById('stampOpacity').value) / 100;
+    const border  = document.getElementById('stampBorder').value;
+    const pos     = positions['stamp'];
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.font        = `bold ${size}px "Segoe UI", sans-serif`;
+    ctx.fillStyle   = color;
+    ctx.textAlign   = 'right';
+    ctx.textBaseline = 'top';
+    ctx.direction   = 'rtl';
+
+    const metrics = ctx.measureText(text);
+    const tw = metrics.width;
+    const th = size * 1.3;
+    const pad = 10;
+    const { x, y } = calcPos(pos, w, h, tw + pad*2, th + pad);
+
+    if (border === 'box') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2;
+        ctx.strokeRect(x, y - pad/2, tw + pad*2, th + pad);
+    } else if (border === 'rounded') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2;
+        roundRect(ctx, x, y - pad/2, tw + pad*2, th + pad, 8);
+        ctx.stroke();
+    } else if (border === 'underline') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y + th);
+        ctx.lineTo(x + tw + pad*2, y + th);
+        ctx.stroke();
+    }
+
+    ctx.fillText(text, x + tw + pad, y + pad/2);
+    ctx.restore();
+}
+
+/* ── رسم العلامة المائية على Canvas ── */
+function drawWatermarkOnCanvas(ctx, w, h) {
+    const text    = document.getElementById('wmText').value.trim();
+    if (!text) return;
+    const size    = parseInt(document.getElementById('wmSize').value);
+    const color   = document.getElementById('wmColor').value;
+    const opacity = parseInt(document.getElementById('wmOpacity').value) / 100;
+    const angle   = parseInt(document.getElementById('wmAngle').value) * Math.PI / 180;
+    const pattern = document.getElementById('wmPattern').value;
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.font        = `bold ${size}px "Segoe UI", sans-serif`;
+    ctx.fillStyle   = color;
+    ctx.textAlign   = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (pattern === 'center') {
+        ctx.translate(w/2, h/2);
+        ctx.rotate(angle);
+        ctx.fillText(text, 0, 0);
+    } else if (pattern === 'grid') {
+        const metrics = ctx.measureText(text);
+        const tw = metrics.width + 60;
+        const th = size + 60;
+        for (let y2 = -th; y2 < h + th; y2 += th) {
+            for (let x2 = -tw; x2 < w + tw; x2 += tw) {
+                ctx.save();
+                ctx.translate(x2, y2);
+                ctx.rotate(angle);
+                ctx.fillText(text, 0, 0);
+                ctx.restore();
+            }
+        }
+    } else if (pattern === 'diagonal') {
+        for (const [cx, cy] of [[w*0.3, h*0.35], [w*0.7, h*0.65]]) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+            ctx.fillText(text, 0, 0);
+            ctx.restore();
+        }
+    }
+
+    ctx.restore();
+}
+
+/* ── مساعد roundRect ── */
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+/* ══════════════════════════════════════════════
+   التنقل بين الصفحات
+══════════════════════════════════════════════ */
+function prevPage() { if (currentPage > 1) { currentPage--; updatePreview(); } }
+function nextPage() { if (currentPage < totalPages) { currentPage++; updatePreview(); } }
+
+/* ══════════════════════════════════════════════
+   تطبيق التعديلات وتحميل PDF النهائي
+══════════════════════════════════════════════ */
+async function applyAndDownload() {
+    if (!pdfBytes) return;
+
+    const btn = document.getElementById('downloadBtn');
+    btn.disabled = true;
+    const pw = document.getElementById('progWrap');
+    pw.classList.add('show');
+    setProgress(10, 'جاري تحميل المكتبة...');
+
+    try {
+        const { PDFDocument, rgb, degrees } = PDFLib;
+        setProgress(20, 'جاري قراءة الملف...');
+        const pdfDoc2 = await PDFDocument.load(pdfBytes);
+        const pages   = pdfDoc2.getPages();
+        setProgress(35, 'جاري تطبيق التخصيصات...');
+
+        for (let i = 0; i < pages.length; i++) {
+            const pg  = pages[i];
+            const { width: pw2, height: ph2 } = pg.getSize();
+            const pageNum = i + 1;
+
+            if (activeTab === 'logo' && logoImageB64) {
+                const applyTo = document.getElementById('logoPages').value;
+                if (shouldApply(applyTo, pageNum, pages.length)) {
+                    await embedLogo(pdfDoc2, pg, pw2, ph2);
+                }
+            } else if (activeTab === 'stamp') {
+                const applyTo = document.getElementById('stampPages').value;
+                if (shouldApply(applyTo, pageNum, pages.length)) {
+                    drawStampOnPDF(pg, pw2, ph2, rgb);
+                }
+            } else if (activeTab === 'watermark') {
+                drawWatermarkOnPDF(pg, pw2, ph2, rgb, degrees);
+            }
+
+            setProgress(35 + Math.round((i / pages.length) * 55), `معالجة صفحة ${pageNum} من ${pages.length}...`);
+        }
+
+        setProgress(92, 'جاري إنشاء الملف...');
+        const outBytes = await pdfDoc2.save();
+        const blob     = new Blob([outBytes], { type: 'application/pdf' });
+        const url      = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href         = url;
+        a.download     = 'مخصص_أدوات_التميز.pdf';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        setProgress(100, '✅ تم التحميل بنجاح!');
+        showStatus('✅ تم تطبيق التخصيصات وتحميل الملف بنجاح!', 'ok');
+
+        setTimeout(() => { pw.classList.remove('show'); }, 1500);
+
+    } catch(e) {
+        console.error(e);
+        showStatus('❌ حدث خطأ أثناء المعالجة: ' + e.message, 'err');
+        pw.classList.remove('show');
+    }
+
+    btn.disabled = false;
+}
+
+/* ── هل تُطبَّق على هذه الصفحة؟ ── */
+function shouldApply(rule, pageNum, total) {
+    if (rule === 'all')   return true;
+    if (rule === 'first') return pageNum === 1;
+    if (rule === 'last')  return pageNum === total;
+    if (rule === 'odd')   return pageNum % 2 !== 0;
+    if (rule === 'even')  return pageNum % 2 === 0;
+    return true;
+}
+
+/* ── تضمين الشعار في PDF ── */
+async function embedLogo(doc, page, pw2, ph2) {
+    const size    = parseInt(document.getElementById('logoSize').value) * 2;
+    const opacity = parseInt(document.getElementById('logoOpacity').value) / 100;
+    const pos     = positions['logo'];
+
+    // تحويل base64 إلى Uint8Array
+    const b64 = logoImageB64.split(',')[1];
+    const raw  = atob(b64);
+    const arr  = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+
+    let embImg;
+    try { embImg = await doc.embedPng(arr); } catch { embImg = await doc.embedJpg(arr); }
+
+    const ratio = embImg.width / embImg.height;
+    const lw    = size * ratio;
+    const lh    = size;
+    const { x, y } = calcPosPDF(pos, pw2, ph2, lw, lh);
+
+    page.drawImage(embImg, {
+        x, y: ph2 - y - lh,
+        width: lw, height: lh,
+        opacity,
+    });
+}
+
+/* ── ختم نصي في PDF ── */
+function drawStampOnPDF(page, pw2, ph2, rgb) {
+    const text    = document.getElementById('stampText').value.trim();
+    if (!text) return;
+    const size    = parseInt(document.getElementById('stampSize').value) * 1.4;
+    const color   = hexToRgb(document.getElementById('stampColor').value);
+    const opacity = parseInt(document.getElementById('stampOpacity').value) / 100;
+    const pos     = positions['stamp'];
+    const tw      = text.length * size * 0.55;
+    const { x, y } = calcPosPDF(pos, pw2, ph2, tw, size);
+
+    page.drawText(text, {
+        x, y: ph2 - y - size,
+        size,
+        color: rgb(color.r, color.g, color.b),
+        opacity,
+    });
+}
+
+/* ── علامة مائية في PDF ── */
+function drawWatermarkOnPDF(page, pw2, ph2, rgb, degrees) {
+    const text    = document.getElementById('wmText').value.trim();
+    if (!text) return;
+    const size    = parseInt(document.getElementById('wmSize').value) * 1.4;
+    const color   = hexToRgb(document.getElementById('wmColor').value);
+    const opacity = parseInt(document.getElementById('wmOpacity').value) / 100;
+    const angle   = parseInt(document.getElementById('wmAngle').value);
+    const pattern = document.getElementById('wmPattern').value;
+
+    const draw = (x, y) => {
+        page.drawText(text, {
+            x, y,
+            size,
+            color: rgb(color.r, color.g, color.b),
+            opacity,
+            rotate: degrees(angle),
+        });
+    };
+
+    if (pattern === 'center') {
+        draw(pw2/2 - (text.length * size * 0.3), ph2/2);
+    } else if (pattern === 'grid') {
+        const gap = size * 4;
+        for (let y2 = 0; y2 < ph2; y2 += gap) {
+            for (let x2 = 0; x2 < pw2; x2 += gap) {
+                draw(x2, y2);
+            }
+        }
+    } else {
+        draw(pw2 * 0.2, ph2 * 0.35);
+        draw(pw2 * 0.5, ph2 * 0.65);
+    }
+}
+
+/* ── calcPos لـ pdf-lib (Y مقلوب) ── */
+function calcPosPDF(pos, w, h, ew, eh, margin = 25) {
+    const map = {
+        'top-right':     { x: w - ew - margin, y: margin },
+        'top-center':    { x: (w - ew) / 2,    y: margin },
+        'top-left':      { x: margin,           y: margin },
+        'mid-right':     { x: w - ew - margin, y: (h - eh) / 2 },
+        'center':        { x: (w - ew) / 2,    y: (h - eh) / 2 },
+        'mid-left':      { x: margin,           y: (h - eh) / 2 },
+        'bottom-right':  { x: w - ew - margin, y: h - eh - margin },
+        'bottom-center': { x: (w - ew) / 2,    y: h - eh - margin },
+        'bottom-left':   { x: margin,           y: h - eh - margin },
+    };
+    return map[pos] || map['center'];
+}
+
+/* ══════════════════════════════════════════════
+   مساعدات
+══════════════════════════════════════════════ */
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16)/255;
+    const g = parseInt(hex.slice(3,5),16)/255;
+    const b = parseInt(hex.slice(5,7),16)/255;
+    return { r, g, b };
+}
+
+function setProgress(p, t) {
+    document.getElementById('progFill').style.width = p + '%';
+    document.getElementById('progTxt').textContent  = t;
+}
+
+function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className   = 'status-msg ' + type;
+}
+
+/* تحديث السنة */
+document.querySelectorAll('.copy-year').forEach(el => {
+    el.textContent = new Date().getFullYear();
+});
+</script>
+
+</body>
+</html>
