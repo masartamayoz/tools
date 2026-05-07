@@ -121,6 +121,38 @@
         .faq-card h3 { margin-top: 32px; margin-bottom: 12px; }
         .faq-card li { margin-bottom: 10px; list-style: none; }
         .faq-card li::before { content: '✅ '; }
+    
+        /* ── زر تغيير الملف ── */
+        .change-file-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--light-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 16px;
+            margin-bottom: 18px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .change-file-bar .cf-info { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+        .change-file-bar .cf-name { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .change-file-bar .cf-size { font-size:.78rem; color:var(--gray); }
+        .change-file-btn {
+            padding: 7px 16px;
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--primary);
+            font-size: .82rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .2s;
+            font-family: var(--font-base);
+        }
+        .change-file-btn:hover { background: var(--primary); color: white; }
+
     </style>
 </head>
 <body>
@@ -375,6 +407,50 @@
             if (window.innerWidth > 768) closeMenu();
         });
     })();
-    </script>
+    
+    function showChangeBar(fileName, fileSize) {
+        // إخفاء منطقة الرفع وإظهار شريط التغيير
+        var uz = document.getElementById('uploadZone') || document.getElementById('pdfUploadZone');
+        if (uz) uz.style.display = 'none';
+
+        var existing = document.getElementById('changeFileBar');
+        if (existing) existing.remove();
+
+        var bar = document.createElement('div');
+        bar.id = 'changeFileBar';
+        bar.className = 'change-file-bar';
+        bar.innerHTML = `
+            <div class="cf-info">
+                <span style="font-size:1.4rem;">📄</span>
+                <div>
+                    <div class="cf-name">${fileName}</div>
+                    <div class="cf-size">${(fileSize/1024/1024).toFixed(2)} MB</div>
+                </div>
+            </div>
+            <button class="change-file-btn" onclick="resetUpload()">🔄 تغيير الملف</button>
+        `;
+
+        var layout = document.getElementById('mainLayout');
+        if (layout) layout.parentNode.insertBefore(bar, layout);
+    }
+
+    function resetUpload() {
+        var bar = document.getElementById('changeFileBar');
+        if (bar) bar.remove();
+
+        var uz = document.getElementById('uploadZone') || document.getElementById('pdfUploadZone');
+        if (uz) { uz.style.display = ''; }
+
+        var layout = document.getElementById('mainLayout');
+        if (layout) layout.style.display = 'none';
+
+        // إعادة تعيين المتغيرات
+        pdfJsDoc = null; pdfBytes = null; curPage = 1; totalPages = 0;
+        if (typeof pdfFiles !== 'undefined') pdfFiles = [];
+        if (typeof originalDoc !== 'undefined') originalDoc = null;
+        if (typeof pdfDocument !== 'undefined') pdfDocument = null;
+    }
+
+</script>
 </body>
 </html>

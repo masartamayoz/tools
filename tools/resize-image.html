@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تغيير حجم الصور | أدوات التميز</title>
+    <meta name="description" content="غيّر أبعاد صورك بدقة — اختر الحجم المناسب أو أدخل أبعاداً مخصصة، مجاناً وبدون رفع ملفاتك">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tools.masartamayoz.com/tools/resize-image.html">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-wrapper { max-width: 1100px; margin: 0 auto; padding: 36px 5% 100px; }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 48px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--card-bg);
+            margin-bottom: 24px;
+        }
+        .upload-zone:hover, .upload-zone.drag { border-color: var(--primary); background: rgba(79,70,229,.03); }
+        .upload-zone input { display: none; }
+
+        .main-layout { display: grid; grid-template-columns: 340px 1fr; gap: 22px; align-items: start; }
+
+        .settings-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 88px;
+        }
+
+        .settings-card h3 { font-size: 1rem; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); color: var(--primary); }
+
+        .fg { margin-bottom: 16px; }
+        .fg label { display: block; font-size: .8rem; font-weight: 700; color: var(--gray); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .4px; }
+        .fg input, .fg select {
+            width: 100%; padding: 10px 13px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--light-bg); color: var(--text);
+            font-family: var(--font-base); font-size: .92rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .fg input:focus, .fg select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.08); }
+
+        .dim-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+        .dim-link {
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--light-bg);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; transition: all .2s; margin-bottom: 0;
+        }
+        .dim-link.locked { background: var(--primary); border-color: var(--primary); color: white; }
+        .dim-link:hover { border-color: var(--primary); }
+
+        /* presets */
+        .presets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 16px; }
+        .preset-card {
+            border: 1.5px solid var(--border); border-radius: var(--radius-md);
+            padding: 8px 6px; text-align: center; cursor: pointer;
+            font-size: .72rem; font-weight: 600; color: var(--gray);
+            background: var(--light-bg); transition: all .15s;
+        }
+        .preset-card:hover, .preset-card.active { border-color: var(--primary); color: var(--primary); background: rgba(79,70,229,.06); }
+        .preset-card .pc-name { display: block; margin-bottom: 2px; }
+        .preset-card .pc-dim  { font-size: .68rem; color: var(--gray); font-weight: 400; }
+
+        /* batch */
+        .batch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 0;
+        }
+
+        .img-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+            transition: box-shadow .2s;
+        }
+
+        .img-item:hover { box-shadow: var(--shadow-md); }
+
+        .img-item img { width: 100%; height: 130px; object-fit: cover; display: block; }
+
+        .img-item .img-info {
+            padding: 8px 10px;
+            font-size: .74rem;
+        }
+
+        .img-item .img-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .img-item .img-dims { color: var(--gray); margin-top: 2px; }
+
+        .img-item .remove-btn {
+            position: absolute; top: 6px; left: 6px;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(239,68,68,.85); color: white;
+            border: none; font-size: .8rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .progress-wrap { display: none; margin: 16px 0; }
+        .progress-wrap.show { display: block; }
+        .prog-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: width .3s; }
+        .prog-txt { font-size: .82rem; color: var(--gray); text-align: center; }
+
+        .status-msg { display: none; margin-top: 14px; padding: 12px 16px; border-radius: var(--radius-md); font-size: .85rem; font-weight: 500; }
+        .status-msg.ok  { display: block; background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.2); color: #059669; }
+        .status-msg.err { display: block; background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.2); color: #dc2626; }
+
+        .preview-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .preview-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px; border-bottom: 1px solid var(--border); gap: 10px; flex-wrap: wrap;
+        }
+        .preview-toolbar h3 { font-size: .95rem; margin: 0; }
+
+        .preview-body { padding: 20px; }
+
+        .tbtn {
+            padding: 9px 18px; border-radius: var(--radius-md);
+            font-size: .84rem; font-weight: 600; cursor: pointer;
+            border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+            font-family: var(--font-base); transition: all .2s;
+        }
+        .tbtn:hover  { border-color: var(--primary); color: var(--primary); }
+        .tbtn.ok     { background: #10b981; color: white; border-color: #10b981; }
+        .tbtn.ok:hover { background: #059669; }
+
+        /* change file bar */
+        .change-file-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--light-bg); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 10px 16px; margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+        }
+        .change-file-bar .cf-info { display:flex; align-items:center; gap:10px; flex:1; }
+        .change-file-btn {
+            padding: 7px 16px; border: 1px solid var(--primary); border-radius: var(--radius-md);
+            background: transparent; color: var(--primary); font-size: .82rem; font-weight: 600;
+            cursor: pointer; white-space: nowrap; transition: all .2s; font-family: var(--font-base);
+        }
+        .change-file-btn:hover { background: var(--primary); color: white; }
+
+        @media (max-width: 860px) { .main-layout { grid-template-columns: 1fr; } .settings-card { position: static; } }
+        @media (max-width: 480px) { .presets-grid { grid-template-columns: repeat(2,1fr); } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="../index.html" class="logo"><img src="../assets/images/logo-nav.png" alt="أدوات التميز" class="logo-img"></a>
+    <div class="links">
+        <a href="../index.html">الرئيسية</a>
+        <a href="../tools/index.html" class="active">الأدوات</a>
+        <a href="../legal/about.html">عن الموقع</a>
+        <a href="../contact.html">اتصل بنا</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="فتح القائمة">&#9776;</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="تبديل الوضع الليلي">🌙</button>
+</nav>
+
+<div class="hero">
+    <h1>📐 تغيير حجم الصور</h1>
+    <p>غيّر أبعاد صورك بدقة — أبعاد مخصصة أو قوالب جاهزة، حتى 25 صورة في نفس الوقت</p>
+</div>
+
+<main class="tool-wrapper">
+
+    <!-- رفع الصور -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imgInput').click()">
+        <input type="file" id="imgInput" accept="image/*" multiple>
+        <div style="font-size:2.8rem;margin-bottom:10px;">🖼️</div>
+        <strong style="font-size:1rem;">اضغط أو اسحب الصور هنا</strong>
+        <p style="color:var(--gray);font-size:.84rem;margin-top:6px;">JPG · PNG · WebP — حتى 25 صورة في نفس الوقت</p>
+    </div>
+
+    <!-- شريط تغيير الملفات -->
+    <div id="changeBar" style="display:none;" class="change-file-bar">
+        <div class="cf-info">
+            <span style="font-size:1.4rem;">🖼️</span>
+            <div>
+                <div style="font-weight:600;" id="changeBarInfo">—</div>
+                <div style="font-size:.78rem;color:var(--gray);">انقر "تغيير" لرفع صور جديدة</div>
+            </div>
+        </div>
+        <button class="change-file-btn" onclick="resetTool()">🔄 تغيير الصور</button>
+    </div>
+
+    <!-- التخطيط الرئيسي -->
+    <div class="main-layout" id="mainLayout" style="display:none;">
+
+        <!-- ══ إعدادات التحجيم ══ -->
+        <div class="settings-card">
+            <h3>⚙️ إعدادات التحجيم</h3>
+
+            <!-- قوالب جاهزة -->
+            <div class="fg">
+                <label>قوالب جاهزة</label>
+                <div class="presets-grid">
+                    <div class="preset-card" onclick="applyPreset(1920,1080,this)">
+                        <span class="pc-name">Full HD</span>
+                        <span class="pc-dim">1920×1080</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(1280,720,this)">
+                        <span class="pc-name">HD</span>
+                        <span class="pc-dim">1280×720</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(800,600,this)">
+                        <span class="pc-name">SVGA</span>
+                        <span class="pc-dim">800×600</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(1080,1080,this)">
+                        <span class="pc-name">Instagram</span>
+                        <span class="pc-dim">1080×1080</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(1200,630,this)">
+                        <span class="pc-name">Facebook</span>
+                        <span class="pc-dim">1200×630</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(1500,500,this)">
+                        <span class="pc-name">Twitter</span>
+                        <span class="pc-dim">1500×500</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(210,297,this)">
+                        <span class="pc-name">A4</span>
+                        <span class="pc-dim">210×297 mm</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(595,842,this)">
+                        <span class="pc-name">A4 PDF</span>
+                        <span class="pc-dim">595×842 px</span>
+                    </div>
+                    <div class="preset-card" onclick="applyPreset(512,512,this)">
+                        <span class="pc-name">أيقونة</span>
+                        <span class="pc-dim">512×512</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أبعاد مخصصة -->
+            <div class="fg">
+                <label>الأبعاد المخصصة (بالبكسل)</label>
+                <div class="dim-row">
+                    <div class="fg" style="margin:0;">
+                        <label style="margin-bottom:5px;font-size:.72rem;">العرض</label>
+                        <input type="number" id="resW" value="1920" min="1" max="8000" oninput="onWChange()">
+                    </div>
+                    <button class="dim-link locked" id="lockBtn" onclick="toggleLock()" title="قفل النسبة">🔒</button>
+                    <div class="fg" style="margin:0;">
+                        <label style="margin-bottom:5px;font-size:.72rem;">الارتفاع</label>
+                        <input type="number" id="resH" value="1080" min="1" max="8000" oninput="onHChange()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fg">
+                <label>وحدة القياس</label>
+                <select id="unit" onchange="updateUnit()">
+                    <option value="px">بكسل (px)</option>
+                    <option value="pct">نسبة مئوية (%)</option>
+                </select>
+            </div>
+
+            <div class="fg">
+                <label>جودة الإخراج</label>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="range" id="quality" min="50" max="100" value="92" oninput="document.getElementById('qualityVal').textContent=this.value+'%'" style="flex:1;accent-color:var(--primary);">
+                    <span style="min-width:38px;text-align:center;font-weight:700;color:var(--primary);font-size:.85rem;" id="qualityVal">92%</span>
+                </div>
+            </div>
+
+            <div class="fg">
+                <label>صيغة الإخراج</label>
+                <select id="outFormat">
+                    <option value="jpeg">JPG (أصغر حجم)</option>
+                    <option value="png">PNG (شفافية)</option>
+                    <option value="webp">WebP (أحدث)</option>
+                </select>
+            </div>
+
+            <div class="fg">
+                <label>طريقة الملاءمة</label>
+                <select id="fitMode">
+                    <option value="stretch">تمديد (قد يشوّه)</option>
+                    <option value="contain" selected>احتواء (مع هوامش)</option>
+                    <option value="cover">تغطية (قص الزائد)</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="resizeAll()" id="resizeBtn" style="width:100%;padding:13px;font-size:1rem;margin-top:8px;">
+                📐 تغيير الحجم وتحميل ZIP
+            </button>
+
+            <div class="progress-wrap" id="progWrap">
+                <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+                <p class="prog-txt" id="progTxt">جاري المعالجة...</p>
+            </div>
+
+            <div class="status-msg" id="statusMsg"></div>
+        </div>
+
+        <!-- ══ معاينة الصور ══ -->
+        <div class="preview-card">
+            <div class="preview-toolbar">
+                <div>
+                    <h3>🖼️ الصور المرفوعة</h3>
+                    <p style="font-size:.75rem;color:var(--gray);margin:2px 0 0;" id="imgCount">—</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="tbtn" onclick="document.getElementById('imgInput').click()">+ إضافة صور</button>
+                    <button class="tbtn" onclick="clearAll()">🗑️ مسح الكل</button>
+                </div>
+            </div>
+            <div class="preview-body">
+                <div class="batch-grid" id="batchGrid"></div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;padding:0 5%;">
+        <div>
+            <p style="font-weight:700;color:var(--text);margin-bottom:3px;">أدوات التميز</p>
+            <p style="font-size:.82rem;">© <span class="copy-year">2026</span>
+                <a href="https://www.masartamayoz.com/" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600;">شبكة مسار التميز التعليمية</a>
+                — جميع الحقوق محفوظة</p>
+        </div>
+        <nav style="display:flex;gap:18px;flex-wrap:wrap;">
+            <a href="../legal/about.html" style="color:var(--gray);font-size:.86rem;">عن الموقع</a>
+            <a href="../legal/privacy.html" style="color:var(--gray);font-size:.86rem;">الخصوصية</a>
+            <a href="../legal/terms.html" style="color:var(--gray);font-size:.86rem;">الشروط</a>
+        </nav>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* ══ السمة ══ */
+const TT=document.getElementById('themeToggle'),H=document.documentElement;
+const sv=localStorage.getItem('theme')||'light';
+H.setAttribute('data-theme',sv); TT.textContent=sv==='dark'?'☀️':'🌙';
+TT.addEventListener('click',()=>{const n=H.getAttribute('data-theme')==='dark'?'light':'dark';H.setAttribute('data-theme',n);TT.textContent=n==='dark'?'☀️':'🌙';localStorage.setItem('theme',n);});
+
+/* ══ Hamburger ══ */
+(function(){var hb=document.getElementById('hamburger'),lk=document.querySelector('nav .links');if(!hb||!lk)return;var ov=document.createElement('div');ov.id='mobileOverlay';document.body.appendChild(ov);var mn=document.createElement('div');mn.id='mobileMenu';var hdr=document.createElement('div');hdr.className='menu-header';hdr.innerHTML='<span>القائمة</span><button class="menu-close">&#10005;</button>';mn.appendChild(hdr);lk.querySelectorAll('a').forEach(function(a){var l=document.createElement('a');l.href=a.href;l.textContent=a.textContent;if(a.classList.contains('active'))l.classList.add('active');l.addEventListener('click',close);mn.appendChild(l);});document.body.appendChild(mn);function open(){mn.classList.add('open');ov.classList.add('open');hb.innerHTML='&#10005;';document.body.style.overflow='hidden';}function close(){mn.classList.remove('open');ov.classList.remove('open');hb.innerHTML='&#9776;';document.body.style.overflow='';}hb.addEventListener('click',function(e){e.stopPropagation();mn.classList.contains('open')?close():open();});hdr.querySelector('.menu-close').addEventListener('click',close);ov.addEventListener('click',close);window.addEventListener('resize',function(){if(window.innerWidth>768)close();});})();
+
+/* ══ الحالة ══ */
+const MAX_FILES = 25;
+let files = [];
+let aspectRatio = 16/9;
+let locked = true;
+let originalDims = {};
+
+/* ══ رفع الصور ══ */
+const uploadZone = document.getElementById('uploadZone');
+const imgInput   = document.getElementById('imgInput');
+
+uploadZone.addEventListener('dragover',  e=>{e.preventDefault();uploadZone.classList.add('drag');});
+uploadZone.addEventListener('dragleave', ()=>uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e=>{
+    e.preventDefault(); uploadZone.classList.remove('drag');
+    addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));
+});
+imgInput.addEventListener('change', e=> addFiles(Array.from(e.target.files)));
+
+function addFiles(newFiles) {
+    const available = MAX_FILES - files.length;
+    if (available <= 0) { showStatus(`⚠️ الحد الأقصى ${MAX_FILES} صورة.`,'err'); return; }
+    const toAdd = newFiles.slice(0, available);
+    files = [...files, ...toAdd];
+
+    if (files.length > 0) {
+        uploadZone.style.display   = 'none';
+        document.getElementById('mainLayout').style.display = 'grid';
+        document.getElementById('changeBar').style.display  = 'flex';
+        document.getElementById('changeBarInfo').textContent = `${files.length} صورة مرفوعة`;
+    }
+
+    renderGrid();
+    // تحميل أبعاد أول صورة تلقائياً
+    if (files.length === toAdd.length) loadFirstImageDims(files[0]);
+}
+
+function loadFirstImageDims(file) {
+    const img = new Image();
+    img.onload = () => {
+        originalDims = { w: img.width, h: img.height };
+        aspectRatio  = img.width / img.height;
+        document.getElementById('resW').value = img.width;
+        document.getElementById('resH').value = img.height;
+        URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(file);
+}
+
+function renderGrid() {
+    const grid = document.getElementById('batchGrid');
+    grid.innerHTML = '';
+    document.getElementById('imgCount').textContent = `${files.length} / ${MAX_FILES} صورة`;
+
+    files.forEach((file, i) => {
+        const url = URL.createObjectURL(file);
+        const div = document.createElement('div');
+        div.className = 'img-item';
+
+        // تحميل أبعاد الصورة
+        const img = new Image();
+        img.onload = () => {
+            div.querySelector('.img-dims').textContent = `${img.width} × ${img.height} px`;
+            URL.revokeObjectURL(img.src);
+        };
+        img.src = url;
+
+        div.innerHTML = `
+            <button class="remove-btn" onclick="removeFile(${i})">×</button>
+            <img src="${url}" alt="${file.name}" loading="lazy">
+            <div class="img-info">
+                <div class="img-name">${file.name}</div>
+                <div class="img-dims" style="color:var(--gray);font-size:.72rem;">جاري التحميل...</div>
+                <div style="color:var(--gray);font-size:.72rem;">${(file.size/1024).toFixed(0)} KB</div>
+            </div>`;
+        grid.appendChild(div);
+    });
+}
+
+function removeFile(i) {
+    files.splice(i, 1);
+    if (!files.length) resetTool();
+    else { renderGrid(); document.getElementById('changeBarInfo').textContent = `${files.length} صورة مرفوعة`; }
+}
+
+function clearAll() { files = []; resetTool(); }
+
+function resetTool() {
+    files = [];
+    uploadZone.style.display = '';
+    document.getElementById('mainLayout').style.display = 'none';
+    document.getElementById('changeBar').style.display  = 'none';
+    document.getElementById('batchGrid').innerHTML = '';
+    document.getElementById('statusMsg').className = 'status-msg';
+    imgInput.value = '';
+}
+
+/* ══ قوالب ══ */
+function applyPreset(w, h, btn) {
+    document.querySelectorAll('.preset-card').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('resW').value = w;
+    document.getElementById('resH').value = h;
+    aspectRatio = w / h;
+}
+
+/* ══ قفل النسبة ══ */
+function toggleLock() {
+    locked = !locked;
+    const btn = document.getElementById('lockBtn');
+    btn.textContent  = locked ? '🔒' : '🔓';
+    btn.classList.toggle('locked', locked);
+    if (locked) {
+        const w = parseFloat(document.getElementById('resW').value)||1;
+        const h = parseFloat(document.getElementById('resH').value)||1;
+        aspectRatio = w / h;
+    }
+}
+
+function onWChange() {
+    if (!locked) return;
+    const w = parseFloat(document.getElementById('resW').value)||1;
+    document.getElementById('resH').value = Math.round(w / aspectRatio);
+}
+
+function onHChange() {
+    if (!locked) return;
+    const h = parseFloat(document.getElementById('resH').value)||1;
+    document.getElementById('resW').value = Math.round(h * aspectRatio);
+}
+
+function updateUnit() {
+    const u = document.getElementById('unit').value;
+    if (u === 'pct') {
+        document.getElementById('resW').value = 100;
+        document.getElementById('resH').value = 100;
+    } else {
+        document.getElementById('resW').value = originalDims.w || 1920;
+        document.getElementById('resH').value = originalDims.h || 1080;
+    }
+}
+
+/* ══ التحجيم الفعلي ══ */
+async function resizeAll() {
+    if (!files.length) return;
+
+    let targetW = parseInt(document.getElementById('resW').value)||800;
+    let targetH = parseInt(document.getElementById('resH').value)||600;
+    const unit    = document.getElementById('unit').value;
+    const quality = parseInt(document.getElementById('quality').value)/100;
+    const fmt     = document.getElementById('outFormat').value;
+    const fitMode = document.getElementById('fitMode').value;
+    const btn     = document.getElementById('resizeBtn');
+    const pw      = document.getElementById('progWrap');
+
+    btn.disabled = true;
+    pw.classList.add('show');
+
+    const zip = new JSZip();
+
+    for (let i = 0; i < files.length; i++) {
+        setP(Math.round((i/files.length)*95), `معالجة صورة ${i+1} من ${files.length}...`);
+
+        const blob = await resizeSingle(files[i], targetW, targetH, unit, quality, fmt, fitMode);
+        const ext  = fmt === 'jpeg' ? 'jpg' : fmt;
+        zip.file(`${files[i].name.replace(/\.[^.]+$/,'')}_resized.${ext}`, blob);
+    }
+
+    setP(98,'جاري إنشاء ملف ZIP...');
+    const zipBlob = await zip.generateAsync({type:'blob'});
+    const url     = URL.createObjectURL(zipBlob);
+    const a       = document.createElement('a');
+    a.href = url; a.download = `صور_محجّمة_أدوات_التميز.zip`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setP(100,'✅ تم!');
+    showStatus(`✅ تم تحجيم ${files.length} صورة وتحميلها بنجاح!`,'ok');
+    setTimeout(()=>pw.classList.remove('show'),1500);
+    btn.disabled = false;
+}
+
+function resizeSingle(file, tw, th, unit, quality, fmt, fitMode) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            let finalW = tw, finalH = th;
+            if (unit === 'pct') {
+                finalW = Math.round(img.width  * tw / 100);
+                finalH = Math.round(img.height * th / 100);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width  = finalW;
+            canvas.height = finalH;
+            const ctx = canvas.getContext('2d');
+
+            // خلفية بيضاء للـ JPG
+            if (fmt === 'jpeg') { ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,finalW,finalH); }
+
+            if (fitMode === 'stretch') {
+                ctx.drawImage(img, 0, 0, finalW, finalH);
+            } else if (fitMode === 'contain') {
+                const scale = Math.min(finalW/img.width, finalH/img.height);
+                const sw = img.width*scale, sh = img.height*scale;
+                ctx.drawImage(img, (finalW-sw)/2, (finalH-sh)/2, sw, sh);
+            } else { // cover
+                const scale = Math.max(finalW/img.width, finalH/img.height);
+                const sw = img.width*scale, sh = img.height*scale;
+                ctx.drawImage(img, (finalW-sw)/2, (finalH-sh)/2, sw, sh);
+            }
+
+            canvas.toBlob(resolve, `image/${fmt}`, quality);
+            URL.revokeObjectURL(img.src);
+        };
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+function setP(p,t){ document.getElementById('progFill').style.width=p+'%'; document.getElementById('progTxt').textContent=t; }
+function showStatus(msg,type){ const el=document.getElementById('statusMsg'); el.textContent=msg; el.className='status-msg '+type; }
+document.querySelectorAll('.copy-year').forEach(el=>el.textContent=new Date().getFullYear());
+</script>
+</body>
+</html>

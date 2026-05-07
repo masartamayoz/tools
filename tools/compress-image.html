@@ -116,6 +116,47 @@
         .faq-card h3 { margin-top: 32px; margin-bottom: 12px; }
         .faq-card li { margin-bottom: 10px; list-style: none; }
         .faq-card li::before { content: '✅ '; }
+
+        /* ── إحصائيات الضغط ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .stat-box {
+            background: var(--light-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .stat-box .s-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+        .stat-box .s-val.green { color: #10b981; }
+        .stat-box .s-val.red   { color: #ef4444; }
+        .stat-box .s-lbl {
+            font-size: .75rem;
+            color: var(--gray);
+            margin-top: 3px;
+            display: block;
+        }
+        .preview-item .size-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 8px;
+            font-size: .75rem;
+            background: var(--light-bg);
+            border-top: 1px solid var(--border);
+        }
+        .preview-item .size-before { color: var(--gray); }
+        .preview-item .size-after  { color: #10b981; font-weight: 600; }
+        .preview-item .size-ratio  { color: var(--primary); font-weight: 700; }
+
     </style>
 </head>
 <body>
@@ -254,16 +295,28 @@
             });
         }
 
+        let compressionStats = [];
+
         async function compressAndDownload() {
             if (!files.length) return;
             const quality = qualitySlider.value / 100;
             const zip = new JSZip();
             status.className = 'status-msg';
+            compressionStats = [];
+            let totalBefore = 0, totalAfter = 0;
 
             for (let i = 0; i < files.length; i++) {
                 status.textContent = `جاري ضغط ${i + 1} من ${files.length} صورة...`;
                 const blob = await compressImage(files[i], quality);
                 zip.file(`مضغوط_${files[i].name.replace(/\.[^.]+$/, '')}.jpg`, blob);
+                totalBefore += files[i].size;
+                totalAfter  += blob.size;
+                compressionStats.push({
+                    name: files[i].name,
+                    before: files[i].size,
+                    after: blob.size,
+                    ratio: Math.round((1 - blob.size/files[i].size)*100)
+                });
             }
 
             const zipBlob = await zip.generateAsync({ type: 'blob' });
