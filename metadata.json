@@ -1,0 +1,6 @@
+{
+  "name": "أدوات التميز — مسار التميز",
+  "description": "منصة مجانية 100% للتلاميذ والأساتذة والأولياء — تحويل الصور إلى PDF، ضغط الملفات، أدوات الرياضيات، دمج وتقسيم PDF، وإنشاء الفروض والاختبارات.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
