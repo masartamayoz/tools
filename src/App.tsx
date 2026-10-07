@@ -3,6 +3,7 @@ import { CategoryId, Tool } from './types';
 import { Navbar } from './components/Navbar';
 import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
+import ArchivedLinksView from './components/ArchivedLinksView';
 import Logo from './components/Logo';
 
 // Subtools
@@ -257,6 +258,14 @@ export default function App() {
           <AboutView />
         ) : currentCategory === 'contact' ? (
           <ContactView />
+        ) : currentCategory === 'archive' ? (
+          <ArchivedLinksView
+            onOpenInternalTool={(toolId) => {
+              setActiveToolId(toolId);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            brandTheme={brandTheme}
+          />
         ) : activeToolId ? (
           /* Single active tool page */
           <div className="space-y-6 animate-in fade-in duration-300">
@@ -320,6 +329,46 @@ export default function App() {
                       </button>
                     )}
                   </div>
+                </div>
+
+                {/* Direct Shortcut Action Pills */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                  <button
+                    onClick={() => selectCategory('archive')}
+                    className="px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-xs font-bold text-white border border-white/25 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    <span>🏛️ أرشيف وروابط مسار المعتمدة</span>
+                    <span className="text-[10px] px-1.5 py-0.2 bg-amber-400 text-slate-900 rounded-full font-black">
+                      مفعّل ↗
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setActiveToolId('pdf-stamp');
+                    }}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>🎨 تخصيص وختم PDF</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setActiveToolId('compress-pdf');
+                    }}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>⚡ ضغط PDF (25 ملفاً)</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setActiveToolId('exam-generator');
+                    }}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>📝 مولد الامتحانات تونس</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -402,6 +451,19 @@ export default function App() {
                   >
                     📝 فروض وامتحانات
                   </button>
+                  <button
+                    onClick={() => selectCategory('archive')}
+                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      currentCategory === 'archive'
+                        ? styles.categoryActiveBg
+                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                    }`}
+                  >
+                    <span>🏛️ أرشيف وروابط مسار</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-extrabold">
+                      مفعّل ↗
+                    </span>
+                  </button>
                 </div>
               </div>
 
@@ -455,7 +517,7 @@ export default function App() {
 
             {/* Portal Integration: Modern & Classic Masar Tamayoz Resources Hub */}
             <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800 space-y-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🏛️</span>
@@ -464,20 +526,34 @@ export default function App() {
                     </h3>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">
-                    دمج متكامل بين أحدث أدوات الويب الذكية والمكتبة البيداغوجية التاريخية لمسار التميز التونسي.
+                    دمج متكامل وشفاف بين أحدث أدوات الويب الذكية والمكتبة البيداغوجية التاريخية لمسار التميز التونسي.
                   </p>
                 </div>
-                <span className="text-[10px] font-black px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                  من الابتدائي إلى الباكالوريا 🇹🇳
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => selectCategory('archive')}
+                    className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <span>استعراض الأرشيف المفصل (8+ روابط موثقة)</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hidden md:inline">
+                    تونس 🇹🇳
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Resource 1: Exam Bank */}
-                <div className="bg-gradient-to-br from-indigo-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">
-                      <GraduationCap className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-indigo-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between items-start">
+                      <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">
+                        <GraduationCap className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                        masartamayoz.com
+                      </span>
                     </div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
                       بنك الفروض والامتحانات الوطنية
@@ -486,23 +562,39 @@ export default function App() {
                       فروض مراقبة وتأليفية مع الإصلاح الدقيق لمناظرات السادسة، التاسعة، وامتحانات الباكالوريا.
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('exam-generator');
-                    }}
-                    className="text-xs font-bold text-indigo-600 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-100 dark:border-slate-800"
-                  >
-                    <span>فتح مولد الفروض والامتحانات</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <a
+                      href="https://masartamayoz.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-xs font-bold py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <span>زيارة الموقع الرسمي</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setActiveToolId('exam-generator');
+                      }}
+                      className="w-full text-[11px] font-bold text-indigo-600 dark:text-sky-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>توليد نموذج فرض تفاعلي</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Resource 2: Textbooks & Parallels */}
-                <div className="bg-gradient-to-br from-emerald-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
-                      <BookMarked className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-emerald-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between items-start">
+                      <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
+                        <BookMarked className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                        masartamayoz.com
+                      </span>
                     </div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
                       الكتب الموازية والملخصات
@@ -511,63 +603,106 @@ export default function App() {
                       سلسلة مسار التميز للكتب المدرسية الموازية وبحوث وتمارين معمقة باللغتين العربية والفرنسية.
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('pdf-stamp');
-                    }}
-                    className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-100 dark:border-slate-800"
-                  >
-                    <span>تخصيص وختم الملخصات PDF</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <a
+                      href="https://masartamayoz.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-xs font-bold py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <span>تصفح كتب وسلاسل مسار</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setActiveToolId('pdf-stamp');
+                      }}
+                      className="w-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>تخصيص وختم الملخصات PDF</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Resource 3: Online Tutoring & Support */}
-                <div className="bg-gradient-to-br from-amber-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
-                      <Award className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-amber-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between items-start">
+                      <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                        academy.masartamayoz.com
+                      </span>
                     </div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      الدعم المدرسي والمراجعة المباشرة
+                      أكاديمية مسار — دروس Google Meet
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      حصص خصوصية تفاعلية ومراجعات مباشرة عبر Google Meet مع نخبة من الأساتذة المتميزين.
+                      حصص خصوصية تفاعلية ومراجعات مباشرة عبر Google Meet مع نخبة من الأساتذة وفضاء متابعة الأولياء.
                     </p>
                   </div>
-                  <button
-                    onClick={() => selectCategory('contact')}
-                    className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-100 dark:border-slate-800"
-                  >
-                    <span>طلب الدعم والاستفسار</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <a
+                      href="https://academy.masartamayoz.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-xs font-bold py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <span>دخول أكاديمية مسار ↗</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      onClick={() => selectCategory('contact')}
+                      className="w-full text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>طلب الدعم والاستفسار</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Resource 4: Official Channel */}
-                <div className="bg-gradient-to-br from-rose-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-rose-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-bold shadow-md shadow-rose-500/20">
-                      <Video className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-rose-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-rose-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between items-start">
+                      <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-bold shadow-md shadow-rose-500/20">
+                        <Video className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                        youtube.com/@masartamayoz
+                      </span>
                     </div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
                       قناة مسار التميز المرئية
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      مقاطع فيديو تعليمية لشرح المفاهيم المعقدة وحلول نموذجية خطوة بخطوة للتمارين والفروض.
+                      شروحات مفصلة بالفيديو وإصلاح نموذجي خطوة بخطوة للتمارين والفروض والامتحانات الوطنية.
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('math-tools');
-                    }}
-                    className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 cursor-pointer pt-2 border-t border-slate-100 dark:border-slate-800"
-                  >
-                    <span>أدوات الرياضيات التفاعلية</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <a
+                      href="https://www.youtube.com/@masartamayoz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-xs font-bold py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <span>مشاهدة القناة على YouTube</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setActiveToolId('math-tools');
+                      }}
+                      className="w-full text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>أدوات الرياضيات التفاعلية</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -608,6 +743,7 @@ export default function App() {
               <button onClick={() => setView('about')} className="hover:text-indigo-600 transition-colors cursor-pointer">عن مسار</button>
               <button onClick={() => { setView('home'); selectCategory('pdf'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">الملفات</button>
               <button onClick={() => { setView('home'); selectCategory('image'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">الصور</button>
+              <button onClick={() => { setView('home'); selectCategory('archive'); }} className="hover:text-indigo-600 transition-colors cursor-pointer text-indigo-600 dark:text-sky-400 font-black">أرشيف الروابط المعتمدة ↗</button>
               <button onClick={() => { setView('home'); selectCategory('contact'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">اتصل بنا الدعم</button>
             </div>
           </div>

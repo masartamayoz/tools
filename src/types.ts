@@ -1,12 +1,25 @@
-export type CategoryId = 'all' | 'pdf' | 'image' | 'math' | 'exam' | 'contact';
+export type CategoryId = 'all' | 'pdf' | 'image' | 'math' | 'exam' | 'archive' | 'contact';
 
 export interface Tool {
   id: string;
   title: string;
   description: string;
-  category: Exclude<CategoryId, 'all' | 'contact'>;
+  category: Exclude<CategoryId, 'all' | 'contact' | 'archive'>;
   icon: string;
   badge?: string;
+}
+
+export interface ArchivedResource {
+  id: string;
+  title: string;
+  category: 'exams' | 'academy' | 'books' | 'tools' | 'videos';
+  targetAudience: string;
+  description: string;
+  url: string;
+  badge?: string;
+  features: string[];
+  isExternal: boolean;
+  internalToolId?: string;
 }
 
 export interface MultiplicationQuestion {

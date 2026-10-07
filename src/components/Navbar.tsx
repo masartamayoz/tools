@@ -126,6 +126,20 @@ export function Navbar({ currentCategory, setCurrentCategory, view, setView, bra
             </button>
 
             <button
+              onClick={() => navigateTo('archive')}
+              className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
+                view === 'home' && currentCategory === 'archive'
+                  ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+              }`}
+            >
+              <span>🏛️ أرشيف وروابط مسار</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-extrabold">
+                مفعّل ↗
+              </span>
+            </button>
+
+            <button
               onClick={navigateToAbout}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 view === 'about'
@@ -218,6 +232,12 @@ export function Navbar({ currentCategory, setCurrentCategory, view, setView, bra
               className="block w-full text-right px-4 py-2.5 rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               📝 فروض واختبارات
+            </button>
+            <button
+              onClick={() => navigateTo('archive')}
+              className="block w-full text-right px-4 py-2.5 rounded-xl text-base font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50/50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
+            >
+              🏛️ أرشيف وروابط مسار المعتمدة ↗
             </button>
             <button
               onClick={navigateToAbout}
