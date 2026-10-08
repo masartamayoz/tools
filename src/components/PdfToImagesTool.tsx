@@ -336,13 +336,13 @@ export default function PdfToImagesTool() {
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 md:p-8 shadow-xl transition-all">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
             📸 تحويل ملفات PDF إلى صور عالية الدقة
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            حوّل جميع صفحات مستنداتك وفروضك المدرسية إلى صور لتسهيل تصفحها ومشاركتها. يدعم تحويل لغاية <span className="font-bold text-indigo-650 dark:text-sky-400">25 ملفاً دفعة واحدة</span>.
+          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base mt-2 font-medium leading-relaxed">
+            حوّل جميع صفحات مستنداتك وفروضك المدرسية إلى صور لتسهيل تصفحها ومشاركتها. يدعم تحويل لغاية <span className="font-black text-indigo-600 dark:text-sky-400">25 ملفاً دفعة واحدة</span>.
           </p>
         </div>
       </div>

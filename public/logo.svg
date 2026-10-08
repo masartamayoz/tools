@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <!-- 3D Hexagonal Pencil & Silhouette Icon -->
+  <g transform="translate(10, 0) scale(0.4)">
+    <path d="M10 162C70 145 130 145 190 162" stroke="#0ea5e9" stroke-width="6" stroke-linecap="round"/>
+    <!-- Pencil -->
+    <path d="M55 45H75V110L55 125V45Z" fill="#38bdf8"/>
+    <path d="M75 45H95V110L85 128L75 110V45Z" fill="#0284c7"/>
+    <path d="M95 45H108V110L95 125V45Z" fill="#0369a1"/>
+    <path d="M55 125C61 120 69 120 75 110" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M75 110C80 115 90 115 95 110" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M95 110C100 120 104 120 108 125" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M55 45C55 38 65 35 81.5 35C98 35 108 38 108 45" fill="#0284c7" opacity="0.3"/>
+    <path d="M55 125L85 170L108 125C108 125 93 118 85 128C77 118 55 125 55 125Z" fill="#e7c8a4"/>
+    <path d="M79 161L85 172L91 161C88 163 85 163 79 161Z" fill="#334155"/>
+    <circle cx="50" cy="165" r="3" fill="#0ea5e9" opacity="0.75"/>
+    <circle cx="120" cy="160" r="2.5" fill="#0ea5e9" opacity="0.6"/>
+    <!-- Silhouette Student/Educator Figure -->
+    <circle cx="138" cy="48" r="14" fill="#1e293b"/>
+    <path d="M138 62C122 62 108 52 102 48C100 46 98 48 99 50C105 61 118 73 132 75V110C132 125 137 142 142 161C143 163 145 163 145 161C147 142 153 125 153 110V80C165 74 180 78 190 82C192 83 193 80 191 78C180 70 158 62 138 62Z" fill="#1e293b"/>
+  </g>
+  <!-- Text Brand block -->
+  <text x="100" y="44" font-family="'Cairo', sans-serif" font-weight="900" font-size="28" fill="#0f172a">أدوات التميز</text>
+  <text x="100" y="66" font-family="'Cairo', sans-serif" font-weight="700" font-size="14" fill="#0284c7">منصة أدوات تعليمية مجانية</text>
+</svg>

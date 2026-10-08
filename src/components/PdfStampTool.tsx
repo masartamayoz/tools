@@ -698,18 +698,18 @@ export default function PdfStampTool() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
-              <Stamp className="w-5 h-5" />
+          <div className="flex flex-wrap items-center gap-2.5 mb-2">
+            <span className="p-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+              <Stamp className="w-6 h-6" />
             </span>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-normal">
               تخصيص ملفات PDF وإضافة العلامات المائية والأختام
             </h2>
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               محدّث ومطوّر 🚀
             </span>
           </div>
-          <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-semibold">
+          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-medium leading-relaxed max-w-3xl">
             استورد أي ملف PDF من حاسوبك، أضف علامات مائية نصية، أختاماً وتوقيعات، ترقيم صفحات أوتوماتيكي، ترويسات وتذييلات رسمية، وصدره فوراً بجودة فائقة!
           </p>
         </div>
@@ -719,9 +719,9 @@ export default function PdfStampTool() {
           {downloadUrl ? (
             <button
               onClick={handleDownload}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl shadow-lg transition-all cursor-pointer text-xs md:text-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl shadow-lg transition-all cursor-pointer text-sm"
             >
-              <FileDown className="w-4 h-4" />
+              <FileDown className="w-5 h-5" />
               تحميل الملف المخصص الآن (PDF)
             </button>
           ) : (

@@ -1,12 +1,38 @@
-export type CategoryId = 'all' | 'pdf' | 'image' | 'math' | 'exam' | 'archive' | 'contact';
+export type CategoryKey =
+  | 'all'
+  | 'organize'
+  | 'optimize'
+  | 'to-pdf'
+  | 'from-pdf'
+  | 'edit'
+  | 'security'
+  | 'images'
+  | 'edu'
+  | 'archive'
+  | 'contact';
 
-export interface Tool {
-  id: string;
-  title: string;
+export interface CategoryInfo {
+  id: CategoryKey;
+  slug: string;
+  name: string;
   description: string;
-  category: Exclude<CategoryId, 'all' | 'contact' | 'archive'>;
+  icon: string;
+  accentColor: string;
+}
+
+export interface ToolItem {
+  id: string;
+  slug: string; // e.g. '/pdf/merge'
+  title: string;
+  shortTitle?: string;
+  description: string;
+  category: CategoryKey;
   icon: string;
   badge?: string;
+  isUpcoming?: boolean;
+  upcomingMessage?: string;
+  keywords?: string[];
+  maxFiles?: number;
 }
 
 export interface ArchivedResource {
@@ -22,6 +48,7 @@ export interface ArchivedResource {
   internalToolId?: string;
 }
 
+// Math Tools data definitions
 export interface MultiplicationQuestion {
   num1: number;
   num2: number;

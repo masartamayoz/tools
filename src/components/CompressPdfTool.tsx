@@ -225,13 +225,13 @@ export default function CompressPdfTool() {
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 md:p-8 shadow-xl transition-all">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
             🗜️ ضغط وتصغير حجم ملفات PDF الذكي
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            قلل سعة كراساتك المدرسية وكتبك الرقمية على ثلاثة مستويات مع الحفاظ على مرونة الخطوط والرسوم الهندسية. يدعم ضغط لغاية <span className="font-bold text-indigo-650 dark:text-sky-400">25 ملفاً دفعة واحدة</span>.
+          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base mt-2 font-medium leading-relaxed">
+            قلل سعة كراساتك المدرسية وكتبك الرقمية على ثلاثة مستويات مع الحفاظ على وضوح الخطوط والرسوم الهندسية. يدعم ضغط لغاية <span className="font-black text-indigo-600 dark:text-sky-400">25 ملفاً دفعة واحدة</span>.
           </p>
         </div>
       </div>

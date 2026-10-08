@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { CategoryId, Tool } from './types';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { CategoryKey, ToolItem } from './types';
+import brand from './data/brand';
+import { categories, allTools } from './data/tools';
 import { Navbar } from './components/Navbar';
 import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
 import ArchivedLinksView from './components/ArchivedLinksView';
-import Logo from './components/Logo';
+import UpcomingModal from './components/UpcomingModal';
 
-// Subtools
+// Interactive Tool Components
 import ImageToPdfTool from './components/ImageToPdfTool';
 import CompressImageTool from './components/CompressImageTool';
 import MergeSplitPdfTool from './components/MergeSplitPdfTool';
@@ -16,8 +18,13 @@ import MathTools from './components/MathTools';
 import ExamGeneratorTool from './components/ExamGeneratorTool';
 import PdfStampTool from './components/PdfStampTool';
 import ResizeImageTool from './components/ResizeImageTool';
-import RemoveBgTool from './components/RemoveBgTool';
+import LatexToImageTool from './components/LatexToImageTool';
+import WorksheetPrintTool from './components/WorksheetPrintTool';
+import NotebookScannerTool from './components/NotebookScannerTool';
+import PdfToTextTool from './components/PdfToTextTool';
+import ImageConvertTool from './components/ImageConvertTool';
 
+// Icons
 import {
   FileText,
   Minimize2,
@@ -35,22 +42,47 @@ import {
   ShieldAlert,
   MapPin,
   Mail,
-  Instagram,
   Heart,
   Paintbrush,
   Stamp,
   ExternalLink,
   BookMarked,
   Video,
-  Award
+  Award,
+  Trash2,
+  RotateCw,
+  FileSpreadsheet,
+  ArrowUpDown,
+  Wrench,
+  FileUp,
+  FileDown,
+  Presentation,
+  Sheet,
+  Globe,
+  Type,
+  Hash,
+  Crop,
+  PenTool,
+  Lock,
+  Unlock,
+  EyeOff,
+  GitCompare,
+  LayoutTemplate,
+  Camera,
+  ShieldCheck,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 
 export default function App() {
-  const [currentCategory, setCurrentCategory] = useState<CategoryId>('all');
+  const [currentCategory, setCurrentCategory] = useState<CategoryKey>('all');
   const [view, setView] = useState<'home' | 'about'>('home');
   const [activeToolId, setActiveToolId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [upcomingTool, setUpcomingTool] = useState<ToolItem | null>(null);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const [brandTheme, setBrandTheme] = useState<'blue' | 'red'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('brand_theme') as 'blue' | 'red') || 'blue';
@@ -64,185 +96,254 @@ export default function App() {
   };
 
   const isBlue = brandTheme === 'blue';
-  
-  // Theme styling helpers that automatically adapt the UI style cleanly!
-  const themeAccent = isBlue ? 'sky' : 'rose';
-  const themeColor = isBlue ? 'indigo' : 'rose';
-  
-  // Custom theme mappings for specific classes
-  const styles = {
-    bgGradient: isBlue 
-      ? 'from-sky-600 via-indigo-600 to-indigo-800 dark:from-sky-950/40 dark:via-indigo-950/20 dark:to-slate-950' 
-      : 'from-rose-600 via-rose-700 to-red-800 dark:from-rose-950/40 dark:via-rose-950/20 dark:to-slate-950',
-    bannerBadge: isBlue ? 'bg-white/10 dark:bg-sky-950/50' : 'bg-white/10 dark:bg-rose-950/50',
-    primaryText: isBlue ? 'text-indigo-600 dark:text-sky-400' : 'text-rose-655 dark:text-rose-400',
-    hoverText: isBlue ? 'hover:text-indigo-600 dark:hover:text-sky-400' : 'hover:text-rose-600 dark:hover:text-rose-400',
-    hoverBorder: isBlue ? 'hover:border-sky-500/80 dark:hover:border-sky-450' : 'hover:border-rose-500/80 dark:hover:border-rose-450',
-    iconBgActive: isBlue ? 'group-hover:bg-indigo-600' : 'group-hover:bg-rose-600',
-    iconBgLight: isBlue ? 'bg-indigo-50 dark:bg-sky-950/30' : 'bg-rose-50 dark:bg-rose-950/30',
-    categoryActiveBg: isBlue ? 'bg-white dark:bg-sky-950 text-indigo-600 dark:text-sky-450 shadow-sm' : 'bg-white dark:bg-rose-950 text-rose-600 dark:text-rose-450 shadow-sm',
-    badgeBg: isBlue ? 'bg-slate-100 dark:bg-slate-850 text-indigo-755 dark:text-sky-305 px-2.5 py-1 rounded-full font-black border border-slate-200/60 dark:border-sky-900/60' : 'bg-slate-100 dark:bg-slate-850 text-rose-755 dark:text-rose-305 px-2.5 py-1 rounded-full font-black border border-slate-200/60 dark:border-rose-900/60',
+
+  // Sync with URL hash for clean permalinks & back button support
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '');
+      if (!hash) {
+        setActiveToolId(null);
+        return;
+      }
+
+      if (hash === 'about') {
+        setView('about');
+        setActiveToolId(null);
+        return;
+      }
+
+      if (hash === 'archive') {
+        setView('home');
+        setCurrentCategory('archive');
+        setActiveToolId(null);
+        return;
+      }
+
+      // Check if hash matches a tool slug
+      const foundTool = allTools.find(
+        (t) => t.slug.replace(/^\//, '') === hash || t.id === hash
+      );
+      if (foundTool) {
+        setView('home');
+        if (foundTool.isUpcoming) {
+          setUpcomingTool(foundTool);
+        } else {
+          setActiveToolId(foundTool.id);
+        }
+        return;
+      }
+
+      // Check if hash matches a category slug
+      const foundCat = categories.find(
+        (c) => c.slug.replace(/^\//, '') === hash || c.id === hash
+      );
+      if (foundCat) {
+        setView('home');
+        setCurrentCategory(foundCat.id);
+        setActiveToolId(null);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update document title following brand guidelines
+  useEffect(() => {
+    if (activeToolId) {
+      const tool = allTools.find((t) => t.id === activeToolId);
+      document.title = brand.getPageTitle(tool ? tool.title : undefined);
+    } else if (currentCategory === 'archive') {
+      document.title = brand.getPageTitle('أرشيف وروابط مسار المعتمدة');
+    } else if (view === 'about') {
+      document.title = brand.getPageTitle('عن المنصة');
+    } else {
+      document.title = `${brand.arabicName} | ${brand.descriptor}`;
+    }
+  }, [activeToolId, currentCategory, view]);
+
+  // Navigate to tool and update hash cleanly
+  const openTool = (tool: ToolItem) => {
+    if (tool.isUpcoming) {
+      setUpcomingTool(tool);
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveToolId(tool.id);
+    window.location.hash = tool.slug.replace(/^\//, '');
   };
 
-  const toolCatalog: Tool[] = [
-    {
-      id: 'image-to-pdf',
-      title: 'تحويل الصور إلى PDF',
-      description: 'حوّل صور الواجبات أو الكراسات والمستندات إلى ملف PDF احترافي مع إمكانية ترتيب الصفحات بسهولة تامة.',
-      category: 'pdf',
-      icon: 'FileText',
-      badge: 'الأكثر شعبية 🔥',
-    },
-    {
-      id: 'compress-image',
-      title: 'ضغط ومعالجة الصور',
-      description: 'قلل من حجم صور الفروض المنزلية دون فقدان الجودة لتمر في منصات التدريس بأقل سعة إنترنت.',
-      category: 'image',
-      icon: 'Minimize2',
-      badge: 'موفّر المساحة ⚡',
-    },
-    {
-      id: 'merge-pdf',
-      title: 'دمج وتقسيم ملفات PDF',
-      description: 'ادمج عدة كراسات أو فصليّات في مستند موحد، أو قسّم واقتطع الفصول المحددة بدقة تامة.',
-      category: 'pdf',
-      icon: 'Layers',
-      badge: 'تنظيم المستندات 📁',
-    },
-    {
-      id: 'compress-pdf',
-      title: 'ضغط وتصغير حجم PDF',
-      description: 'صغّر حجم مستنداتك المدرسية على 3 مستويات مع دعم حتى 25 ملفاً دفعة واحدة وحساب الحجم والنسبة فوراً.',
-      category: 'pdf',
-      icon: 'Minimize2',
-      badge: 'دفعة 25 ملف ⚡',
-    },
-    {
-      id: 'pdf-to-images',
-      title: 'تحويل PDF إلى صور JPG/PNG',
-      description: 'حوّل صفحات ملفات الـ PDF أو الامتحانات إلى صور مستقلة عالية الدقة مع دعم حتى 25 ملفاً دفعة واحدة.',
-      category: 'pdf',
-      icon: 'FileImage',
-      badge: 'دفعة 25 ملف 🖼️',
-    },
-    {
-      id: 'math-tools',
-      title: 'أدوات الرياضيات التفاعلية',
-      description: 'جدول الضرب التفاعلي، حساب الأشكال والمجسمات الهندسية، تحويل المعايير، ورسام محاكاة المعادلات.',
-      category: 'math',
-      icon: 'BookOpen',
-      badge: 'رياضيات ذكية 📐',
-    },
-    {
-      id: 'exam-generator',
-      title: 'إنشاء الفروض والامتحانات تونس',
-      description: 'أنشئ فوراً فروض مراقبة وتأليف نموذجية حسب موضوع ومقترح التدريس المدرسي الرسمي تونس لتطبعها للتلاميذ.',
-      category: 'exam',
-      icon: 'GraduationCap',
-      badge: 'جديد ومقترح ✏️',
-    },
-    {
-      id: 'pdf-stamp',
-      title: 'تخصيص ملفات PDF والعلامة المائية',
-      description: 'استورد ملفك من الحاسوب، أضف علامات مائية نصية، أختاماً وتوقيعات وشعارات، ترقيم صفحات تلقائي، وترويسة رسمية.',
-      category: 'pdf',
-      icon: 'Stamp',
-      badge: 'محدّث ومطور 🌟',
-    },
-    {
-      id: 'resize-image',
-      title: 'تغيير حجم ومقاس الصورة',
-      description: 'غيّر أبعاد صور الملخصات والوثائق بدقة تامة بالبكسل مع قوالب جاهزة متوافقة مع الأنظمة المدرسية.',
-      category: 'image',
-      icon: 'Scale',
-      badge: 'ضبط الحجم 📏',
-    },
-    {
-      id: 'remove-bg',
-      title: 'إزالة وعزل خلفيات الصور',
-      description: 'اجعل خلفيات صور التلاميذ شفافة أو غيّر لونها للون الأبيض أو الأزرق المعتمد للبطاقات المدرسية والمناظرات.',
-      category: 'image',
-      icon: 'User',
-      badge: 'عزل شفّاف ✂️',
-    },
-  ];
+  const closeTool = () => {
+    setActiveToolId(null);
+    window.location.hash = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  // Map icon strings to React elements
+  const selectCategory = (cat: CategoryKey) => {
+    setView('home');
+    setActiveToolId(null);
+    setCurrentCategory(cat);
+    if (cat === 'all') {
+      window.location.hash = '';
+    } else if (cat === 'archive') {
+      window.location.hash = 'archive';
+    } else {
+      const found = categories.find((c) => c.id === cat);
+      if (found) {
+        window.location.hash = found.slug.replace(/^\//, '');
+      }
+    }
+  };
+
+  // Icon renderer mapping
   const renderIcon = (iconName: string) => {
-    const props = { className: `h-6 w-6 ${isBlue ? 'text-indigo-600 dark:text-sky-400' : 'text-rose-600 dark:text-rose-450'}` };
+    const props = { className: 'h-6 w-6' };
     switch (iconName) {
-      case 'FileText':
-        return <FileText {...props} />;
-      case 'Minimize2':
-        return <Minimize2 {...props} />;
       case 'Layers':
         return <Layers {...props} />;
+      case 'Scissors':
+        return <Scissors {...props} />;
+      case 'Trash2':
+        return <Trash2 {...props} />;
+      case 'FileSpreadsheet':
+        return <FileSpreadsheet {...props} />;
+      case 'ArrowUpDown':
+        return <ArrowUpDown {...props} />;
+      case 'RotateCw':
+        return <RotateCw {...props} />;
+      case 'Minimize2':
+        return <Minimize2 {...props} />;
+      case 'Wrench':
+        return <Wrench {...props} />;
+      case 'Search':
+        return <Search {...props} />;
+      case 'FileText':
+        return <FileText {...props} />;
+      case 'FileUp':
+        return <FileUp {...props} />;
+      case 'FileDown':
+        return <FileDown {...props} />;
+      case 'Presentation':
+        return <Presentation {...props} />;
+      case 'Sheet':
+        return <Sheet {...props} />;
+      case 'Globe':
+        return <Globe {...props} />;
       case 'FileImage':
         return <FileImage {...props} />;
-      case 'BookOpen':
-        return <BookOpen {...props} />;
-      case 'GraduationCap':
-        return <GraduationCap {...props} />;
-      case 'Sparkles':
-        return <Sparkles {...props} />;
+      case 'Type':
+        return <Type {...props} />;
+      case 'Stamp':
+        return <Stamp {...props} />;
+      case 'Hash':
+        return <Hash {...props} />;
+      case 'Crop':
+        return <Crop {...props} />;
+      case 'Info':
+        return <Info {...props} />;
+      case 'PenTool':
+        return <PenTool {...props} />;
+      case 'Lock':
+        return <Lock {...props} />;
+      case 'Unlock':
+        return <Unlock {...props} />;
+      case 'EyeOff':
+        return <EyeOff {...props} />;
+      case 'GitCompare':
+        return <GitCompare {...props} />;
       case 'Scale':
         return <Scale {...props} />;
       case 'User':
         return <User {...props} />;
-      case 'Stamp':
-        return <Stamp {...props} />;
+      case 'Sparkles':
+        return <Sparkles {...props} />;
+      case 'LayoutTemplate':
+        return <LayoutTemplate {...props} />;
+      case 'Camera':
+        return <Camera {...props} />;
+      case 'GraduationCap':
+        return <GraduationCap {...props} />;
+      case 'BookOpen':
+        return <BookOpen {...props} />;
       default:
         return <BookOpen {...props} />;
     }
   };
 
-  // Filters logic
-  const filteredTools = toolCatalog.filter((t) => {
-    const matchesCategory =
-      currentCategory === 'all' || t.category === currentCategory;
-    const matchesSearch =
-      t.title.includes(searchQuery) || t.description.includes(searchQuery);
-    return matchesCategory && matchesSearch;
-  });
+  // Filter tools by category and search
+  const filteredTools = useMemo(() => {
+    return allTools.filter((t) => {
+      const matchesCategory =
+        currentCategory === 'all' || t.category === currentCategory;
+      const query = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        t.title.toLowerCase().includes(query) ||
+        t.description.toLowerCase().includes(query) ||
+        (t.keywords && t.keywords.some((k) => k.toLowerCase().includes(query)));
+      return matchesCategory && matchesSearch;
+    });
+  }, [currentCategory, searchQuery]);
 
-  const selectCategory = (cat: CategoryId) => {
-    setView('home');
-    setActiveToolId(null);
-    setCurrentCategory(cat);
-  };
-
-  const getActiveToolComponent = () => {
+  // Current active tool component
+  const renderActiveToolComponent = () => {
     switch (activeToolId) {
       case 'image-to-pdf':
         return <ImageToPdfTool />;
       case 'compress-image':
         return <CompressImageTool />;
       case 'merge-pdf':
+      case 'split-pdf':
+      case 'remove-pages':
+      case 'extract-pages':
+      case 'reorder-pdf':
+      case 'rotate-pdf':
         return <MergeSplitPdfTool />;
       case 'compress-pdf':
         return <CompressPdfTool />;
       case 'pdf-to-images':
         return <PdfToImagesTool />;
-      case 'math-tools':
-        return <MathTools />;
-      case 'exam-generator':
-        return <ExamGeneratorTool />;
+      case 'pdf-to-text':
+        return <PdfToTextTool />;
       case 'pdf-stamp':
+      case 'page-numbers':
+      case 'crop-pdf':
+      case 'pdf-metadata':
+      case 'sign-pdf':
         return <PdfStampTool />;
       case 'resize-image':
         return <ResizeImageTool />;
-      case 'remove-bg':
-        return <RemoveBgTool />;
+      case 'crop-rotate-image':
+      case 'watermark-image':
+      case 'ocr-image':
+        return <ResizeImageTool />;
+      case 'convert-image':
+        return <ImageConvertTool />;
+      case 'latex-to-image':
+        return <LatexToImageTool />;
+      case 'worksheet-print':
+        return <WorksheetPrintTool />;
+      case 'notebook-scanner':
+        return <NotebookScannerTool />;
+      case 'exam-generator':
+        return <ExamGeneratorTool />;
+      case 'math-tools':
+        return <MathTools />;
       default:
         return null;
     }
   };
 
-  const currentYear = new Date().getFullYear();
+  const currentToolItem = allTools.find((t) => t.id === activeToolId);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col font-sans" dir="rtl">
-      {/* Dynamic Nav Header */}
+    <div
+      dir="rtl"
+      className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300"
+    >
+      {/* Navbar with brand identity */}
       <Navbar
         currentCategory={currentCategory}
         setCurrentCategory={selectCategory}
@@ -250,459 +351,422 @@ export default function App() {
         setView={setView}
         brandTheme={brandTheme}
         setBrandTheme={handleSetBrandTheme}
+        onSearchClick={() => {
+          setView('home');
+          setActiveToolId(null);
+          setTimeout(() => searchInputRef.current?.focus(), 100);
+        }}
       />
 
-      {/* Main Body content */}
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        {/* VIEW: About */}
         {view === 'about' ? (
-          <AboutView />
-        ) : currentCategory === 'contact' ? (
-          <ContactView />
-        ) : currentCategory === 'archive' ? (
-          <ArchivedLinksView
-            onOpenInternalTool={(toolId) => {
-              setActiveToolId(toolId);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            brandTheme={brandTheme}
-          />
+          <AboutView brandTheme={brandTheme} />
         ) : activeToolId ? (
-          /* Single active tool page */
+          /* VIEW: Active Tool Running */
           <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-205/60 dark:border-slate-800/80 rounded-2xl py-3.5 px-5 shadow-sm">
-              <button
-                onClick={() => setActiveToolId(null)}
-                className={`text-sm font-bold text-slate-600 ${styles.hoverText} transition-colors flex items-center gap-1.5 cursor-pointer`}
-              >
-                ← العودة إلى قائمة الأدوات والمنصة الرئيسية
-              </button>
-              <div className={`text-xs font-black ${styles.primaryText}`}>
-                {brandTheme === 'blue' ? 'منصة أدوات التميز • معالجة محلية آمنة 🔒' : 'مسار التميز النموذجي • حماية كاملة للتلميذ 🔒'}
+            {/* Top Breadcrumb Navigation */}
+            <div className="flex items-center justify-between bg-white dark:bg-slate-900 px-5 py-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
+                <button
+                  onClick={closeTool}
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer"
+                >
+                  الرئيسية
+                </button>
+                <span>/</span>
+                <span className="text-slate-900 dark:text-white font-black">
+                  {currentToolItem?.title || 'الأداة'}
+                </span>
+                {currentToolItem?.badge && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold ms-1">
+                    {currentToolItem.badge}
+                  </span>
+                )}
               </div>
-            </div>
-            {getActiveToolComponent()}
-          </div>
-        ) : (
-          /* Hub view (catalogs & lists) */
-          <div className="space-y-12 animate-in fade-in duration-300">
-            {/* Elegant Hero Banner - with high professionalism and dynamic graphics */}
-            <div className={`bg-gradient-to-br ${styles.bgGradient} text-white rounded-[2.5rem] p-8 md:p-12 text-center shadow-xl relative overflow-hidden transition-all duration-500`}>
-              {/* Grid abstract overlay */}
-              <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
-              <div className="relative z-10 space-y-6 max-w-3xl mx-auto flex flex-col items-center">
-                {/* Center stage Logo displaying official visual identity beautifully */}
-                <div className="bg-white/95 dark:bg-slate-900/90 p-5 rounded-[2rem] shadow-2xl border border-white/20 hover:scale-[1.03] transition-transform duration-300">
-                  <Logo variant={brandTheme} size="lg" showText={true} animate={true} />
+              <button
+                onClick={closeTool}
+                className="py-1.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>العودة لكافة الأدوات</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Active Tool Body */}
+            {renderActiveToolComponent()}
+          </div>
+        ) : currentCategory === 'archive' ? (
+          /* VIEW: Archived Links & Resources Portal */
+          <ArchivedLinksView
+            brandTheme={brandTheme}
+            onOpenInternalTool={(toolId) => {
+              const tool = allTools.find((t) => t.id === toolId);
+              if (tool) openTool(tool);
+            }}
+          />
+        ) : (
+          /* VIEW: Homepage & Tools Bento Grid */
+          <div className="space-y-10 animate-in fade-in duration-300">
+            {/* Hero Section */}
+            <div
+              className={`rounded-3xl p-6 sm:p-10 lg:p-12 text-white shadow-xl relative overflow-hidden bg-gradient-to-br ${
+                isBlue
+                  ? 'from-sky-700 via-indigo-800 to-slate-900'
+                  : 'from-rose-700 via-rose-800 to-slate-900'
+              }`}
+            >
+              {/* Background decorative grid */}
+              <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] opacity-10 pointer-events-none" />
+
+              <div className="relative z-10 max-w-4xl space-y-4 sm:space-y-5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-xs sm:text-sm font-bold text-white border border-white/20">
+                  <Sparkles className="h-4 w-4 text-amber-300 flex-shrink-0" />
+                  <span>{brand.descriptor} — شبكة {brand.parentNetworkName}</span>
                 </div>
 
-                <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full ${styles.bannerBadge} backdrop-blur-sm text-xs font-bold text-white tracking-wide border border-white/10`}>
-                  <Sparkles className="h-3.5 w-3.5 animate-pulse text-amber-300" />
-                  المنصة التعليمية الشاملة رقم #1 لمسيرة التميز والتعليم الحديث
-                </span>
-
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-                  بوابة الـتمـيـّز المدرسية الذكية
+                {/* H1 strictly adheres to designated dimension: 28px mobile -> 44px desktop with leading 1.4 */}
+                <h1 className="text-[26px] min-[380px]:text-[28px] sm:text-[34px] md:text-[38px] lg:text-[44px] font-black tracking-normal leading-[1.35] sm:leading-[1.4] max-w-3xl break-words">
+                  كل ما تحتاجه لملفات PDF والصور المدرسية في مكان واحد
                 </h1>
 
-                <p className="text-sm md:text-base text-slate-100 leading-relaxed font-semibold max-w-2xl mx-auto opacity-95">
-                  حوّل صور واجباتك المدرسية لـ PDF، اضغط وعالج كراساتك، ارسم الرسوم والبيانات الهندسية، وأنشئ فروض و امتحانات ورقية نموذجية لطباعتها مجاناً 100%!
+                {/* Body paragraph adheres to: 16 -> 17px, line-height 1.8, max ~65 characters */}
+                <p className="text-[15px] sm:text-[16px] lg:text-[17px] text-slate-100 font-medium leading-[1.8] max-w-2xl break-words">
+                  حوّل صور الكراسات إلى PDF، صغّر حجم الفروض المنزلية حتى 25 ملفاً دفعة واحدة، اكتب معادلات LaTeX، وخصص الامتحانات مع ضمان الخصوصية التامة: <strong className="text-white underline decoration-amber-400 decoration-2 underline-offset-4">ملفاتك لا تغادر جهازك أبداً</strong>.
                 </p>
 
-                {/* Live Search bar */}
-                <div className="w-full max-w-xl mx-auto pt-2">
-                  <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200/30 overflow-hidden flex items-center px-4">
-                    <Search className="h-5 w-5 text-slate-400 flex-shrink-0" />
+                {/* Instant Search Bar */}
+                <div className="pt-2">
+                  <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-white/20 overflow-hidden flex items-center px-4 max-w-2xl">
+                    <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
                     <input
+                      ref={searchInputRef}
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="ابحث عن أداة تريد استخدامها (مثال: جدول الضرب، ضغط صور...)"
-                      className="w-full bg-transparent border-0 px-3 py-4 text-slate-800 dark:text-white placeholder-slate-400 text-xs md:text-sm font-semibold focus:outline-none"
+                      placeholder="ابحث في 40+ أداة (مثال: دمج، ضغط 25 ملف، LaTeX، صور إلى PDF، وورد...)"
+                      className="w-full bg-transparent border-0 px-4 py-3.5 sm:py-4 text-slate-900 dark:text-white placeholder-slate-400 text-sm sm:text-base font-bold focus:outline-none"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => setSearchQuery('')}
-                        className="text-xs text-rose-500 hover:underline font-bold cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 cursor-pointer"
                       >
-                        مسح
+                        <X className="w-4 h-4" />
                       </button>
                     )}
                   </div>
                 </div>
-
-                {/* Direct Shortcut Action Pills */}
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                  <button
-                    onClick={() => selectCategory('archive')}
-                    className="px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-xs font-bold text-white border border-white/25 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                  >
-                    <span>🏛️ أرشيف وروابط مسار المعتمدة</span>
-                    <span className="text-[10px] px-1.5 py-0.2 bg-amber-400 text-slate-900 rounded-full font-black">
-                      مفعّل ↗
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('pdf-stamp');
-                    }}
-                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>🎨 تخصيص وختم PDF</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('compress-pdf');
-                    }}
-                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>⚡ ضغط PDF (25 ملفاً)</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      setActiveToolId('exam-generator');
-                    }}
-                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-xs font-bold text-white border border-white/15 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>📝 مولد الامتحانات تونس</span>
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* Quick Stat info segment */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl text-center shadow-sm">
-                <span className={`block text-2xl font-black ${styles.primaryText}`}>9+</span>
-                <span className="text-xs text-slate-450 dark:text-slate-400 font-bold block mt-1">أدوات ويب ذكية</span>
-              </div>
-              <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl text-center shadow-sm">
-                <span className={`block text-2xl font-black ${styles.primaryText}`}>100%</span>
-                <span className="text-xs text-slate-450 dark:text-slate-400 font-bold block mt-1">أمان وخصوصية محلية</span>
-              </div>
-              <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl text-center shadow-sm">
-                <span className={`block text-2xl font-black ${styles.primaryText}`}>مجاناً</span>
-                <span className="text-xs text-slate-450 dark:text-slate-400 font-bold block mt-1">دون اشتراك مادي أو قيود</span>
-              </div>
-              <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl text-center shadow-sm">
-                <span className={`block text-2xl font-black ${styles.primaryText}`}>تونس 🇹🇳</span>
-                <span className="text-xs text-slate-450 dark:text-slate-400 font-bold block mt-1">بفكر و منهج متميز</span>
-              </div>
-            </div>
-
-            {/* Hub Filters segment */}
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  🛠️ تصفح وتفعيل أدوات مسار
-                </h2>
-
-                <div className="flex flex-wrap gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800">
-                  <button
-                    onClick={() => selectCategory('all')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      currentCategory === 'all'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    الكل
-                  </button>
-                  <button
-                    onClick={() => selectCategory('pdf')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      currentCategory === 'pdf'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    📄 ملفات ومستندات PDF
-                  </button>
-                  <button
-                    onClick={() => selectCategory('image')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      currentCategory === 'image'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    🖼️ صور غرافيك وتصميم
-                  </button>
-                  <button
-                    onClick={() => selectCategory('math')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      currentCategory === 'math'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    📐 مواد و رياضيات
-                  </button>
-                  <button
-                    onClick={() => selectCategory('exam')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      currentCategory === 'exam'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    📝 فروض وامتحانات
-                  </button>
-                  <button
-                    onClick={() => selectCategory('archive')}
-                    className={`py-1.5 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                      currentCategory === 'archive'
-                        ? styles.categoryActiveBg
-                        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    <span>🏛️ أرشيف وروابط مسار</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-extrabold">
-                      مفعّل ↗
-                    </span>
-                  </button>
+            {/* Educational Trust & Privacy Banner */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3.5 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
                 </div>
-              </div>
-
-              {/* Grid bento box segment */}
-              {filteredTools.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl">
-                  <p className="text-slate-400 dark:text-slate-500 font-semibold text-sm">
-                    لم يثبت العثور على أية أدوات تطابق الكلمات المفتاحية لمسعاك المتميز. جرب كلمة أخرى!
+                <div>
+                  <h4 className="font-black text-sm sm:text-base text-slate-900 dark:text-white">
+                    ملفاتك لا تغادر جهازك
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                    معالجة داخلية 100% دون أي رفع لسيرفرات خارجية
                   </p>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredTools.map((tool) => (
-                    <div
-                      key={tool.id}
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setActiveToolId(tool.id);
-                      }}
-                      className={`group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 ${styles.hoverBorder} hover:shadow-xl hover:-translate-y-1.5 p-6 rounded-3xl transition-all cursor-pointer flex flex-col justify-between shadow-md`}
-                    >
-                      <div>
-                        <div className="flex justify-between items-start mb-4">
-                          <div className={`p-3 rounded-2xl transition-all ${styles.iconBgLight} ${styles.iconBgActive} group-hover:text-white`}>
-                            {renderIcon(tool.icon)}
-                          </div>
-                          {tool.badge && (
-                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black border ${isBlue ? 'bg-sky-50 dark:bg-sky-950/40 text-indigo-700 dark:text-sky-350 border-sky-100 dark:border-sky-900/50' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-350 border-rose-100 dark:border-rose-900/50'}`}>
-                              {tool.badge}
-                            </span>
-                          )}
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3.5 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-black text-sm sm:text-base text-slate-900 dark:text-white">
+                    موجّهة للتلاميذ والأساتذة
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                    أدوات مخصصة للفروض، الكراسات، وسلاسل التمارين
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3.5 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-black text-sm sm:text-base text-slate-900 dark:text-white">
+                    دفعات حتى 25 ملفاً مجاناً
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
+                    ضغط وتحويل سريع دون أي قيود على عدد الصفحات
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Horizontal Filter Chips Bar */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[20px] sm:text-[24px] lg:text-[28px] font-black text-slate-900 dark:text-white flex items-center gap-2.5 leading-[1.35]">
+                  <span className="text-2xl">🛠️</span>
+                  <span>تصفح أدوات التميز حسب الفئة:</span>
+                </h2>
+                <span className="text-xs sm:text-sm font-bold text-slate-500 bg-slate-100 dark:bg-slate-850 px-3 py-1 rounded-full">
+                  {filteredTools.length} أداة متاحة
+                </span>
+              </div>
+
+              {/* Scrollable Chips with snap */}
+              <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x">
+                <button
+                  onClick={() => selectCategory('all')}
+                  className={`py-2.5 px-5 rounded-2xl text-sm font-bold transition-all whitespace-nowrap snap-start cursor-pointer min-h-[44px] ${
+                    currentCategory === 'all'
+                      ? 'bg-indigo-600 text-white shadow-md font-black'
+                      : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  الكل ({allTools.length})
+                </button>
+
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => selectCategory(cat.id)}
+                    className={`py-2.5 px-5 rounded-2xl text-sm font-bold transition-all whitespace-nowrap snap-start cursor-pointer flex items-center gap-2 min-h-[44px] ${
+                      currentCategory === cat.id
+                        ? 'bg-indigo-600 text-white shadow-md font-black'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    {cat.id === 'edu' && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 font-black">
+                        حصري
+                      </span>
+                    )}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => selectCategory('archive')}
+                  className="py-2.5 px-5 rounded-2xl text-sm font-black whitespace-nowrap snap-start cursor-pointer flex items-center gap-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 min-h-[44px]"
+                >
+                  <span>🏛️ أرشيف وروابط مسار</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-black">
+                    مفعّل ↗
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Tools Bento Grid (1 col mobile, 2-3 col tablet, 4 col desktop) */}
+            {filteredTools.length === 0 ? (
+              <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl space-y-3">
+                <p className="font-bold text-slate-700 dark:text-slate-300 text-base">
+                  لم يتم العثور على أية أدوات تطابق كلمة البحث "{searchQuery}".
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCurrentCategory('all');
+                  }}
+                  className="text-sm text-indigo-600 dark:text-indigo-400 font-bold hover:underline cursor-pointer"
+                >
+                  إعادة ضبط البحث واستعراض جميع الأدوات
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredTools.map((tool) => (
+                  <div
+                    key={tool.id}
+                    onClick={() => openTool(tool)}
+                    className="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Top icon and badge row */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                          {renderIcon(tool.icon)}
                         </div>
 
-                        <h3 className={`text-base font-extrabold text-slate-900 dark:text-white tracking-tight ${isBlue ? 'group-hover:text-indigo-650 dark:group-hover:text-sky-400' : 'group-hover:text-rose-650 dark:group-hover:text-rose-400'} transition-colors`}>
-                          {tool.title}
-                        </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-2.5">
-                          {tool.description}
-                        </p>
+                        {tool.badge && (
+                          <span
+                            className={`text-[11px] font-black px-3 py-1 rounded-full border ${
+                              tool.isUpcoming
+                                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-750 dark:text-slate-250 border-slate-200 dark:border-slate-700'
+                            }`}
+                          >
+                            {tool.badge}
+                          </span>
+                        )}
                       </div>
 
-                      <div className={`pt-5 mt-5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold ${isBlue ? 'text-indigo-600 dark:text-sky-400' : 'text-rose-600 dark:text-rose-450'}`}>
-                        <span>ابدأ تشغيل الأداة</span>
-                        <ArrowRight className="h-4.5 w-4.5 transform group-hover:translate-x-1.5 transition-transform" />
-                      </div>
+                      {/* Tool Title */}
+                      <h3 className="font-black text-[17px] sm:text-[18px] md:text-[20px] text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-[1.4] break-words line-clamp-2">
+                        {tool.title}
+                      </h3>
+
+                      {/* Tool Description */}
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed font-medium">
+                        {tool.description}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Portal Integration: Modern & Classic Masar Tamayoz Resources Hub */}
-            <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800 space-y-6">
+                    {/* Bottom action trigger */}
+                    <div className="pt-4 mt-5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                      <span>{tool.isUpcoming ? 'عرض التفاصيل' : 'فتح وتجربة الأداة'}</span>
+                      <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Integrated Masar Tamayoz Hub Section (دمج القديم بالجديد) */}
+            <div className="pt-10 border-t border-slate-200/80 dark:border-slate-800 space-y-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🏛️</span>
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                      بوابة موارد مسار التميز الأصلية — مسار النجاح المتكامل
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl">🏛️</span>
+                    <h3 className="text-[19px] sm:text-[22px] font-black text-slate-900 dark:text-white leading-[1.35]">
+                      بوابة موارد مسار التميز الرسمية — دمج القديم بالجديد
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">
-                    دمج متكامل وشفاف بين أحدث أدوات الويب الذكية والمكتبة البيداغوجية التاريخية لمسار التميز التونسي.
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-semibold">
+                    الوصول الشفاف والمباشر إلى بنك الامتحانات، الأكاديمية التفاعلية، والكتب المدرسية الموازية.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => selectCategory('archive')}
-                    className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-                  >
-                    <span>استعراض الأرشيف المفصل (8+ روابط موثقة)</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hidden md:inline">
-                    تونس 🇹🇳
-                  </span>
-                </div>
+
+                <button
+                  onClick={() => selectCategory('archive')}
+                  className="py-2.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                >
+                  <span>استعراض كافة الروابط المعتمدة ↗</span>
+                  <ExternalLink className="w-4 h-4" />
+                </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Resource 1: Exam Bank */}
-                <div className="bg-gradient-to-br from-indigo-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {/* 1. Exam Bank */}
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
-                    <div className="flex justify-between items-start">
-                      <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">
-                        <GraduationCap className="w-5 h-5" />
+                    <div className="flex items-center justify-between">
+                      <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center">
+                        <GraduationCap className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                      <span className="text-[11px] font-mono text-slate-500 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                         masartamayoz.com
                       </span>
                     </div>
-                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      بنك الفروض والامتحانات الوطنية
+                    <h4 className="font-black text-base text-slate-900 dark:text-white">
+                      بنك الفروض والامتحانات
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      فروض مراقبة وتأليفية مع الإصلاح الدقيق لمناظرات السادسة، التاسعة، وامتحانات الباكالوريا.
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                      مناظرات السيزيام (6ème)، النوفيام (9ème)، والباكالوريا الرسمية مع الإصلاح الدقيق.
                     </p>
                   </div>
-                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <a
-                      href="https://masartamayoz.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full text-xs font-bold py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <span>زيارة الموقع الرسمي</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setActiveToolId('exam-generator');
-                      }}
-                      className="w-full text-[11px] font-bold text-indigo-600 dark:text-sky-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <span>توليد نموذج فرض تفاعلي</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <a
+                    href="https://masartamayoz.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span>زيارة بنك الفروض</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
 
-                {/* Resource 2: Textbooks & Parallels */}
-                <div className="bg-gradient-to-br from-emerald-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                {/* 2. Parallel Books */}
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
-                    <div className="flex justify-between items-start">
-                      <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
-                        <BookMarked className="w-5 h-5" />
+                    <div className="flex items-center justify-between">
+                      <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                        <BookMarked className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                      <span className="text-[11px] font-mono text-slate-500 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                         masartamayoz.com
                       </span>
                     </div>
-                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                    <h4 className="font-black text-base text-slate-900 dark:text-white">
                       الكتب الموازية والملخصات
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      سلسلة مسار التميز للكتب المدرسية الموازية وبحوث وتمارين معمقة باللغتين العربية والفرنسية.
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                      سلسلة مسار التميز للكتب المنهجية والتمارين المعمقة بالعربية والفرنسية.
                     </p>
                   </div>
-                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <a
-                      href="https://masartamayoz.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full text-xs font-bold py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <span>تصفح كتب وسلاسل مسار</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setActiveToolId('pdf-stamp');
-                      }}
-                      className="w-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <span>تخصيص وختم الملخصات PDF</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <a
+                    href="https://masartamayoz.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span>تصفح الكتب الموازية</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
 
-                {/* Resource 3: Online Tutoring & Support */}
-                <div className="bg-gradient-to-br from-amber-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                {/* 3. Academy & Live tutoring */}
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
-                    <div className="flex justify-between items-start">
-                      <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
-                        <Award className="w-5 h-5" />
+                    <div className="flex items-center justify-between">
+                      <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center">
+                        <Award className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
+                      <span className="text-[11px] font-mono text-slate-500 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                         academy.masartamayoz.com
                       </span>
                     </div>
-                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      أكاديمية مسار — دروس Google Meet
+                    <h4 className="font-black text-base text-slate-900 dark:text-white">
+                      أكاديمية مسار — حصص تفاعلية
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      حصص خصوصية تفاعلية ومراجعات مباشرة عبر Google Meet مع نخبة من الأساتذة وفضاء متابعة الأولياء.
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                      دروس دعم ومراجعة دورية عبر Google Meet وفضاء خاص بمتابعة الأولياء.
                     </p>
                   </div>
-                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <a
-                      href="https://academy.masartamayoz.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full text-xs font-bold py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <span>دخول أكاديمية مسار ↗</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => selectCategory('contact')}
-                      className="w-full text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <span>طلب الدعم والاستفسار</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <a
+                    href="https://academy.masartamayoz.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span>دخول الأكاديمية</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
 
-                {/* Resource 4: Official Channel */}
-                <div className="bg-gradient-to-br from-rose-50/60 to-white dark:from-slate-900 dark:to-slate-900 border border-rose-100 dark:border-slate-800 rounded-3xl p-5 hover:shadow-lg transition-all flex flex-col justify-between space-y-4">
+                {/* 4. Official YouTube Channel */}
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
-                    <div className="flex justify-between items-start">
-                      <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-bold shadow-md shadow-rose-500/20">
-                        <Video className="w-5 h-5" />
+                    <div className="flex items-center justify-between">
+                      <div className="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
+                        <Video className="w-6 h-6" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border">
-                        youtube.com/@masartamayoz
+                      <span className="text-[11px] font-mono text-slate-500 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                        youtube.com
                       </span>
                     </div>
-                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                    <h4 className="font-black text-base text-slate-900 dark:text-white">
                       قناة مسار التميز المرئية
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
-                      شروحات مفصلة بالفيديو وإصلاح نموذجي خطوة بخطوة للتمارين والفروض والامتحانات الوطنية.
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                      فيديوهات شرح للدروس الصعبة وإصلاح تفاعلي للتمارين والامتحانات الوطنية.
                     </p>
                   </div>
-                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <a
-                      href="https://www.youtube.com/@masartamayoz"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full text-xs font-bold py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <span>مشاهدة القناة على YouTube</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setActiveToolId('math-tools');
-                      }}
-                      className="w-full text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <span>أدوات الرياضيات التفاعلية</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <a
+                    href="https://www.youtube.com/@masartamayoz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span>مشاهدة الفيديوهات</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -710,48 +774,80 @@ export default function App() {
         )}
       </main>
 
-      {/* Decorative Warning Notice Alert about static preview storage boundaries */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 w-full mt-10">
-        <div className="p-4 bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-400 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5 text-xs text-center sm:text-right leading-relaxed justify-between">
-          <div className="flex items-center gap-2.5">
-            <ShieldAlert className="h-5 w-5 text-amber-500 flex-shrink-0" />
-            <p className="font-semibold">
-              <strong>ضمان الخصوصية الرقمي:</strong> تقتصر معالجة الملفات والامتحانات على محرك الويب بمتصفحك فقط، ولا يتم تخزين أي شيء في سحابة الخادم لحماية التلاميذ والخصوصية المدرسية بالجمهورية التونسية!
-            </p>
-          </div>
-          <button
-            onClick={() => selectCategory('contact')}
-            className="px-4.5 py-1.5 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-all font-bold cursor-pointer text-[10px]"
-          >
-            اقرأ البند والسياسة
-          </button>
-        </div>
-      </div>
+      {/* Upcoming Tool Explanatory Modal */}
+      <UpcomingModal
+        tool={upcomingTool}
+        onClose={() => setUpcomingTool(null)}
+        onNavigateToAlternative={(toolId) => {
+          const tool = allTools.find((t) => t.id === toolId);
+          if (tool) openTool(tool);
+        }}
+      />
 
-      {/* Footer Branding block */}
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-220 dark:border-slate-800 py-10 mt-auto transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-right text-xs">
+      {/* Footer Branding strictly following rules */}
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-12 mt-16 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-right">
             <div>
-              <p className="font-extrabold text-slate-800 dark:text-white text-sm">أدوات التميّز المدرسية</p>
-              <p className="text-slate-400 mt-1">
-                صمم و رتب بأمان. جميع الحقوق لكل تلاميذ ومنسقي المسيرة التعليمية بالجمهورية التونسية محفوظة © {currentYear}
+              <div className="flex items-center justify-center md:justify-start gap-2.5">
+                <span className="font-black text-slate-900 dark:text-white text-lg sm:text-xl">
+                  {brand.arabicName}
+                </span>
+                <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                  ({brand.latinName})
+                </span>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 font-medium leading-relaxed max-w-xl">
+                «{brand.descriptor}» — {brand.privacyNotice}
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center md:justify-end text-slate-450 dark:text-slate-400 font-bold">
-              <button onClick={() => setView('about')} className="hover:text-indigo-600 transition-colors cursor-pointer">عن مسار</button>
-              <button onClick={() => { setView('home'); selectCategory('pdf'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">الملفات</button>
-              <button onClick={() => { setView('home'); selectCategory('image'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">الصور</button>
-              <button onClick={() => { setView('home'); selectCategory('archive'); }} className="hover:text-indigo-600 transition-colors cursor-pointer text-indigo-600 dark:text-sky-400 font-black">أرشيف الروابط المعتمدة ↗</button>
-              <button onClick={() => { setView('home'); selectCategory('contact'); }} className="hover:text-indigo-600 transition-colors cursor-pointer">اتصل بنا الدعم</button>
+            {/* Footer Navigation Links */}
+            <div className="flex flex-wrap gap-5 justify-center md:justify-end text-sm font-bold text-slate-700 dark:text-slate-300">
+              <button
+                onClick={() => setView('about')}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                عن المنصة
+              </button>
+              <button
+                onClick={() => selectCategory('organize')}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                تنظيم PDF
+              </button>
+              <button
+                onClick={() => selectCategory('edu')}
+                className="hover:text-indigo-600 transition-colors cursor-pointer text-purple-600 dark:text-purple-400 font-black"
+              >
+                أدوات تعليمية
+              </button>
+              <button
+                onClick={() => selectCategory('archive')}
+                className="hover:text-amber-600 transition-colors cursor-pointer text-amber-700 dark:text-amber-400 font-black"
+              >
+                أرشيف الروابط المعتمدة ↗
+              </button>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800/60 text-center text-[10px] text-slate-400 flex items-center justify-center gap-1 font-semibold">
-            <span>صنع بكل</span>
-            <Heart className="h-3.5 w-3.5 text-rose-500 animate-pulse fill-rose-500" />
-            <span>للتلاميذ والمعلمين وأولياء الأمور — شبكة مسار التميز</span>
+          {/* Strict Brand Footer Line */}
+          <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+            <a
+              href={brand.urls.academy}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-bold flex items-center gap-1.5 text-slate-800 dark:text-slate-200"
+            >
+              <span>«{brand.footerLine}»</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+              <span>صُنعت بكل</span>
+              <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" />
+              <span>للتلاميذ والمعلمين — جميع الحقوق محفوظة {new Date().getFullYear()}</span>
+            </div>
           </div>
         </div>
       </footer>
